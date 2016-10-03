@@ -1,0 +1,12 @@
+exports[`test Test createStore 1`] = `
+Object {
+  "@@observable": [Function],
+  "dispatch": [Function],
+  "getState": [Function],
+  "registerReducers": [Function],
+  "replaceReducer": [Function],
+  "setPreloadedState": [Function],
+  "subscribe": [Function],
+  "unregisterReducers": [Function],
+}
+`;

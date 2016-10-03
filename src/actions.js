@@ -1,0 +1,2 @@
+export const UPDATE_STATE = '@@COMPONENT_SET_STATE'
+export const RESET_STATE = '@@COMPONENT_RESET_STATE'

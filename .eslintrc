@@ -1,0 +1,23 @@
+{
+  "parser": "babel-eslint",
+  "env": {
+    "browser": true,
+    "node": true,
+    "jest": true
+  },
+  "plugins": [
+    "import",
+    "react"
+  ],
+  "extends": [
+    "eslint:recommended",
+    "plugin:import/errors",
+    "plugin:react/recommended"
+  ],
+  "rules": {
+    "indent": [2, 2, {
+      "SwitchCase": 1
+    }],
+    "semi": [2, "never"]
+  }
+}

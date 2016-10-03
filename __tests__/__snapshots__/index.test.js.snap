@@ -1,0 +1,7 @@
+exports[`test Test library exports 1`] = `
+Object {
+  "createReducer": [Function],
+  "createStore": [Function],
+  "getState": [Function],
+}
+`;

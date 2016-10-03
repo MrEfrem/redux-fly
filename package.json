@@ -1,0 +1,52 @@
+{
+  "name": "redux-fly",
+  "version": "0.0.1-alpha0",
+  "main": "lib/index.js",
+  "module": "es/index.js",
+  "jsnext:main": "es/index.js",
+  "files": [
+    "lib",
+    "es",
+    "src"
+  ],
+  "scripts": {
+    "build": "npm run build:commonjs && npm run build:es",
+    "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib",
+    "build:es": "cross-env BABEL_ENV=es babel src --out-dir es",
+    "clean": "rimraf lib es",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "coverage": "jest --coverage"
+  },
+  "author": "Efremov Alexander <mr.efrem@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-cli": "^6.14.0",
+    "babel-eslint": "^7.0.0",
+    "babel-jest": "^16.0.0",
+    "babel-preset-latest": "^6.14.0",
+    "babel-preset-react": "^6.11.1",
+    "babel-preset-stage-2": "^6.13.0",
+    "cross-env": "^3.0.0",
+    "eslint": "^3.5.0",
+    "eslint-plugin-import": "^2.0.0",
+    "eslint-plugin-react": "^6.3.0",
+    "jest-cli": "^16.0.0",
+    "react": "^15.3.2",
+    "redux": "^3.6.0",
+    "rimraf": "^2.5.4"
+  },
+  "dependencies": {
+    "lodash": "^4.16.1"
+  },
+  "peerDependencies": {
+    "react": "15.x",
+    "redux": "3.x",
+    "react-redux": "4.x"
+  },
+  "jest": {
+    "testEnvironment": "node"
+  }
+}
