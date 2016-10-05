@@ -1,12 +1,7 @@
 import React from 'react'
-import { connect } from 'react-redux'
-import storeShape from './utils/storeShape'
 import { checkMountPath, checkInitialState, checkListenActions, checkOptions, checkDetailOptions }
   from './checks'
-import createBoundedReducer from './createBoundedReducer'
-import setReduxState from './setReduxState'
-import { RESET_STATE } from './actions'
-import getState from './getState'
+import createRegisterReducer from './createRegisterReducer'
 
 /**
  * Create/mount reducer
@@ -14,7 +9,10 @@ import getState from './getState'
  * @param  {Object} initialState
  * @param  {Object} listenActions
  * @param  {Object} options
- * @return {function} HOC
+ * @return {
+ *   @param {Object} wrapped React component
+ *   @return {void}
+ * }
  */
 export default (
   mountPath,
@@ -22,65 +20,81 @@ export default (
   listenActions,
   options = {}
 ) => {
-  checkMountPath(mountPath)
-  checkInitialState(initialState)
-  checkListenActions(listenActions)
+  let needWrapped = false
+
+  if (typeof mountPath !== 'function') {
+    checkMountPath(mountPath)
+  } else {
+    needWrapped = true
+  }
+
+  if (typeof initialState !== 'function') {
+    checkInitialState(initialState)
+  } else {
+    needWrapped = true
+  }
+
+  if (typeof listenActions !== 'function') {
+    checkListenActions(listenActions)
+  } else {
+    needWrapped = true
+  }
+
   checkOptions(options)
-  const _options = {
+
+  const defaultOptions = {
     connectToStore: true,
     unregisterInUnmount: false,
+  }
+  const _options = {
+    ...defaultOptions,
     ...options
   }
-  checkDetailOptions(_options)
-
-  const { connectToStore, unregisterInUnmount } = _options
-
-  const reducer = {
-    [mountPath]: createBoundedReducer(mountPath, initialState, listenActions || {}),
-  }
+  checkDetailOptions(Object.keys(defaultOptions), _options)
 
   return (WrappedComponent) => {
-    let ChildComponent = WrappedComponent
-    if (connectToStore) {
-      ChildComponent = connect(getState(mountPath))(WrappedComponent)
+    // Not transferred parameters is functions
+    if (!needWrapped) {
+      return createRegisterReducer(mountPath, initialState, listenActions, options,
+        WrappedComponent)
     }
-    return class RegisterReducer extends React.Component {
-      static contextTypes = {
-        store: storeShape,
-      }
 
-      constructor(props, context) {
-        super(props, context)
-        const { store } = context
-        // Binding setReduxState with redux store
-        this.setReduxState = setReduxState(mountPath, store.dispatch, store.getState)
-      }
-
+    // Transferred some parameters is functions
+    return class CreateReducer extends React.Component {
       componentWillMount() {
-        const { store } = this.context
-        // Registration of created reducer
-        store.registerReducers(reducer)
+        let _mountPath = mountPath
+        if (typeof _mountPath === 'function') {
+          _mountPath = _mountPath(this.props)
+          checkMountPath(_mountPath)
+        }
+
+        let _initialState = initialState
+        if (typeof _initialState === 'function') {
+          _initialState = _initialState(this.props)
+          checkInitialState(_initialState)
+        }
+
+        let _listenActions = listenActions
+        if (typeof _listenActions === 'function') {
+          _listenActions = _listenActions(this.props)
+          checkListenActions(_listenActions)
+        }
+
+        this.WrappedComponent = createRegisterReducer(_mountPath, _initialState, _listenActions,
+          options, WrappedComponent)
       }
 
       componentWillUnmount() {
-        if (unregisterInUnmount) {
-          const { store } = this.context
-          store.dispatch({
-            type: RESET_STATE,
-            instance: mountPath,
-          })
-          store.unregisterReducers(reducer)
-        }
+        this.WrappedComponent = null
       }
 
       render() {
-        return (
-          <ChildComponent
-            {...this.props}
-            setReduxState={this.setReduxState}
-          />
-        )
+        const WrappedComponent = this.WrappedComponent
+        return <WrappedComponent {...this.props} />
       }
     }
   }
+
+
+
 }

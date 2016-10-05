@@ -46,14 +46,24 @@ export const checkOptions = (options) => {
 
 /**
  * Check properties of an object options
+ * @param  {Array}  default options
  * @param  {Object}  options
  * @return {void}
  */
-export const checkDetailOptions = (options) => {
+export const checkDetailOptions = (defaultOptions, options) => {
   if (typeof options.connectToStore !== 'boolean') {
-    throw new Error('connectToStore property of an object options must be boolean')
+    throw new Error('Option connectToStore must be boolean')
   }
   if (typeof options.unregisterInUnmount !== 'boolean') {
-    throw new Error('Property unregisterInUnmount in third parameter shall be boolean')
+    throw new Error('Option unregisterInUnmount must be boolean')
+  }
+  const undefinedOptions = Object.keys(options).reduce((prev, next) => {
+    if (!defaultOptions.includes(next)) {
+      prev = `${prev}, `
+    }
+    return prev
+  }, '').slice(0, -2)
+  if (undefinedOptions) {
+    throw new Error(`Undefined options: ${undefinedOptions}`)
   }
 }

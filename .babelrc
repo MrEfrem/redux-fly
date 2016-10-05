@@ -11,9 +11,15 @@
   ],
   "env": {
     "commonjs": {
-      "plugins": [
-        ["transform-es2015-modules-commonjs", { "loose": true }]
-      ]
+      "presets": [
+        ["latest", {
+          "es2015": {
+            "loose": true,
+          }
+        }],
+        "react",
+        "stage-2"
+      ],
     },
     "es": {
       "plugins": [
@@ -21,9 +27,11 @@
       ]
     },
     "test": {
-      "plugins": [
-        "transform-es2015-modules-commonjs"
-      ]
+      "presets": [
+        "latest",
+        "react",
+        "stage-2"
+      ],
     }
   }
 }

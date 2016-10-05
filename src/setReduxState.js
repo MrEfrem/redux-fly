@@ -1,12 +1,26 @@
 import warning from './utils/warning'
 import isPlainObject from 'lodash/isPlainObject'
-import { UPDATE_STATE } from './actions'
+import { MOUNT_PATH, UUID } from './consts'
 
-// Update state
-export default (instance, dispatch, getState) => (newState) => {
+/**
+ * Update state
+ * @param  {string} uuid
+ * @param  {string} mountPath
+ * @param  {function} dispatch
+ * @param  {function} getState
+ * @return {
+ *   @param {actionType} Custom action type
+ *   @param {Object} New state
+ *   @return {void}
+ * )
+ */
+export default (uuid, mountPath, dispatch, getState) => (actionType, newState) => {
   if (process.env.NODE_ENV !== 'production') {
+    if (typeof actionType !== 'string' || !actionType.length) {
+      warning('Parameter actionType must be not empty string')
+    }
     if (!isPlainObject(newState) && typeof newState !== 'function') {
-      warning('First parameter newState must be plain object or function')
+      warning('Parameter newState must be plain object or function')
     }
   }
 
@@ -24,8 +38,9 @@ export default (instance, dispatch, getState) => (newState) => {
   }
 
   dispatch({
-    type: UPDATE_STATE,
-    instance,
+    type: actionType,
+    [MOUNT_PATH]: mountPath,
     newState: _newState,
+    [UUID]: uuid,
   })
 }
