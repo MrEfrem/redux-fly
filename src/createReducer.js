@@ -1,7 +1,7 @@
 import React from 'react'
-import { checkMountPath, checkInitialState, checkListenActions, checkOptions, checkDetailOptions }
-  from './checks'
+import { checkMountPath, checkInitialState, checkOptions } from './checks'
 import createRegisterReducer from './createRegisterReducer'
+import { checkListenActions, checkDetailOptions } from './checks/createReducer'
 
 /**
  * Create/mount reducer
@@ -11,7 +11,7 @@ import createRegisterReducer from './createRegisterReducer'
  * @param  {Object} options
  * @return {
  *   @param {Object} wrapped React component
- *   @return {void}
+ *   @return {Object} React component
  * }
  */
 export default (

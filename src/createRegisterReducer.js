@@ -14,7 +14,7 @@ import genUUIDv4 from './genUUIDv4'
  * @param  {Object} listenActions
  * @param  {Object} options
  * @param {Object} wrapped React component
- * @return {void}
+ * @return {Object} React component
  */
 export default function createRegisterReducer(mountPath, initialState, listenActions, options,
   WrappedComponent
@@ -22,30 +22,25 @@ export default function createRegisterReducer(mountPath, initialState, listenAct
   const { connectToStore, unregisterInUnmount } = options
   let ChildComponent = WrappedComponent
   if (connectToStore) {
-    ChildComponent = connect(getState(mountPath))(WrappedComponent)
+    ChildComponent = connect((state) =>
+      ({ reduxState: getState(mountPath)(state) })
+    )(WrappedComponent)
   }
   return class RegisterReducer extends React.Component {
     static contextTypes = {
       store: storeShape,
     }
 
-    constructor(props) {
-      super(props)
-      this.unmounted = false
-    }
-
     componentWillMount() {
-      if (unregisterInUnmount && this.unmounted || !this.unmounted) {
-        const { store } = this.context
-        this.uuid = genUUIDv4
-        this.reducer = {
-          [mountPath]: createBoundedReducer(this.uuid, mountPath, initialState, listenActions || {}),
-        }
-        // Registration of created reducer
-        store.registerReducers(this.reducer)
-        // Binding setReduxState with redux store
-        this.setReduxState = setReduxState(this.uuid, mountPath, store.dispatch, store.getState)
+      const { store } = this.context
+      this.uuid = genUUIDv4
+      this.reducer = {
+        [mountPath]: createBoundedReducer(this.uuid, mountPath, initialState, listenActions || {}),
       }
+      // Registration of created reducer
+      store.registerReducers(this.reducer, { replaceIfMatch: true })
+      // Binding setReduxState with redux store
+      this.setReduxState = setReduxState(this.uuid, mountPath, store.dispatch, store.getState)
     }
 
     componentWillUnmount() {
@@ -57,11 +52,10 @@ export default function createRegisterReducer(mountPath, initialState, listenAct
           [UUID]: this.uuid,
         })
         store.unregisterReducers(this.reducer)
-        this.uuid = null
-        this.reducer = null
-        this.setReduxState = null
       }
-      this.unmounted = true
+      this.uuid = null
+      this.reducer = null
+      this.setReduxState = null
     }
 
     render() {
