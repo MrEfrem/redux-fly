@@ -7,5 +7,4 @@ export default PropTypes.shape({
   replaceReducer: PropTypes.func.isRequired,
   registerReducer: PropTypes.func.isRequired,
   unRegisterReducer: PropTypes.func.isRequired,
-  setPreloadedState: PropTypes.func.isRequired
 })

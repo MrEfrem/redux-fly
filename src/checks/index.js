@@ -6,19 +6,19 @@ import isPlainObject from 'lodash/isPlainObject'
  * @return {void}
  */
 export const checkMountPath = (path) => {
-  if (typeof path !== 'string' || !path.length) {
+  if (typeof path !== 'string' || !path.trim().length) {
     throw new Error('Mount path must be string')
   }
 }
 
 /**
- * Check initialState
- * @param  {Object} initialState
+ * Check preloadedState
+ * @param  {Object} preloadedState
  * @return {void}
  */
-export const checkInitialState = (initialState) => {
-  if (!isPlainObject(initialState)) {
-    throw new Error('InitialState must be plain object')
+export const checkPreloadedState = (preloadedState) => {
+  if (!isPlainObject(preloadedState)) {
+    throw new Error('PreloadedState must be plain object')
   }
 }
 

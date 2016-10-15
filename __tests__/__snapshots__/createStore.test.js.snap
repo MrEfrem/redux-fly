@@ -5,7 +5,6 @@ Object {
   "getState": [Function],
   "registerReducers": [Function],
   "replaceReducer": [Function],
-  "setPreloadedState": [Function],
   "subscribe": [Function],
   "unregisterReducers": [Function],
 }

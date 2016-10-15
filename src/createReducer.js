@@ -1,12 +1,51 @@
 import React from 'react'
-import { checkMountPath, checkInitialState, checkOptions } from './checks'
+import { checkMountPath, checkPreloadedState, checkOptions } from './checks'
 import createRegisterReducer from './createRegisterReducer'
-import { checkListenActions, checkDetailOptions } from './checks/createReducer'
+import isPlainObject from 'lodash/isPlainObject'
+import warning from './utils/warning'
+import { PROP_MOUNT_PATH } from './consts'
+
+/**
+ * Check listenActions
+ * @param  {Object} listenActions
+ * @return {void}
+ */
+const checkListenActions = (listenActions) => {
+  if (listenActions && !isPlainObject(listenActions)) {
+    throw new Error('ListenActions must be plain object')
+  }
+}
+
+/**
+ * Check properties of an object options
+ * @param  {Array}  default options
+ * @param  {Object}  options
+ * @return {void}
+ */
+const checkDetailOptions = (defaultOptions, options) => {
+  if (typeof options.connectToStore !== 'boolean') {
+    throw new Error('Option connectToStore must be boolean')
+  }
+  if (typeof options.persist !== 'boolean') {
+    throw new Error('Option persist must be boolean')
+  }
+  if (process.env.NODE_ENV !== 'production') {
+    const undefinedOptions = Object.keys(options).reduce((prev, next) => {
+      if (!defaultOptions.includes(next)) {
+        prev = `${prev}, `
+      }
+      return prev
+    }, '').slice(0, -2)
+    if (undefinedOptions) {
+      warning(`Undefined options: ${undefinedOptions}`)
+    }
+  }
+}
 
 /**
  * Create/mount reducer
  * @param  {string} mountPath
- * @param  {Object} initialState
+ * @param  {Object} preloadedState
  * @param  {Object} listenActions
  * @param  {Object} options
  * @return {
@@ -16,20 +55,19 @@ import { checkListenActions, checkDetailOptions } from './checks/createReducer'
  */
 export default (
   mountPath,
-  initialState,
+  preloadedState,
   listenActions,
   options = {}
 ) => {
   let needWrapped = false
 
-  if (typeof mountPath !== 'function') {
+  if (typeof mountPath !== 'undefined') {
     checkMountPath(mountPath)
-  } else {
-    needWrapped = true
+    mountPath = mountPath.trim()
   }
 
-  if (typeof initialState !== 'function') {
-    checkInitialState(initialState)
+  if (typeof preloadedState !== 'function') {
+    checkPreloadedState(preloadedState)
   } else {
     needWrapped = true
   }
@@ -44,7 +82,7 @@ export default (
 
   const defaultOptions = {
     connectToStore: true,
-    unregisterInUnmount: false,
+    persist: false,
   }
   const _options = {
     ...defaultOptions,
@@ -55,23 +93,25 @@ export default (
   return (WrappedComponent) => {
     // Not transferred parameters is functions
     if (!needWrapped) {
-      return createRegisterReducer(mountPath, initialState, listenActions, options,
+      return createRegisterReducer(mountPath, preloadedState, listenActions, options,
         WrappedComponent)
     }
 
     // Transferred some parameters is functions
     return class CreateReducer extends React.Component {
       componentWillMount() {
-        let _mountPath = mountPath
-        if (typeof _mountPath === 'function') {
-          _mountPath = _mountPath(this.props)
-          checkMountPath(_mountPath)
+        let { [PROP_MOUNT_PATH]: propMountPath } = this.props
+        if (typeof mountPath === 'undefined' && typeof propMountPath === 'undefined') {
+          throw new Error('Mount path must be defined')
         }
-
-        let _initialState = initialState
-        if (typeof _initialState === 'function') {
-          _initialState = _initialState(this.props)
-          checkInitialState(_initialState)
+        if (typeof mountPath !== 'undefined' && typeof propMountPath !== 'undefined') {
+          throw new Error('Many mount path passed')
+        }
+        let realMountPath = mountPath ? mountPath : propMountPath.trim()
+        let _preloadedState = preloadedState
+        if (typeof _preloadedState === 'function') {
+          _preloadedState = _preloadedState(this.props)
+          checkPreloadedState(_preloadedState)
         }
 
         let _listenActions = listenActions
@@ -80,7 +120,7 @@ export default (
           checkListenActions(_listenActions)
         }
 
-        this.WrappedComponent = createRegisterReducer(_mountPath, _initialState, _listenActions,
+        this.WrappedComponent = createRegisterReducer(realMountPath, _preloadedState, _listenActions,
           options, WrappedComponent)
       }
 
@@ -94,7 +134,4 @@ export default (
       }
     }
   }
-
-
-
 }

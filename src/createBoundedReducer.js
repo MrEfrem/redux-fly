@@ -1,15 +1,15 @@
 import { RESET_STATE, MOUNT_PATH, UUID } from './consts'
 
 // Create reducer bounded on mountPath
-export default (uuid, mountPath, initialState, listenActions) =>
-  (state = initialState, action) => {
-    if ((action[MOUNT_PATH] && action[MOUNT_PATH] === mountPath && action[UUID] &&
-      action[UUID] === uuid && typeof action.newState !== 'undefined') ||
+export default (uuid, mountPath, preloadedState, listenActions) =>
+  (state = preloadedState, action) => {
+    if ((typeof action[MOUNT_PATH] !== 'undefined' && action[MOUNT_PATH].trim() === mountPath &&
+      (typeof action.newState !== 'undefined' && typeof action[UUID] !== 'undefined' && action[UUID] === uuid || action.type === RESET_STATE)) ||
       action.type in listenActions
     ) {
       const reducerMap = {
         [RESET_STATE]: () => ({
-          ...initialState,
+          ...preloadedState,
         }),
         ...listenActions,
       }

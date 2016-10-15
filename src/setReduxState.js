@@ -1,4 +1,3 @@
-import warning from './utils/warning'
 import isPlainObject from 'lodash/isPlainObject'
 import { MOUNT_PATH, UUID } from './consts'
 
@@ -17,10 +16,10 @@ import { MOUNT_PATH, UUID } from './consts'
 export default (uuid, mountPath, dispatch, getState) => (actionType, newState) => {
   if (process.env.NODE_ENV !== 'production') {
     if (typeof actionType !== 'string' || !actionType.length) {
-      warning('Parameter actionType must be not empty string')
+      throw new Error('Parameter actionType must be not empty string')
     }
     if (!isPlainObject(newState) && typeof newState !== 'function') {
-      warning('Parameter newState must be plain object or function')
+      throw new Error('Parameter newState must be plain object or function')
     }
   }
 
@@ -33,7 +32,7 @@ export default (uuid, mountPath, dispatch, getState) => (actionType, newState) =
 
   if (process.env.NODE_ENV !== 'production') {
     if (!isPlainObject(_newState) || !Object.keys(_newState).length) {
-      warning('New state must be non empty plain object')
+      throw new Error('New state must be non empty plain object')
     }
   }
 

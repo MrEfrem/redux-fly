@@ -1,19 +1,43 @@
 import { combineReducers } from 'redux'
 import isPlainObject from 'lodash/isPlainObject'
 import { checkOptions } from './checks'
-import { registerReducersCheckDetailOptions } from './checks/createStore'
+import warning from './utils/warning'
 
-const createStore = (createStore) => (reducer, initialState, enhancer) => {
-  const store = createStore(reducer, initialState, enhancer)
+/**
+ * Enhancer redux store for runtime management reducers.
+ * @param Object createStore
+ * @return Function
+ *    @param reducer
+ *    @param preloadedState
+ *    @param enhancer
+ *       @return Object:
+ *          registerReducers Function
+ *          unregisterReducers Function
+ * If isn't passed reducer, but passed preloaderState, then preloadedState would uses
+ * how default state for new registered reducers.
+ */
+const createStore = (createStore) => (reducer, preloadedState, enhancer) => {
+  let store
   let reducers = {}
   let rawReducers = {}
   let rawReducersMap = []
-  let preloadedState = null
 
-  function setReducerPreloadedState(reducer, preloadedState) {
-    return (state = preloadedState, action) => reducer(state, action)
+  if (typeof preloadedState === 'function' && typeof enhancer === 'undefined') {
+    enhancer = preloadedState
+    preloadedState = undefined
+  }
+  if (preloadedState && !isPlainObject(preloadedState)) {
+    throw new Error('Preloaded state must be plain object')
   }
 
+  if (reducer) {
+    registerReducers(reducer)
+    store = createStore(reducers, preloadedState, enhancer)
+  } else {
+    store = createStore(() => ({}), undefined, enhancer)
+  }
+
+  // Recreate reducers tree and replace them in store
   function recreateReducers () {
     reducers = {}
     function recreate(node) {
@@ -37,12 +61,14 @@ const createStore = (createStore) => (reducer, initialState, enhancer) => {
       }
     }
     reducers = recreate(rawReducers)
-    store.replaceReducer(reducers)
+    if (store) {
+      store.replaceReducer(reducers)
+    }
   }
 
-  // Set preloaded state for registerReducers
-  function setPreloadedState(state) {
-    preloadedState = state
+  // Wrap reducer for passed preloaded state
+  function wrapperReducerPreloadedState(reducer, preloadedState) {
+    return (state = preloadedState, action) => reducer(state, action)
   }
 
   // Add reducers in store
@@ -67,21 +93,43 @@ const createStore = (createStore) => (reducer, initialState, enhancer) => {
       ...defaultOptions,
       ...options
     }
-    registerReducersCheckDetailOptions(Object.keys(defaultOptions), _options)
+
+    if (typeof _options.replaceReducers !== 'boolean') {
+      throw new Error('Option replaceReducers must be boolean')
+    }
+    if (typeof _options.replaceIfMatch !== 'boolean') {
+      throw new Error('Option replaceIfMatch must be boolean')
+    }
+    if (process.env.NODE_ENV !== 'production') {
+      const undefinedOptions = Object.keys(_options).reduce((prev, next) => {
+        if (!Object.keys(defaultOptions).includes(next)) {
+          prev = `${prev}, `
+        }
+        return prev
+      }, '').slice(0, -2)
+      if (undefinedOptions) {
+        warning(`Undefined options: ${undefinedOptions}`)
+      }
+    }
 
     const { replaceReducers, replaceIfMatch } = _options
     if (replaceReducers) {
       rawReducers = {}
+      rawReducersMap = []
     }
     Object.keys(reducers1).forEach(key => {
       key = key.trim()
-      if (!replaceIfMatch) {
-        // Let's look reducer path in registered paths
-        const foundPath = rawReducersMap.filter(key1 => key.indexOf(key1) !== -1 && key !== key1)
-        if (foundPath.length) {
-          throw new Error(`Reducer mount path ${key} already busy: ${foundPath.join(', ')}`)
+      rawReducersMap.forEach(key1 => {
+        if (key.indexOf(key1) === 0 || key1.indexOf(key) === 0) {
+          if (key1 === key) {
+            if (!replaceIfMatch) {
+              throw new Error(`Reducer mount path ${key1} already busy`)
+            }
+          } else {
+            throw new Error(`Reducer mount path ${key1} already busy`)
+          }
         }
-      }
+      })
       const keys = key.split(' ')
       let preloadedState1 = preloadedState
       const result = keys.slice(0, -1).reduce((prev, next) => {
@@ -95,8 +143,8 @@ const createStore = (createStore) => (reducer, initialState, enhancer) => {
         return prev[next]
       }, rawReducers)
       const lastKey = keys.slice(-1)
-      if (preloadedState1[lastKey]) {
-        result[lastKey] = setReducerPreloadedState(reducers1[key], preloadedState1[lastKey])
+      if (preloadedState1 && preloadedState1[lastKey]) {
+        result[lastKey] = wrapperReducerPreloadedState(reducers1[key], preloadedState1[lastKey])
       } else {
         result[lastKey] = reducers1[key]
       }
@@ -136,20 +184,18 @@ const createStore = (createStore) => (reducer, initialState, enhancer) => {
         if (Object.keys(result).some(key1 => key1 !== '__needRecreate')) {
           result.__needRecreate = true
         }
-        rawReducersMap = rawReducersMap.map(key1 => key1 !== key)
+        rawReducersMap = rawReducersMap.filter(key1 => key1 !== key)
       }
     })
     if (needRecreate) {
       recreateReducers()
-
     }
   }
 
   return {
     ...store,
     registerReducers,
-    unregisterReducers,
-    setPreloadedState
+    unregisterReducers
   }
 }
 

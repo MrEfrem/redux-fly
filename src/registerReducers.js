@@ -19,9 +19,13 @@ export default (
 
       componentWillMount() {
         const { store } = this.context
-        // Registration reducers
-        store.registerReducers(typeof reducers === 'function' ? reducers(this.props) : reducers,
-          options)
+        if (typeof store.registerReducers !== 'function') {
+          throw new Error('Redux store must be enhanced with redux-fly')
+        } else {
+          // Registration reducers
+          store.registerReducers(typeof reducers === 'function' ? reducers(this.props) : reducers,
+            options)
+        }
       }
 
       render() {
