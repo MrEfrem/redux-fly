@@ -1,3 +1,4 @@
+// @flow
 export { default as createStore } from './createStore'
 export { default as registerReducers } from './registerReducers'
 export { default as createReducer } from './createReducer'

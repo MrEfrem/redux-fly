@@ -1,3 +1,4 @@
+// @flow
 import React from 'react'
 import storeShape from './utils/storeShape'
 
@@ -8,10 +9,10 @@ import storeShape from './utils/storeShape'
  * @return {Object} React component
  */
 export default (
-  reducers,
-  options,
+  reducers: Function | Object,
+  options: Object,
 ) =>
-  (WrappedComponent) =>
+  (WrappedComponent: any) =>
     class CreateReducer extends React.Component {
       static contextTypes = {
         store: storeShape,

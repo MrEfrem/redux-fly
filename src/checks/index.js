@@ -1,3 +1,4 @@
+// @flow
 import isPlainObject from 'lodash/isPlainObject'
 
 /**
@@ -5,7 +6,7 @@ import isPlainObject from 'lodash/isPlainObject'
  * @param  {string} path
  * @return {void}
  */
-export const checkMountPath = (path) => {
+export const checkMountPath = (path: string) => {
   if (typeof path !== 'string' || !path.trim().length) {
     throw new Error('Mount path must be string')
   }
@@ -16,7 +17,7 @@ export const checkMountPath = (path) => {
  * @param  {Object} preloadedState
  * @return {void}
  */
-export const checkPreloadedState = (preloadedState) => {
+export const checkPreloadedState = (preloadedState: Object) => {
   if (!isPlainObject(preloadedState)) {
     throw new Error('PreloadedState must be plain object')
   }
@@ -27,7 +28,7 @@ export const checkPreloadedState = (preloadedState) => {
  * @param  {Object} options
  * @return {void}
  */
-export const checkOptions = (options) => {
+export const checkOptions = (options: Object) => {
   if (!isPlainObject(options)) {
     throw new Error('Options must be plain object ')
   }

@@ -1,9 +1,10 @@
+// @flow
 import React from 'react'
 import { connect } from 'react-redux'
 import storeShape from './utils/storeShape'
 import createBoundedReducer from './createBoundedReducer'
 import setReduxState from './setReduxState'
-import { RESET_STATE, MOUNT_PATH, PROP_MOUNT_PATH } from './consts'
+import { RESET_STATE, MOUNT_PATH } from './consts'
 import getState from './getState'
 import genUUIDv4 from './genUUIDv4'
 
@@ -16,8 +17,8 @@ import genUUIDv4 from './genUUIDv4'
  * @param {Object} wrapped React component
  * @return {Object} React component
  */
-export default function createRegisterReducer(mountPath, preloadedState, listenActions, options,
-  WrappedComponent
+export default function createRegisterReducer(mountPath: string, preloadedState: Object, listenActions?: Object, options: Object,
+  WrappedComponent: any
 ) {
   const { connectToStore, persist } = options
   let ChildComponent = WrappedComponent
@@ -31,24 +32,23 @@ export default function createRegisterReducer(mountPath, preloadedState, listenA
       store: storeShape,
     }
 
+    uuid: ?string
+    reducer: ?Object
+    setReduxState: ?Function
+
+
     componentWillMount() {
-      const { [PROP_MOUNT_PATH]: propMountPath } = this.props
-      if (typeof mountPath === 'undefined' && typeof propMountPath === 'undefined') {
-        throw new Error('Mount path must be defined')
-      }
-      if (typeof mountPath !== 'undefined' && typeof propMountPath !== 'undefined') {
-        throw new Error('Many mount path passed')
-      }
-      this.realMountPath = mountPath ? mountPath : propMountPath.trim()
       const { store } = this.context
-      this.uuid = genUUIDv4
+      this.uuid = genUUIDv4()
       this.reducer = {
-        [this.realMountPath]: createBoundedReducer(this.uuid, this.realMountPath, preloadedState, listenActions || {}),
+        [mountPath]: createBoundedReducer(this.uuid, mountPath, preloadedState, listenActions || {}),
       }
       // Registration of created reducer
       store.registerReducers(this.reducer, { replaceIfMatch: true })
       // Binding setReduxState with redux store
-      this.setReduxState = setReduxState(this.uuid, this.realMountPath, store.dispatch, store.getState)
+      if (this.uuid != null) {
+        this.setReduxState = setReduxState(this.uuid, mountPath, store.dispatch, store.getState)
+      }
     }
 
     componentWillUnmount() {
@@ -56,14 +56,13 @@ export default function createRegisterReducer(mountPath, preloadedState, listenA
         const { store } = this.context
         store.dispatch({
           type: RESET_STATE,
-          [MOUNT_PATH]: this.realMountPath
+          [MOUNT_PATH]: mountPath
         })
-        store.unregisterReducers(this.reducer)
+        store.unregisterReducers(mountPath)
       }
-      this.uuid = null
       this.reducer = null
       this.setReduxState = null
-      this.realMountPath = null
+      this.uuid = null
     }
 
     render() {
@@ -71,7 +70,7 @@ export default function createRegisterReducer(mountPath, preloadedState, listenA
         <ChildComponent
           {...this.props}
           setReduxState={this.setReduxState}
-          reduxMountedPath={this.realMountPath}
+          reduxMountedPath={mountPath}
         />
       )
     }

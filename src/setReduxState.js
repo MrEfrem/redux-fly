@@ -1,3 +1,4 @@
+// @flow
 import isPlainObject from 'lodash/isPlainObject'
 import { MOUNT_PATH, UUID } from './consts'
 
@@ -8,12 +9,12 @@ import { MOUNT_PATH, UUID } from './consts'
  * @param  {function} dispatch
  * @param  {function} getState
  * @return {
- *   @param {actionType} Custom action type
- *   @param {Object} New state
+ *   @param {actionType} custom action type
+ *   @param {Object} new state
  *   @return {void}
  * )
  */
-export default (uuid, mountPath, dispatch, getState) => (actionType, newState) => {
+export default (uuid: string, mountPath: string, dispatch: Function, getState: Function) => (actionType: string, newState: Object | Function) => {
   if (process.env.NODE_ENV !== 'production') {
     if (typeof actionType !== 'string' || !actionType.length) {
       throw new Error('Parameter actionType must be not empty string')

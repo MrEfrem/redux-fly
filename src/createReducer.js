@@ -1,3 +1,4 @@
+// @flow
 import React from 'react'
 import { checkMountPath, checkPreloadedState, checkOptions } from './checks'
 import createRegisterReducer from './createRegisterReducer'
@@ -54,13 +55,11 @@ const checkDetailOptions = (defaultOptions, options) => {
  * }
  */
 export default (
-  mountPath,
-  preloadedState,
-  listenActions,
-  options = {}
+  mountPath?: string,
+  preloadedState: Function | Object,
+  listenActions?: Function | Object,
+  options: Object = {}
 ) => {
-  let needWrapped = false
-
   if (typeof mountPath !== 'undefined') {
     checkMountPath(mountPath)
     mountPath = mountPath.trim()
@@ -68,14 +67,10 @@ export default (
 
   if (typeof preloadedState !== 'function') {
     checkPreloadedState(preloadedState)
-  } else {
-    needWrapped = true
   }
 
   if (typeof listenActions !== 'function') {
     checkListenActions(listenActions)
-  } else {
-    needWrapped = true
   }
 
   checkOptions(options)
@@ -90,15 +85,11 @@ export default (
   }
   checkDetailOptions(Object.keys(defaultOptions), _options)
 
-  return (WrappedComponent) => {
-    // Not transferred parameters is functions
-    if (!needWrapped) {
-      return createRegisterReducer(mountPath, preloadedState, listenActions, options,
-        WrappedComponent)
-    }
-
+  return (WrappedComponent: any) => {
     // Transferred some parameters is functions
     return class CreateReducer extends React.Component {
+      WrappedComponent: any
+
       componentWillMount() {
         let { [PROP_MOUNT_PATH]: propMountPath } = this.props
         if (typeof mountPath === 'undefined' && typeof propMountPath === 'undefined') {
@@ -110,13 +101,13 @@ export default (
         let realMountPath = mountPath ? mountPath : propMountPath.trim()
         let _preloadedState = preloadedState
         if (typeof _preloadedState === 'function') {
-          _preloadedState = _preloadedState(this.props)
+          _preloadedState = _preloadedState(this.props, realMountPath)
           checkPreloadedState(_preloadedState)
         }
 
         let _listenActions = listenActions
         if (typeof _listenActions === 'function') {
-          _listenActions = _listenActions(this.props)
+          _listenActions = _listenActions(this.props, realMountPath)
           checkListenActions(_listenActions)
         }
 

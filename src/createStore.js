@@ -1,3 +1,4 @@
+// @flow
 import { combineReducers } from 'redux'
 import isPlainObject from 'lodash/isPlainObject'
 import { checkOptions } from './checks'
@@ -16,12 +17,16 @@ import warning from './utils/warning'
  * If isn't passed reducer, but passed preloaderState, then preloadedState would uses
  * how default state for new registered reducers.
  */
-const createStore = (createStore) => (reducer, preloadedState, enhancer) => {
+const createStore = (createStore: Function) => (reducer?: Function | Object, preloadedState?: Function | Object, enhancer?: Function) => {
   let store
   let reducers = {}
   let rawReducers = {}
   let rawReducersMap = []
 
+  if (typeof reducer === 'function' && typeof preloadedState === 'undefined' && typeof enhancer === 'undefined') {
+    enhancer = reducer
+    reducer = undefined
+  }
   if (typeof preloadedState === 'function' && typeof enhancer === 'undefined') {
     enhancer = preloadedState
     preloadedState = undefined
@@ -72,7 +77,7 @@ const createStore = (createStore) => (reducer, preloadedState, enhancer) => {
   }
 
   // Add reducers in store
-  function registerReducers(reducers1, options = {}) {
+  function registerReducers(reducers1: Object, options: Object = {}) {
     if (!isPlainObject(reducers1) || Object.keys(reducers1).length === 0) {
       throw new Error('The reducers must be non empty object')
     }
@@ -132,7 +137,7 @@ const createStore = (createStore) => (reducer, preloadedState, enhancer) => {
       })
       const keys = key.split(' ')
       let preloadedState1 = preloadedState
-      const result = keys.slice(0, -1).reduce((prev, next) => {
+      const result: Object = keys.slice(0, -1).reduce((prev, next) => {
         if (typeof prev[next] === 'undefined') {
           prev[next] = {}
         }
@@ -155,15 +160,12 @@ const createStore = (createStore) => (reducer, preloadedState, enhancer) => {
   }
 
   // Delete reducers from store
-  function unregisterReducers(reducers1) {
-    if (typeof reducers1 !== 'string' && !isPlainObject(reducers1) && !Array.isArray(reducers1)) {
+  function unregisterReducers(reducers1: string | Array<string>) {
+    if (typeof reducers1 !== 'string' && !Array.isArray(reducers1)) {
       throw new Error('The reducers must be string or object or Array')
     }
     if (typeof reducers1 === 'string') {
       reducers1 = [reducers1]
-    }
-    if (isPlainObject(reducers1)) {
-      reducers1 = Object.keys(reducers1)
     }
     let needRecreate = false
     reducers1.forEach(key => {
@@ -173,7 +175,7 @@ const createStore = (createStore) => (reducer, preloadedState, enhancer) => {
       if (foundPath.length) {
         needRecreate = true
         const keys = key.split(' ')
-        const result = keys.slice(0, -1).reduce((prev, next) => {
+        const result: Object = keys.slice(0, -1).reduce((prev, next) => {
           if (typeof prev[next] === 'undefined') {
             prev[next] = {}
           }

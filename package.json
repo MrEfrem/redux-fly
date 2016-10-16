@@ -1,6 +1,6 @@
 {
   "name": "redux-fly",
-  "version": "0.0.1-alpha0",
+  "version": "0.0.1-alpha.1",
   "main": "lib/index.js",
   "module": "es/index.js",
   "jsnext:main": "es/index.js",
@@ -18,7 +18,7 @@
     "lint:fix": "eslint src --fix",
     "test": "jest",
     "test:watch": "jest --watch",
-    "coverage": "jest --coverage"
+    "flow": "flow; test $? -eq 0 -o $? -eq 2"
   },
   "author": "Efremov Alexander <mr.efrem@gmail.com>",
   "license": "MIT",
@@ -33,6 +33,7 @@
     "eslint": "^3.5.0",
     "eslint-plugin-import": "^1.0.0",
     "eslint-plugin-react": "^6.3.0",
+    "flow-bin": "^0.33.0",
     "jest-cli": "^16.0.0",
     "react": "^15.3.2",
     "redux": "^3.6.0",
