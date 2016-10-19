@@ -1,10 +1,11 @@
 // @flow
 import React from 'react'
-import { checkMountPath, checkPreloadedState, checkOptions } from './checks'
+import { checkMountPath, checkPreloadedState, checkOptions } from './utils/checks'
 import createRegisterReducer from './createRegisterReducer'
 import isPlainObject from 'lodash/isPlainObject'
 import warning from './utils/warning'
-import { PROP_MOUNT_PATH } from './consts'
+import { PROP_MOUNT_PATH, PROP_PERSIST } from './consts'
+import { normalizeMountPath } from './utils/normalize'
 
 /**
  * Check listenActions
@@ -18,6 +19,15 @@ const checkListenActions = (listenActions) => {
 }
 
 /**
+ * Check persist
+ */
+const checkPersist = (persist) => {
+  if (typeof persist !== 'boolean') {
+    throw new Error('Persist must be boolean')
+  }
+}
+
+/**
  * Check properties of an object options
  * @param  {Array}  default options
  * @param  {Object}  options
@@ -27,12 +37,10 @@ const checkDetailOptions = (defaultOptions, options) => {
   if (typeof options.connectToStore !== 'boolean') {
     throw new Error('Option connectToStore must be boolean')
   }
-  if (typeof options.persist !== 'boolean') {
-    throw new Error('Option persist must be boolean')
-  }
+  checkPersist(options.persist)
   if (process.env.NODE_ENV !== 'production') {
     const undefinedOptions = Object.keys(options).reduce((prev, next) => {
-      if (!defaultOptions.includes(next)) {
+      if (defaultOptions.indexOf(next) === -1) {
         prev = `${prev}, `
       }
       return prev
@@ -62,7 +70,6 @@ export default (
 ) => {
   if (typeof mountPath !== 'undefined') {
     checkMountPath(mountPath)
-    mountPath = mountPath.trim()
   }
 
   if (typeof preloadedState !== 'function') {
@@ -89,22 +96,37 @@ export default (
     // Transferred some parameters is functions
     return class CreateReducer extends React.Component {
       WrappedComponent: any
+      propMountPath: ?string
 
       componentWillMount() {
-        let { [PROP_MOUNT_PATH]: propMountPath } = this.props
+        let { [PROP_MOUNT_PATH]: propMountPath, [PROP_PERSIST]: propPersist } = this.props
+        // Mount path must be passed in props or options
         if (typeof mountPath === 'undefined' && typeof propMountPath === 'undefined') {
           throw new Error('Mount path must be defined')
         }
-        if (typeof mountPath !== 'undefined' && typeof propMountPath !== 'undefined') {
-          throw new Error('Many mount path passed')
+
+        let realMountPath = mountPath
+        // Priority mount path from props
+        if (typeof propMountPath !== 'undefined') {
+          checkMountPath(propMountPath)
+          realMountPath = propMountPath
         }
-        let realMountPath = mountPath ? mountPath : propMountPath.trim()
+        realMountPath = normalizeMountPath(realMountPath)
+
+        // Priority persist from props
+        if (typeof propPersist !== 'undefined') {
+          checkPersist(propPersist)
+          options.persist = propPersist
+        }
+
+        // Preloaded state is function
         let _preloadedState = preloadedState
         if (typeof _preloadedState === 'function') {
           _preloadedState = _preloadedState(this.props, realMountPath)
           checkPreloadedState(_preloadedState)
         }
 
+        // Listen actions is function
         let _listenActions = listenActions
         if (typeof _listenActions === 'function') {
           _listenActions = _listenActions(this.props, realMountPath)

@@ -4,12 +4,12 @@ import storeShape from './utils/storeShape'
 
 /**
  * Register reducers
- * @param  {Object|function} reducers
+ * @param  {Object|function|undefined} reducers
  * @param  {Object} options for store.registerReducers
  * @return {Object} React component
  */
 export default (
-  reducers: Function | Object,
+  reducers: ?(Function | Object),
   options: Object,
 ) =>
   (WrappedComponent: any) =>
@@ -20,18 +20,21 @@ export default (
 
       componentWillMount() {
         const { store } = this.context
-        if (typeof store.registerReducers !== 'function') {
+        if (typeof store.registerReducers !== 'function' || typeof store.unregisterReducers !== 'function') {
           throw new Error('Redux store must be enhanced with redux-fly')
         } else {
-          // Registration reducers
-          store.registerReducers(typeof reducers === 'function' ? reducers(this.props) : reducers,
-            options)
+          if (typeof reducers !== 'undefined') {
+            // Registration reducers
+            store.registerReducers(typeof reducers === 'function' ? reducers(this.props) : reducers,
+              options)
+          }
         }
       }
 
       render() {
+        const { store } = this.context
         return (
-          <WrappedComponent {...this.props} />
+          <WrappedComponent {...this.props} unregisterReducers={store.unregisterReducers} />
         )
       }
     }

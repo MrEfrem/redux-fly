@@ -1,8 +1,9 @@
 // @flow
 import { combineReducers } from 'redux'
 import isPlainObject from 'lodash/isPlainObject'
-import { checkOptions } from './checks'
+import { checkOptions } from './utils/checks'
 import warning from './utils/warning'
+import { normalizeMountPath } from './utils/normalize'
 
 /**
  * Enhancer redux store for runtime management reducers.
@@ -85,14 +86,13 @@ const createStore = (createStore: Function) => (reducer?: Function | Object, pre
       if (typeof key !== 'string') {
         throw new Error('Reducers mount paths must be strings')
       }
-      if (!isPlainObject(reducers1[key])) {
+      if (typeof reducers1[key] !== 'function') {
         throw new Error('Reducers must be functions')
       }
     })
     checkOptions(options)
     const defaultOptions = {
-      replaceReducers: false,
-      replaceIfMatch: false
+      replaceReducers: false
     }
     const _options = {
       ...defaultOptions,
@@ -102,12 +102,9 @@ const createStore = (createStore: Function) => (reducer?: Function | Object, pre
     if (typeof _options.replaceReducers !== 'boolean') {
       throw new Error('Option replaceReducers must be boolean')
     }
-    if (typeof _options.replaceIfMatch !== 'boolean') {
-      throw new Error('Option replaceIfMatch must be boolean')
-    }
     if (process.env.NODE_ENV !== 'production') {
       const undefinedOptions = Object.keys(_options).reduce((prev, next) => {
-        if (!Object.keys(defaultOptions).includes(next)) {
+        if (Object.keys(defaultOptions).indexOf(next) === -1) {
           prev = `${prev}, `
         }
         return prev
@@ -117,22 +114,16 @@ const createStore = (createStore: Function) => (reducer?: Function | Object, pre
       }
     }
 
-    const { replaceReducers, replaceIfMatch } = _options
+    const { replaceReducers } = _options
     if (replaceReducers) {
       rawReducers = {}
       rawReducersMap = []
     }
     Object.keys(reducers1).forEach(key => {
-      key = key.trim()
+      key = normalizeMountPath(key)
       rawReducersMap.forEach(key1 => {
-        if (key.indexOf(key1) === 0 || key1.indexOf(key) === 0) {
-          if (key1 === key) {
-            if (!replaceIfMatch) {
-              throw new Error(`Reducer mount path ${key1} already busy`)
-            }
-          } else {
-            throw new Error(`Reducer mount path ${key1} already busy`)
-          }
+        if ((key.indexOf(key1) === 0 || key1.indexOf(key) === 0) && key1 !== key) {
+          throw new Error(`Reducer mount path ${key1} already busy`)
         }
       })
       const keys = key.split(' ')
@@ -160,16 +151,16 @@ const createStore = (createStore: Function) => (reducer?: Function | Object, pre
   }
 
   // Delete reducers from store
-  function unregisterReducers(reducers1: string | Array<string>) {
+  function unregisterReducers(reducers1: string | string[]) {
     if (typeof reducers1 !== 'string' && !Array.isArray(reducers1)) {
-      throw new Error('The reducers must be string or object or Array')
+      throw new Error('The reducers must be string or Array')
     }
     if (typeof reducers1 === 'string') {
       reducers1 = [reducers1]
     }
     let needRecreate = false
     reducers1.forEach(key => {
-      key = key.trim()
+      key = normalizeMountPath(key)
       // Let's look reducer path in registered paths
       const foundPath = rawReducersMap.filter(key1 => key === key1)
       if (foundPath.length) {

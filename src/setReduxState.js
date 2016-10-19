@@ -10,7 +10,7 @@ import { MOUNT_PATH, UUID } from './consts'
  * @param  {function} getState
  * @return {
  *   @param {actionType} custom action type
- *   @param {Object} new state
+ *   @param {Object | Function} new state
  *   @return {void}
  * )
  */

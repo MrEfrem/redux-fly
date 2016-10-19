@@ -1,6 +1,6 @@
 {
   "name": "redux-fly",
-  "version": "0.0.1-alpha.1",
+  "version": "0.0.1-alpha.2",
   "main": "lib/index.js",
   "module": "es/index.js",
   "jsnext:main": "es/index.js",
@@ -10,7 +10,7 @@
     "src"
   ],
   "scripts": {
-    "build": "npm run build:commonjs && npm run build:es",
+    "build": "npm run clean && npm run build:commonjs && npm run build:es",
     "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib",
     "build:es": "cross-env BABEL_ENV=es babel src --out-dir es",
     "clean": "rimraf lib es",
@@ -33,7 +33,6 @@
     "eslint": "^3.5.0",
     "eslint-plugin-import": "^1.0.0",
     "eslint-plugin-react": "^6.3.0",
-    "flow-bin": "^0.33.0",
     "jest-cli": "^16.0.0",
     "react": "^15.3.2",
     "redux": "^3.6.0",

@@ -32,9 +32,10 @@ export default function createRegisterReducer(mountPath: string, preloadedState:
       store: storeShape,
     }
 
-    uuid: ?string
+    uuid: any
     reducer: ?Object
-    setReduxState: ?Function
+    setReduxState: any
+    resetReduxState: any
 
 
     componentWillMount() {
@@ -44,25 +45,25 @@ export default function createRegisterReducer(mountPath: string, preloadedState:
         [mountPath]: createBoundedReducer(this.uuid, mountPath, preloadedState, listenActions || {}),
       }
       // Registration of created reducer
-      store.registerReducers(this.reducer, { replaceIfMatch: true })
+      store.registerReducers(this.reducer)
       // Binding setReduxState with redux store
-      if (this.uuid != null) {
-        this.setReduxState = setReduxState(this.uuid, mountPath, store.dispatch, store.getState)
-      }
+      this.setReduxState = setReduxState(this.uuid, mountPath, store.dispatch, store.getState)
+      // Action creator RESET redux state
+      this.resetReduxState = () => store.dispatch({
+        type: RESET_STATE,
+        [MOUNT_PATH]: mountPath
+      })
     }
 
     componentWillUnmount() {
+      // If component isn't persist then RESET redux state
       if (!persist) {
-        const { store } = this.context
-        store.dispatch({
-          type: RESET_STATE,
-          [MOUNT_PATH]: mountPath
-        })
-        store.unregisterReducers(mountPath)
+        this.resetReduxState()
       }
       this.reducer = null
       this.setReduxState = null
       this.uuid = null
+      this.resetReduxState = null
     }
 
     render() {
@@ -70,6 +71,7 @@ export default function createRegisterReducer(mountPath: string, preloadedState:
         <ChildComponent
           {...this.props}
           setReduxState={this.setReduxState}
+          resetReduxState={this.resetReduxState()}
           reduxMountedPath={mountPath}
         />
       )

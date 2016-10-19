@@ -1,5 +1,5 @@
 import createBoundedReducer from '../src/createBoundedReducer'
-import { MOUNT_PATH, UUID } from '../src/consts'
+import { MOUNT_PATH, UUID, RESET_STATE } from '../src/consts'
 
 test('Test no match action', () => {
   const preloadedState = {
@@ -13,27 +13,39 @@ test('Test no match action', () => {
   expect(createBoundedReducer('RANDOM_UUID', 'ui todo', preloadedState, {})({ text },
     { type: 'TEST_ACTION' }
   ).text).toBe(text)
+
+  expect(createBoundedReducer('RANDOM_UUID', 'ui todo', preloadedState, {})(undefined,
+    { type: 'MEGA_UPDATE', [MOUNT_PATH]: 'ui todo', newState: text }
+  ).text).toBe(preloadedState.text)
 })
 
 test('Test match action', () => {
   const preloadedState = {
     text: 'My first todo!'
   }
-  expect(createBoundedReducer('RANDOM_UUID', 'ui todo', preloadedState, {})(undefined,
-    { type: 'MEGA_UPDATE' }
-  )).toBe(preloadedState)
 
-  const newState = { text: 'My second todo' }
+  // Test RESET state
+  expect(createBoundedReducer('RANDOM_UUID', 'ui todo', preloadedState, {})({ test: 'Second todo!' },
+    { type: RESET_STATE, [MOUNT_PATH]: 'ui todo  ' }
+  )).not.toBe(preloadedState)
   expect(createBoundedReducer('RANDOM_UUID', 'ui todo', preloadedState, {})(undefined,
-    { type: 'MEGA_UPDATE', [MOUNT_PATH]: 'ui todo', newState }
+    { type: RESET_STATE, [MOUNT_PATH]: '  ui   todo ' }
+  ).text).toBe(preloadedState.text)
+  expect(createBoundedReducer('RANDOM_UUID', 'ui todo', preloadedState, {})({ test: 'Second todo!' },
+    { type: RESET_STATE, [MOUNT_PATH]: '  ui   todo ' }
   ).text).toBe(preloadedState.text)
 
+  // Test UPDATE state
+  const newState = { text: 'My second todo' }
   expect(createBoundedReducer('RANDOM_UUID', 'ui todo', preloadedState, {})(undefined,
-    { type: 'MEGA_UPDATE', [MOUNT_PATH]: 'ui todo', newState, [UUID]: 'RANDOM_UUID' }
+    { type: 'MEGA_UPDATE', [MOUNT_PATH]: 'ui todo   ', newState, [UUID]: 'RANDOM_UUID' }
+  ).text).toBe(newState.text)
+  expect(createBoundedReducer('RANDOM_UUID', 'ui todo', preloadedState, {})({ ...preloadedState },
+    { type: 'MEGA_UPDATE', [MOUNT_PATH]: 'ui todo   ', newState, [UUID]: 'RANDOM_UUID' }
   ).text).toBe(newState.text)
 })
 
-test('Test subscibe to actions', () => {
+test('Test subscribe to actions', () => {
   const preloadedState = {
     text: 'My first todo!'
   }
@@ -42,6 +54,11 @@ test('Test subscibe to actions', () => {
   expect(createBoundedReducer('RANDOM_UUID', 'ui todo', preloadedState, {
     [ACTION]: (state, action) => ({ text: action.text })
   })(undefined,
+    { type: ACTION, text: newText }
+  ).text).toBe(newText)
+  expect(createBoundedReducer('RANDOM_UUID', 'ui todo', preloadedState, {
+    [ACTION]: (state, action) => ({ text: action.text })
+  })({ ...preloadedState },
     { type: ACTION, text: newText }
   ).text).toBe(newText)
 })
