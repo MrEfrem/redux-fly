@@ -1,9 +1,9 @@
 import createBoundedReducer from '../src/createBoundedReducer'
-import { MOUNT_PATH, UUID, RESET_STATE } from '../src/consts'
+import { MOUNT_PATH, UUID, RESET_STATE, NEW_STATE, PROCESS_BATCH, ACTIONS } from '../src/consts'
 
 test('Test no match action', () => {
   const preloadedState = {
-    text: 'My first todo!'
+    text: 'My first todo'
   }
   expect(createBoundedReducer('RANDOM_UUID', 'ui todo', preloadedState, {})(undefined,
     { type: 'TEST_ACTION' }
@@ -15,33 +15,97 @@ test('Test no match action', () => {
   ).text).toBe(text)
 
   expect(createBoundedReducer('RANDOM_UUID', 'ui todo', preloadedState, {})(undefined,
-    { type: 'MEGA_UPDATE', [MOUNT_PATH]: 'ui todo', newState: text }
+    { type: 'MEGA_UPDATE', [MOUNT_PATH]: 'ui todo', [NEW_STATE]: text }
   ).text).toBe(preloadedState.text)
+
+  expect(createBoundedReducer('RANDOM_UUID', 'ui todo', preloadedState, {})(undefined,
+    { type: 'MEGA_UPDATE', [MOUNT_PATH]: 'ui todo', [NEW_STATE]: text, [UUID]: 'OTHER_RANDOM_UUID' }
+  ).text).toBe(preloadedState.text)
+
+  expect(createBoundedReducer('RANDOM_UUID', 'ui todo', preloadedState, {})({ test: 'Second todo!' },
+    { type: RESET_STATE, [MOUNT_PATH]: 'ui todo  ' }
+  ).test).not.toBe(preloadedState.text)
+
+  expect(createBoundedReducer('RANDOM_UUID', 'ui todo', preloadedState, {})({ test: 'Second todo!' },
+    { type: RESET_STATE, [MOUNT_PATH]: 'ui todo  ', [UUID]: 'OTHER_RANDOM_UUID' }
+  ).test).not.toBe(preloadedState.text)
+
+  expect(createBoundedReducer('RANDOM_UUID', 'ui todo', preloadedState, {})(undefined,
+    { type: PROCESS_BATCH, [MOUNT_PATH]: 'ui todo  ' }
+  )).not.toBe(preloadedState.text)
+
+  expect(createBoundedReducer('RANDOM_UUID', 'ui todo', preloadedState, {})(undefined,
+    { type: PROCESS_BATCH, [MOUNT_PATH]: 'ui todo  ', [UUID]: 'OTHER_RANDOM_UUID' }
+  )).not.toBe(preloadedState.text)
 })
 
 test('Test match action', () => {
   const preloadedState = {
-    text: 'My first todo!'
+    text: 'My first todo'
+  }
+  const newState = {
+    text: 'My second todo'
   }
 
   // Test RESET state
   expect(createBoundedReducer('RANDOM_UUID', 'ui todo', preloadedState, {})({ test: 'Second todo!' },
-    { type: RESET_STATE, [MOUNT_PATH]: 'ui todo  ' }
+    { type: RESET_STATE, [MOUNT_PATH]: 'ui todo  ', [UUID]: 'RANDOM_UUID' }
   )).not.toBe(preloadedState)
-  expect(createBoundedReducer('RANDOM_UUID', 'ui todo', preloadedState, {})(undefined,
-    { type: RESET_STATE, [MOUNT_PATH]: '  ui   todo ' }
+  expect(createBoundedReducer('RANDOM_UUID', 'ui todo', preloadedState, {})({ test: 'Second todo!' },
+    { type: RESET_STATE, [MOUNT_PATH]: '  ui   todo ', [UUID]: 'RANDOM_UUID' }
   ).text).toBe(preloadedState.text)
   expect(createBoundedReducer('RANDOM_UUID', 'ui todo', preloadedState, {})({ test: 'Second todo!' },
-    { type: RESET_STATE, [MOUNT_PATH]: '  ui   todo ' }
+    { type: RESET_STATE, [MOUNT_PATH]: 'ui todo  ', [UUID]: 'RANDOM_UUID' }
+  ).text).toBe(preloadedState.text)
+  expect(createBoundedReducer('RANDOM_UUID', 'ui todo', preloadedState, {})(undefined,
+    { type: RESET_STATE, [MOUNT_PATH]: '  ui   todo ', [UUID]: 'RANDOM_UUID' }
   ).text).toBe(preloadedState.text)
 
-  // Test UPDATE state
-  const newState = { text: 'My second todo' }
+
+  // Test process batch
   expect(createBoundedReducer('RANDOM_UUID', 'ui todo', preloadedState, {})(undefined,
-    { type: 'MEGA_UPDATE', [MOUNT_PATH]: 'ui todo   ', newState, [UUID]: 'RANDOM_UUID' }
+    { type: PROCESS_BATCH, [MOUNT_PATH]: 'ui todo  ', [UUID]: 'RANDOM_UUID', [ACTIONS]: [] }
+  )).toBe(preloadedState)
+  expect(createBoundedReducer('RANDOM_UUID', 'ui todo', preloadedState, {}).bind(this, undefined,
+    { type: PROCESS_BATCH, [MOUNT_PATH]: 'ui todo  ', [UUID]: 'RANDOM_UUID', [ACTIONS]: [{}] }
+  )).toThrowError('Incorrect @@UUID undefined')
+  expect(createBoundedReducer('RANDOM_UUID', 'ui todo', preloadedState, {}).bind(this, undefined,
+    { type: PROCESS_BATCH, [MOUNT_PATH]: 'ui todo  ', [UUID]: 'RANDOM_UUID',
+      [ACTIONS]: [{
+        [UUID]: 'OTHER_RANDOM_UUID'
+      }]
+    }
+  )).toThrowError('Incorrect @@UUID OTHER_RANDOM_UUID')
+  expect(createBoundedReducer('RANDOM_UUID', 'ui todo', preloadedState, {})(undefined,
+    { type: PROCESS_BATCH, [MOUNT_PATH]: 'ui todo  ', [UUID]: 'RANDOM_UUID',
+      [ACTIONS]: [{
+        [UUID]: 'RANDOM_UUID',
+        [NEW_STATE]: newState
+      }]
+    }
+  ).text).toBe(newState.text)
+  expect(createBoundedReducer('RANDOM_UUID', 'ui todo', preloadedState, {})(undefined,
+    { type: PROCESS_BATCH, [MOUNT_PATH]: 'ui todo  ', [UUID]: 'RANDOM_UUID',
+      [ACTIONS]: [{
+        [UUID]: 'RANDOM_UUID',
+        [NEW_STATE]: newState
+      },
+      {
+        [UUID]: 'RANDOM_UUID',
+        [NEW_STATE]: {
+          text: 'My third todo'
+        }
+      }]
+    }
+  ).text).toBe('My third todo')
+
+
+  // Test UPDATE state
+  expect(createBoundedReducer('RANDOM_UUID', 'ui todo', preloadedState, {})(undefined,
+    { type: 'MEGA_UPDATE', [MOUNT_PATH]: 'ui todo   ', [NEW_STATE]: newState, [UUID]: 'RANDOM_UUID' }
   ).text).toBe(newState.text)
   expect(createBoundedReducer('RANDOM_UUID', 'ui todo', preloadedState, {})({ ...preloadedState },
-    { type: 'MEGA_UPDATE', [MOUNT_PATH]: 'ui todo   ', newState, [UUID]: 'RANDOM_UUID' }
+    { type: 'MEGA_UPDATE', [MOUNT_PATH]: 'ui todo   ', [NEW_STATE]: newState, [UUID]: 'RANDOM_UUID' }
   ).text).toBe(newState.text)
 })
 

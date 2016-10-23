@@ -16,8 +16,8 @@
     "clean": "rimraf lib es",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
-    "test": "jest",
-    "test:watch": "jest --watch",
+    "test": "NODE_ENV=test jest",
+    "test:watch": "NODE_ENV=test jest --watch",
     "flow": "flow; test $? -eq 0 -o $? -eq 2"
   },
   "author": "Efremov Alexander <mr.efrem@gmail.com>",
@@ -30,11 +30,16 @@
     "babel-preset-react": "^6.11.1",
     "babel-preset-stage-2": "^6.13.0",
     "cross-env": "^3.0.0",
+    "enzyme": "^2.5.1",
     "eslint": "^3.5.0",
     "eslint-plugin-import": "^1.0.0",
     "eslint-plugin-react": "^6.3.0",
     "jest-cli": "^16.0.0",
-    "react": "^15.3.2",
+    "react": "^15.4.0-rc.4",
+    "react-addons-test-utils": "^15.4.0-rc.4",
+    "react-dom": "^15.4.0-rc.4",
+    "react-redux": "^4.4.5",
+    "react-test-renderer": "^15.4.0-rc.4",
     "redux": "^3.6.0",
     "rimraf": "^2.5.4"
   },
@@ -47,6 +52,9 @@
     "react-redux": "4.x"
   },
   "jest": {
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "setupFiles": [
+      "./setup.tests.js"
+    ]
   }
 }

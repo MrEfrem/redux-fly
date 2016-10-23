@@ -1,15 +1,15 @@
 // @flow
-import React from 'react'
+import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import storeShape from './utils/storeShape'
 import createBoundedReducer from './createBoundedReducer'
 import setReduxState from './setReduxState'
-import { RESET_STATE, MOUNT_PATH } from './consts'
+import { RESET_STATE, MOUNT_PATH, UUID } from './consts'
 import getState from './getState'
 import genUUIDv4 from './genUUIDv4'
 
 /**
- * Create/mount reducer
+ * Create and mount reducer
  * @param  {string} mountPath
  * @param  {Object} preloadedState
  * @param  {Object} listenActions
@@ -20,38 +20,48 @@ import genUUIDv4 from './genUUIDv4'
 export default function createRegisterReducer(mountPath: string, preloadedState: Object, listenActions?: Object, options: Object,
   WrappedComponent: any
 ) {
-  const { connectToStore, persist } = options
+  const { connectToStore, persist, actionPrefix } = options
   let ChildComponent = WrappedComponent
   if (connectToStore) {
     ChildComponent = connect((state) =>
       ({ reduxState: getState(mountPath)(state) })
     )(WrappedComponent)
   }
+  let contextStoreShape = storeShape
+  if (process.env.NODE_ENV === 'test') {
+    contextStoreShape = PropTypes.object
+  }
+  const uuid = genUUIDv4()
   return class RegisterReducer extends React.Component {
     static contextTypes = {
-      store: storeShape,
+      store: contextStoreShape
     }
 
-    uuid: any
     reducer: ?Object
     setReduxState: any
     resetReduxState: any
-
+    batchActions: any
 
     componentWillMount() {
       const { store } = this.context
-      this.uuid = genUUIDv4()
+      if (typeof store !== 'object') {
+        throw new Error('Redux store must be created')
+      }
+      if (typeof store.registerReducers !== 'function') {
+        throw new Error('Redux store must be enhanced with redux-fly')
+      }
       this.reducer = {
-        [mountPath]: createBoundedReducer(this.uuid, mountPath, preloadedState, listenActions || {}),
+        [mountPath]: createBoundedReducer(uuid, mountPath, preloadedState, listenActions || {}),
       }
       // Registration of created reducer
       store.registerReducers(this.reducer)
       // Binding setReduxState with redux store
-      this.setReduxState = setReduxState(this.uuid, mountPath, store.dispatch, store.getState)
+      this.setReduxState = setReduxState(uuid, mountPath, store.dispatch, store.getState, actionPrefix)
       // Action creator RESET redux state
       this.resetReduxState = () => store.dispatch({
         type: RESET_STATE,
-        [MOUNT_PATH]: mountPath
+        [MOUNT_PATH]: mountPath,
+        [UUID]: uuid
       })
     }
 
@@ -62,8 +72,8 @@ export default function createRegisterReducer(mountPath: string, preloadedState:
       }
       this.reducer = null
       this.setReduxState = null
-      this.uuid = null
       this.resetReduxState = null
+      this.batchActions = null
     }
 
     render() {
@@ -71,7 +81,7 @@ export default function createRegisterReducer(mountPath: string, preloadedState:
         <ChildComponent
           {...this.props}
           setReduxState={this.setReduxState}
-          resetReduxState={this.resetReduxState()}
+          resetReduxState={this.resetReduxState}
           reduxMountedPath={mountPath}
         />
       )

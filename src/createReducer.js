@@ -9,11 +9,9 @@ import { normalizeMountPath } from './utils/normalize'
 
 /**
  * Check listenActions
- * @param  {Object} listenActions
- * @return {void}
  */
 const checkListenActions = (listenActions) => {
-  if (listenActions && !isPlainObject(listenActions)) {
+  if (!isPlainObject(listenActions)) {
     throw new Error('ListenActions must be plain object')
   }
 }
@@ -35,13 +33,16 @@ const checkPersist = (persist) => {
  */
 const checkDetailOptions = (defaultOptions, options) => {
   if (typeof options.connectToStore !== 'boolean') {
-    throw new Error('Option connectToStore must be boolean')
+    throw new Error('ConnectToStore must be boolean')
   }
   checkPersist(options.persist)
-  if (process.env.NODE_ENV !== 'production') {
+  if (typeof options.actionPrefix !== 'string') {
+    throw new Error('ActionPrefix must be string')
+  }
+  if (['production', 'test'].indexOf(process.env.NODE_ENV) === -1) {
     const undefinedOptions = Object.keys(options).reduce((prev, next) => {
       if (defaultOptions.indexOf(next) === -1) {
-        prev = `${prev}, `
+        prev = `${prev}${next}, `
       }
       return prev
     }, '').slice(0, -2)
@@ -68,7 +69,7 @@ export default (
   listenActions?: Function | Object,
   options: Object = {}
 ) => {
-  if (typeof mountPath !== 'undefined') {
+  if (mountPath || mountPath !== null) {
     checkMountPath(mountPath)
   }
 
@@ -76,7 +77,7 @@ export default (
     checkPreloadedState(preloadedState)
   }
 
-  if (typeof listenActions !== 'function') {
+  if (listenActions && typeof listenActions !== 'function') {
     checkListenActions(listenActions)
   }
 
@@ -85,6 +86,7 @@ export default (
   const defaultOptions = {
     connectToStore: true,
     persist: false,
+    actionPrefix: '',
   }
   const _options = {
     ...defaultOptions,
@@ -92,31 +94,31 @@ export default (
   }
   checkDetailOptions(Object.keys(defaultOptions), _options)
 
-  return (WrappedComponent: any) => {
+  return (WrappedComponent: any) =>
     // Transferred some parameters is functions
-    return class CreateReducer extends React.Component {
-      WrappedComponent: any
+    class CreateReducer extends React.Component {
+      RegisterReducer: any
       propMountPath: ?string
 
       componentWillMount() {
         let { [PROP_MOUNT_PATH]: propMountPath, [PROP_PERSIST]: propPersist } = this.props
         // Mount path must be passed in props or options
-        if (typeof mountPath === 'undefined' && typeof propMountPath === 'undefined') {
+        if (!mountPath && !propMountPath) {
           throw new Error('Mount path must be defined')
         }
 
         let realMountPath = mountPath
         // Priority mount path from props
-        if (typeof propMountPath !== 'undefined') {
+        if (propMountPath) {
           checkMountPath(propMountPath)
           realMountPath = propMountPath
         }
         realMountPath = normalizeMountPath(realMountPath)
 
         // Priority persist from props
-        if (typeof propPersist !== 'undefined') {
+        if (propPersist) {
           checkPersist(propPersist)
-          options.persist = propPersist
+          _options.persist = propPersist
         }
 
         // Preloaded state is function
@@ -133,18 +135,17 @@ export default (
           checkListenActions(_listenActions)
         }
 
-        this.WrappedComponent = createRegisterReducer(realMountPath, _preloadedState, _listenActions,
-          options, WrappedComponent)
+        this.RegisterReducer = createRegisterReducer(realMountPath, _preloadedState, _listenActions,
+          _options, WrappedComponent)
       }
 
       componentWillUnmount() {
-        this.WrappedComponent = null
+        this.RegisterReducer = null
       }
 
       render() {
-        const WrappedComponent = this.WrappedComponent
-        return <WrappedComponent {...this.props} />
+        const RegisterReducer = this.RegisterReducer
+        return <RegisterReducer {...this.props} />
       }
     }
-  }
 }

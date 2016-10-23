@@ -1,9 +1,10 @@
 // @flow
-import { combineReducers } from 'redux'
+import { combineReducers, applyMiddleware, compose } from 'redux'
 import isPlainObject from 'lodash/isPlainObject'
 import { checkOptions } from './utils/checks'
 import warning from './utils/warning'
 import { normalizeMountPath } from './utils/normalize'
+import { BATCH, UUID, MOUNT_PATH, PROCESS_BATCH, ACTIONS } from './consts'
 
 /**
  * Enhancer redux store for runtime management reducers.
@@ -23,6 +24,7 @@ const createStore = (createStore: Function) => (reducer?: Function | Object, pre
   let reducers = {}
   let rawReducers = {}
   let rawReducersMap = []
+  let batchActions = {}
 
   if (typeof reducer === 'function' && typeof preloadedState === 'undefined' && typeof enhancer === 'undefined') {
     enhancer = reducer
@@ -36,11 +38,41 @@ const createStore = (createStore: Function) => (reducer?: Function | Object, pre
     throw new Error('Preloaded state must be plain object')
   }
 
+  // Middleware for processing batch actions
+  const processBatch = () => next => action => {
+    if (typeof action[MOUNT_PATH] !== 'undefined' && typeof action[UUID] !== 'undefined') {
+      const mountPath = normalizeMountPath(action[MOUNT_PATH])
+      // Add action in batch
+      if (action[BATCH]) {
+        if (!rawReducersMap.filter(el => el === mountPath).length) {
+          throw new Error(`Reducer mount path ${mountPath} isn't found`)
+        }
+        if (!batchActions[mountPath]) {
+          batchActions[mountPath] = []
+        }
+        batchActions[mountPath].push(action)
+      }
+      // Process batch actions
+      if (action.type === PROCESS_BATCH) {
+        if (!batchActions[mountPath]) {
+          throw new Error(`Batch with mount path ${mountPath} isn't found`)
+        }
+        action[ACTIONS] = batchActions[mountPath]
+        next(action)
+      }
+    }
+  }
+
+  // Create store with middleware for process batch actions
+  let _enhancer = applyMiddleware(processBatch)
+  if (enhancer) {
+    _enhancer = compose(_enhancer, enhancer)
+  }
   if (reducer) {
     registerReducers(reducer)
-    store = createStore(reducers, preloadedState, enhancer)
+    store = createStore(reducers, preloadedState, _enhancer)
   } else {
-    store = createStore(() => ({}), undefined, enhancer)
+    store = createStore(() => ({}), undefined, _enhancer)
   }
 
   // Recreate reducers tree and replace them in store
@@ -102,7 +134,7 @@ const createStore = (createStore: Function) => (reducer?: Function | Object, pre
     if (typeof _options.replaceReducers !== 'boolean') {
       throw new Error('Option replaceReducers must be boolean')
     }
-    if (process.env.NODE_ENV !== 'production') {
+    if (['production', 'test'].indexOf(process.env.NODE_ENV) === -1) {
       const undefinedOptions = Object.keys(_options).reduce((prev, next) => {
         if (Object.keys(defaultOptions).indexOf(next) === -1) {
           prev = `${prev}, `

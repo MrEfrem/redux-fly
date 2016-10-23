@@ -2,7 +2,6 @@ exports[`test Test library exports 1`] = `
 Object {
   "consts": Object {
     "MOUNT_PATH": "@@MOUNT_PATH",
-    "RESET_STATE": "@@COMPONENT_RESET_STATE",
   },
   "createReducer": [Function],
   "createStore": [Function],

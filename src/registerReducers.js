@@ -20,14 +20,16 @@ export default (
 
       componentWillMount() {
         const { store } = this.context
+        if (typeof store !== 'object') {
+          throw new Error('Redux store must be created')
+        }
         if (typeof store.registerReducers !== 'function' || typeof store.unregisterReducers !== 'function') {
           throw new Error('Redux store must be enhanced with redux-fly')
-        } else {
-          if (typeof reducers !== 'undefined') {
-            // Registration reducers
-            store.registerReducers(typeof reducers === 'function' ? reducers(this.props) : reducers,
-              options)
-          }
+        }
+        if (typeof reducers !== 'undefined') {
+          // Registration reducers
+          store.registerReducers(typeof reducers === 'function' ? reducers(this.props) : reducers,
+            options)
         }
       }
 
