@@ -4,7 +4,7 @@ import isPlainObject from 'lodash/isPlainObject'
 import { checkOptions } from './utils/checks'
 import warning from './utils/warning'
 import { normalizeMountPath } from './utils/normalize'
-import { BATCH, UUID, MOUNT_PATH, PROCESS_BATCH, ACTIONS } from './consts'
+import { BATCH, UUID, MOUNT_PATH, COMMIT_BATCH, ACTIONS } from './consts'
 
 /**
  * Enhancer redux store for runtime management reducers.
@@ -51,15 +51,18 @@ const createStore = (createStore: Function) => (reducer?: Function | Object, pre
           batchActions[mountPath] = []
         }
         batchActions[mountPath].push(action)
-      }
-      // Process batch actions
-      if (action.type === PROCESS_BATCH) {
+      } else if (action.type === COMMIT_BATCH) { // Commit batch actions
         if (!batchActions[mountPath]) {
           throw new Error(`Batch with mount path ${mountPath} isn't found`)
         }
         action[ACTIONS] = batchActions[mountPath]
         next(action)
+        delete batchActions[mountPath]
+      } else if (batchActions[mountPath]) {
+        delete batchActions[mountPath]
       }
+    } else {
+      next(action)
     }
   }
 

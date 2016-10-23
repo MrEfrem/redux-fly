@@ -1,6 +1,6 @@
 // @flow
 import isPlainObject from 'lodash/isPlainObject'
-import { MOUNT_PATH, UUID, BATCH, PROCESS_BATCH, NEW_STATE } from './consts'
+import { MOUNT_PATH, UUID, BATCH, COMMIT_BATCH, NEW_STATE } from './consts'
 
 /**
  * Update state
@@ -18,9 +18,9 @@ import { MOUNT_PATH, UUID, BATCH, PROCESS_BATCH, NEW_STATE } from './consts'
  */
 export default (uuid: string, mountPath: string, dispatch: Function, getState: Function, actionPrefix: string) => (newState: Object | Function, actionType: string, batch: ?Boolean) => {
   if (!arguments.length) {
-    // Process batch actions
+    // Commit batch actions
     dispatch({
-      type: PROCESS_BATCH,
+      type: COMMIT_BATCH,
       [MOUNT_PATH]: mountPath,
       [UUID]: uuid
     })

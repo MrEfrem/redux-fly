@@ -27,14 +27,10 @@ export default function createRegisterReducer(mountPath: string, preloadedState:
       ({ reduxState: getState(mountPath)(state) })
     )(WrappedComponent)
   }
-  let contextStoreShape = storeShape
-  if (process.env.NODE_ENV === 'test') {
-    contextStoreShape = PropTypes.object
-  }
   const uuid = genUUIDv4()
   return class RegisterReducer extends React.Component {
     static contextTypes = {
-      store: contextStoreShape
+      store: process.env.NODE_ENV === 'test' ? PropTypes.object : storeShape
     }
 
     reducer: ?Object
@@ -83,6 +79,7 @@ export default function createRegisterReducer(mountPath: string, preloadedState:
           setReduxState={this.setReduxState}
           resetReduxState={this.resetReduxState}
           reduxMountedPath={mountPath}
+          persist={process.env.NODE_ENV === 'test' ? persist : null}
         />
       )
     }

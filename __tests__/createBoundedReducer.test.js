@@ -1,5 +1,5 @@
 import createBoundedReducer from '../src/createBoundedReducer'
-import { MOUNT_PATH, UUID, RESET_STATE, NEW_STATE, PROCESS_BATCH, ACTIONS } from '../src/consts'
+import { MOUNT_PATH, UUID, RESET_STATE, NEW_STATE, COMMIT_BATCH, ACTIONS } from '../src/consts'
 
 test('Test no match action', () => {
   const preloadedState = {
@@ -31,11 +31,11 @@ test('Test no match action', () => {
   ).test).not.toBe(preloadedState.text)
 
   expect(createBoundedReducer('RANDOM_UUID', 'ui todo', preloadedState, {})(undefined,
-    { type: PROCESS_BATCH, [MOUNT_PATH]: 'ui todo  ' }
+    { type: COMMIT_BATCH, [MOUNT_PATH]: 'ui todo  ' }
   )).not.toBe(preloadedState.text)
 
   expect(createBoundedReducer('RANDOM_UUID', 'ui todo', preloadedState, {})(undefined,
-    { type: PROCESS_BATCH, [MOUNT_PATH]: 'ui todo  ', [UUID]: 'OTHER_RANDOM_UUID' }
+    { type: COMMIT_BATCH, [MOUNT_PATH]: 'ui todo  ', [UUID]: 'OTHER_RANDOM_UUID' }
   )).not.toBe(preloadedState.text)
 })
 
@@ -62,22 +62,22 @@ test('Test match action', () => {
   ).text).toBe(preloadedState.text)
 
 
-  // Test process batch
+  // Test commit batch
   expect(createBoundedReducer('RANDOM_UUID', 'ui todo', preloadedState, {})(undefined,
-    { type: PROCESS_BATCH, [MOUNT_PATH]: 'ui todo  ', [UUID]: 'RANDOM_UUID', [ACTIONS]: [] }
+    { type: COMMIT_BATCH, [MOUNT_PATH]: 'ui todo  ', [UUID]: 'RANDOM_UUID', [ACTIONS]: [] }
   )).toBe(preloadedState)
   expect(createBoundedReducer('RANDOM_UUID', 'ui todo', preloadedState, {}).bind(this, undefined,
-    { type: PROCESS_BATCH, [MOUNT_PATH]: 'ui todo  ', [UUID]: 'RANDOM_UUID', [ACTIONS]: [{}] }
+    { type: COMMIT_BATCH, [MOUNT_PATH]: 'ui todo  ', [UUID]: 'RANDOM_UUID', [ACTIONS]: [{}] }
   )).toThrowError('Incorrect @@UUID undefined')
   expect(createBoundedReducer('RANDOM_UUID', 'ui todo', preloadedState, {}).bind(this, undefined,
-    { type: PROCESS_BATCH, [MOUNT_PATH]: 'ui todo  ', [UUID]: 'RANDOM_UUID',
+    { type: COMMIT_BATCH, [MOUNT_PATH]: 'ui todo  ', [UUID]: 'RANDOM_UUID',
       [ACTIONS]: [{
         [UUID]: 'OTHER_RANDOM_UUID'
       }]
     }
   )).toThrowError('Incorrect @@UUID OTHER_RANDOM_UUID')
   expect(createBoundedReducer('RANDOM_UUID', 'ui todo', preloadedState, {})(undefined,
-    { type: PROCESS_BATCH, [MOUNT_PATH]: 'ui todo  ', [UUID]: 'RANDOM_UUID',
+    { type: COMMIT_BATCH, [MOUNT_PATH]: 'ui todo  ', [UUID]: 'RANDOM_UUID',
       [ACTIONS]: [{
         [UUID]: 'RANDOM_UUID',
         [NEW_STATE]: newState
@@ -85,7 +85,7 @@ test('Test match action', () => {
     }
   ).text).toBe(newState.text)
   expect(createBoundedReducer('RANDOM_UUID', 'ui todo', preloadedState, {})(undefined,
-    { type: PROCESS_BATCH, [MOUNT_PATH]: 'ui todo  ', [UUID]: 'RANDOM_UUID',
+    { type: COMMIT_BATCH, [MOUNT_PATH]: 'ui todo  ', [UUID]: 'RANDOM_UUID',
       [ACTIONS]: [{
         [UUID]: 'RANDOM_UUID',
         [NEW_STATE]: newState

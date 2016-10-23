@@ -1,19 +1,19 @@
 // @flow
-import { RESET_STATE, MOUNT_PATH, UUID, PROCESS_BATCH, NEW_STATE, ACTIONS } from './consts'
+import { RESET_STATE, MOUNT_PATH, UUID, COMMIT_BATCH, NEW_STATE, ACTIONS } from './consts'
 import { normalizeMountPath } from './utils/normalize'
 
 // Create reducer bounded on mountPath
 export default (uuid: string, mountPath: string, preloadedState: Object, listenActions: Object) =>
   (state: Object = preloadedState, action: Object) => {
     if ((typeof action[MOUNT_PATH] !== 'undefined' && normalizeMountPath(action[MOUNT_PATH]) === mountPath && typeof action[UUID] !== 'undefined' &&
-      action[UUID] === uuid && (typeof action[NEW_STATE] !== 'undefined' || action.type === RESET_STATE || action.type === PROCESS_BATCH)) ||
+      action[UUID] === uuid && (typeof action[NEW_STATE] !== 'undefined' || action.type === RESET_STATE || action.type === COMMIT_BATCH)) ||
       action.type in listenActions
     ) {
       const reducerMap = {
         [RESET_STATE]: () => ({
           ...preloadedState,
         }),
-        [PROCESS_BATCH]: (state, action) =>
+        [COMMIT_BATCH]: (state, action) =>
           action[ACTIONS].reduce((prev, next) => {
             if (typeof next[UUID] === 'undefined' || next[UUID] !== uuid) {
               throw new Error(`Incorrect ${UUID} ${next[UUID]}`)

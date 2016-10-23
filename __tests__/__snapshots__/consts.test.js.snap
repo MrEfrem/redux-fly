@@ -2,9 +2,9 @@ exports[`test Verify Defined CONSTS 1`] = `
 Object {
   "ACTIONS": "@@ACTIONS",
   "BATCH": "@@BATCH",
+  "COMMIT_BATCH": "@@COMPONENT_COMMIT_BATCH",
   "MOUNT_PATH": "@@MOUNT_PATH",
   "NEW_STATE": "@@NEW_STATE",
-  "PROCESS_BATCH": "@@COMPONENT_PROCESS_BATCH",
   "PROP_MOUNT_PATH": "reduxMountPath",
   "PROP_PERSIST": "reduxPersist",
   "RESET_STATE": "@@COMPONENT_RESET_STATE",

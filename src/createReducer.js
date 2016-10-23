@@ -1,5 +1,5 @@
 // @flow
-import React from 'react'
+import React, { PropTypes } from 'react'
 import { checkMountPath, checkPreloadedState, checkOptions } from './utils/checks'
 import createRegisterReducer from './createRegisterReducer'
 import isPlainObject from 'lodash/isPlainObject'
@@ -100,6 +100,11 @@ export default (
       RegisterReducer: any
       propMountPath: ?string
 
+      static propTypes = {
+        [PROP_MOUNT_PATH]: process.env.NODE_ENV === 'test' ? PropTypes.any : PropTypes.string,
+        [PROP_PERSIST]: process.env.NODE_ENV === 'test' ? PropTypes.any : PropTypes.bool
+      }
+
       componentWillMount() {
         let { [PROP_MOUNT_PATH]: propMountPath, [PROP_PERSIST]: propPersist } = this.props
         // Mount path must be passed in props or options
@@ -109,14 +114,14 @@ export default (
 
         let realMountPath = mountPath
         // Priority mount path from props
-        if (propMountPath) {
+        if (typeof propMountPath !== 'undefined') {
           checkMountPath(propMountPath)
           realMountPath = propMountPath
         }
         realMountPath = normalizeMountPath(realMountPath)
 
         // Priority persist from props
-        if (propPersist) {
+        if (typeof propPersist !== 'undefined') {
           checkPersist(propPersist)
           _options.persist = propPersist
         }
