@@ -1,10 +1,9 @@
 // @flow
-import React, { PropTypes } from 'react'
+import React from 'react'
 import { checkMountPath, checkPreloadedState, checkOptions } from './utils/checks'
 import createRegisterReducer from './createRegisterReducer'
 import isPlainObject from 'lodash/isPlainObject'
 import warning from './utils/warning'
-import { PROP_MOUNT_PATH, PROP_PERSIST } from './consts'
 import { normalizeMountPath } from './utils/normalize'
 
 /**
@@ -100,13 +99,15 @@ export default (
       RegisterReducer: any
       propMountPath: ?string
 
-      static propTypes = {
-        [PROP_MOUNT_PATH]: process.env.NODE_ENV === 'test' ? PropTypes.any : PropTypes.string,
-        [PROP_PERSIST]: process.env.NODE_ENV === 'test' ? PropTypes.any : PropTypes.bool
+      props: {
+        reduxMountPath: string,
+        reduxPersist: boolean
       }
 
-      componentWillMount() {
-        let { [PROP_MOUNT_PATH]: propMountPath, [PROP_PERSIST]: propPersist } = this.props
+      constructor(props: any) {
+        super(props)
+
+        let { reduxMountPath: propMountPath, reduxPersist: propPersist } = props
         // Mount path must be passed in props or options
         if (!mountPath && !propMountPath) {
           throw new Error('Mount path must be defined')
@@ -129,14 +130,14 @@ export default (
         // Preloaded state is function
         let _preloadedState = preloadedState
         if (typeof _preloadedState === 'function') {
-          _preloadedState = _preloadedState(this.props, realMountPath)
+          _preloadedState = _preloadedState(props, realMountPath)
           checkPreloadedState(_preloadedState)
         }
 
         // Listen actions is function
         let _listenActions = listenActions
         if (typeof _listenActions === 'function') {
-          _listenActions = _listenActions(this.props, realMountPath)
+          _listenActions = _listenActions(props, realMountPath)
           checkListenActions(_listenActions)
         }
 

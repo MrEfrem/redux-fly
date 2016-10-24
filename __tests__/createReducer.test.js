@@ -1,10 +1,8 @@
 import createReducer from '../src/createReducer'
 import renderer from 'react-test-renderer'
 import React, { PropTypes } from 'react'
-import { PROP_MOUNT_PATH, PROP_PERSIST } from '../src/consts'
 import { createStore, compose } from 'redux'
-import { connect } from 'react-redux'
-import { Provider } from 'react-redux'
+import { connect, Provider } from 'react-redux'
 import flyEnhancedStore from '../src/createStore'
 import { mount } from 'enzyme'
 
@@ -29,15 +27,15 @@ test('Test invalid init component', () => {
   )).toThrowError('Mount path must be defined')
 
   expect(renderer.create.bind(renderer,
-    <ExtendedComponent1 {...{[PROP_MOUNT_PATH]: ['ui component']}} />
+    <ExtendedComponent1 reduxMountPath={['ui component']} />
   )).toThrowError('Mount path must be string')
 
   expect(renderer.create.bind(renderer,
-    <ExtendedComponent1 {...{[PROP_MOUNT_PATH]: 'ui component'}} />
+    <ExtendedComponent1 reduxMountPath="ui component" />
   )).toThrowError('Redux store must be created')
 
   expect(renderer.create.bind(renderer,
-    <ExtendedComponent1 {...{[PROP_MOUNT_PATH]: 'ui component'}} {...{[PROP_PERSIST]: 'true'}}/>
+    <ExtendedComponent1 reduxMountPath="ui component" reduxPersist="true" />
   )).toThrowError('Persist must be boolean')
 
 
@@ -56,7 +54,7 @@ test('Test invalid init component', () => {
   const store = createStore(() => ({}))
   expect(renderer.create.bind(renderer,
     <Provider store={store}>
-      <ExtendedComponent1 {...{[PROP_MOUNT_PATH]: 'ui component'}} />
+      <ExtendedComponent1 reduxMountPath="ui component" />
     </Provider>
   )).toThrowError('Redux store must be enhanced with redux-fly')
 })
@@ -114,7 +112,7 @@ test('Test valid init component passed mount path in Component', () => {
 
   let component = mount(
     <Provider store={store}>
-      <ExtendedComponent {...{[PROP_MOUNT_PATH]: 'ui component'}} />
+      <ExtendedComponent reduxMountPath="ui component" />
     </Provider>
   )
   expect(component.html()).
@@ -144,7 +142,7 @@ test('Test valid init component passed mount path in createReducer and Component
 
   let component = mount(
     <Provider store={store}>
-      <ExtendedComponent {...{[PROP_MOUNT_PATH]: 'ui other-component'}} />
+      <ExtendedComponent reduxMountPath="ui other-component" />
     </Provider>
   )
   expect(component.html()).
@@ -204,7 +202,7 @@ test('Test valid init component passed persist in Component', () => {
 
   let component = mount(
     <Provider store={store}>
-      <ExtendedComponent {...{[PROP_PERSIST]: true}}/>
+      <ExtendedComponent reduxPersist={true} />
     </Provider>
   )
   expect(component.html()).
@@ -234,7 +232,7 @@ test('Test valid init component passed persist in createReducer and Component', 
 
   let component = mount(
     <Provider store={store}>
-      <ExtendedComponent {...{[PROP_PERSIST]: false}}/>
+      <ExtendedComponent reduxPersist={false} />
     </Provider>
   )
   expect(component.html()).
@@ -365,4 +363,149 @@ test('Test valid init component passed listenActions is function', () => {
   )
   expect(component.html()).
     toBe('<div><span>function</span><span>function</span><span>ui component</span><span>{\"text\":\"My second todo\",\"mountPath\":\"ui component\"}</span><span>false</span></div>')
+})
+
+test('Test valid init component without connectToStore', () => {
+  const store = createStore(null, null, flyEnhancedStore)
+
+  const Component = (props) => (
+    <div>
+      <span>{typeof props.setReduxState}</span>
+      <span>{typeof props.resetReduxState}</span>
+      <span>{props.reduxMountedPath}</span>
+      <span>{JSON.stringify(props.reduxState)}</span>
+      <span>{props.persist.toString()}</span>
+    </div>
+  )
+  Component.propTypes = {
+    setReduxState: PropTypes.func.isRequired,
+    resetReduxState: PropTypes.func.isRequired,
+    reduxMountedPath: PropTypes.string.isRequired,
+    reduxState: PropTypes.object,
+    persist: PropTypes.bool.isRequired
+  }
+  const ExtendedComponent = compose(
+    createReducer(
+      'ui component',
+      { text: 'My first todo' },
+      null,
+      {
+        connectToStore: false
+      }
+    )
+  )(Component)
+
+  let component = mount(
+    <Provider store={store}>
+      <ExtendedComponent />
+    </Provider>
+  )
+  expect(component.html()).
+    toBe('<div><span>function</span><span>function</span><span>ui component</span><span></span><span>false</span></div>')
+})
+
+test('Test reset state (persist = false) after unmounting component', () => {
+  const store = createStore(null, null, flyEnhancedStore)
+
+  class Component extends React.Component {
+    componentDidMount() {
+      const { setReduxState } = this.props
+      setReduxState({
+        text: 'My second todo',
+      }, 'update_todo')
+    }
+
+    render() {
+      const { props } = this
+      return (
+        <div>
+          <span>{typeof props.setReduxState}</span>
+          <span>{typeof props.resetReduxState}</span>
+          <span>{props.reduxMountedPath}</span>
+          <span>{JSON.stringify(props.reduxState)}</span>
+          <span>{props.persist.toString()}</span>
+        </div>
+      )
+    }
+  }
+  Component.propTypes = {
+    setReduxState: PropTypes.func.isRequired,
+    resetReduxState: PropTypes.func.isRequired,
+    reduxMountedPath: PropTypes.string.isRequired,
+    reduxState: PropTypes.object.isRequired,
+    persist: PropTypes.bool.isRequired
+  }
+  const ExtendedComponent = compose(
+    createReducer(
+      'ui component',
+      { text: 'My first todo' }
+    )
+  )(Component)
+
+  let component = mount(
+    <Provider store={store}>
+      <ExtendedComponent />
+    </Provider>
+  )
+  expect(component.html()).
+    toBe('<div><span>function</span><span>function</span><span>ui component</span><span>{\"text\":\"My second todo\"}</span><span>false</span></div>')
+  expect(JSON.stringify(store.getState())).toBe('{"ui":{"component":{"text":"My second todo"}}}')
+
+  component.unmount()
+  expect(JSON.stringify(store.getState())).toBe('{"ui":{"component":{"text":"My first todo"}}}')
+})
+
+test('Test preserved state (persist = true) after unmounting component', () => {
+  const store = createStore(null, null, flyEnhancedStore)
+
+  class Component extends React.Component {
+    componentDidMount() {
+      const { setReduxState } = this.props
+      setReduxState({
+        text: 'My second todo',
+      }, 'update_todo')
+    }
+
+    render() {
+      const { props } = this
+      return (
+        <div>
+          <span>{typeof props.setReduxState}</span>
+          <span>{typeof props.resetReduxState}</span>
+          <span>{props.reduxMountedPath}</span>
+          <span>{JSON.stringify(props.reduxState)}</span>
+          <span>{props.persist.toString()}</span>
+        </div>
+      )
+    }
+  }
+  Component.propTypes = {
+    setReduxState: PropTypes.func.isRequired,
+    resetReduxState: PropTypes.func.isRequired,
+    reduxMountedPath: PropTypes.string.isRequired,
+    reduxState: PropTypes.object.isRequired,
+    persist: PropTypes.bool.isRequired
+  }
+  const ExtendedComponent = compose(
+    createReducer(
+      'ui component',
+      { text: 'My first todo' },
+      null,
+      {
+        persist: true
+      }
+    )
+  )(Component)
+
+  let component = mount(
+    <Provider store={store}>
+      <ExtendedComponent />
+    </Provider>
+  )
+  expect(component.html()).
+    toBe('<div><span>function</span><span>function</span><span>ui component</span><span>{\"text\":\"My second todo\"}</span><span>true</span></div>')
+  expect(JSON.stringify(store.getState())).toBe('{"ui":{"component":{"text":"My second todo"}}}')
+
+  component.unmount()
+  expect(JSON.stringify(store.getState())).toBe('{"ui":{"component":{"text":"My second todo"}}}')
 })

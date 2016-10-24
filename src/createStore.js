@@ -58,8 +58,11 @@ const createStore = (createStore: Function) => (reducer?: Function | Object, pre
         action[ACTIONS] = batchActions[mountPath]
         next(action)
         delete batchActions[mountPath]
-      } else if (batchActions[mountPath]) {
-        delete batchActions[mountPath]
+      } else {
+        if (batchActions[mountPath]) {
+          delete batchActions[mountPath]
+        }
+        next(action)
       }
     } else {
       next(action)

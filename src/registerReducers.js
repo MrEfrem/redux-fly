@@ -18,8 +18,10 @@ export default (
         store: storeShape,
       }
 
-      componentWillMount() {
-        const { store } = this.context
+      constructor(props: any, context: any) {
+        super(props, context)
+
+        const { store } = context
         if (typeof store !== 'object') {
           throw new Error('Redux store must be created')
         }
@@ -28,7 +30,7 @@ export default (
         }
         if (typeof reducers !== 'undefined') {
           // Registration reducers
-          store.registerReducers(typeof reducers === 'function' ? reducers(this.props) : reducers,
+          store.registerReducers(typeof reducers === 'function' ? reducers(props) : reducers,
             options)
         }
       }

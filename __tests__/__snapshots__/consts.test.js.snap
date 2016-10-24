@@ -5,8 +5,6 @@ Object {
   "COMMIT_BATCH": "@@COMPONENT_COMMIT_BATCH",
   "MOUNT_PATH": "@@MOUNT_PATH",
   "NEW_STATE": "@@NEW_STATE",
-  "PROP_MOUNT_PATH": "reduxMountPath",
-  "PROP_PERSIST": "reduxPersist",
   "RESET_STATE": "@@COMPONENT_RESET_STATE",
   "UUID": "@@UUID",
 }

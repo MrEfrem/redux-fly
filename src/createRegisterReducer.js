@@ -33,24 +33,23 @@ export default function createRegisterReducer(mountPath: string, preloadedState:
       store: process.env.NODE_ENV === 'test' ? PropTypes.object : storeShape
     }
 
-    reducer: ?Object
     setReduxState: any
     resetReduxState: any
-    batchActions: any
 
-    componentWillMount() {
-      const { store } = this.context
+    constructor(props: any, context: any) {
+      super(props, context)
+
+      const { store } = context
       if (typeof store !== 'object') {
         throw new Error('Redux store must be created')
       }
       if (typeof store.registerReducers !== 'function') {
         throw new Error('Redux store must be enhanced with redux-fly')
       }
-      this.reducer = {
+      // Creation and registration reducer
+      store.registerReducers({
         [mountPath]: createBoundedReducer(uuid, mountPath, preloadedState, listenActions || {}),
-      }
-      // Registration of created reducer
-      store.registerReducers(this.reducer)
+      })
       // Binding setReduxState with redux store
       this.setReduxState = setReduxState(uuid, mountPath, store.dispatch, store.getState, actionPrefix)
       // Action creator RESET redux state
@@ -66,10 +65,8 @@ export default function createRegisterReducer(mountPath: string, preloadedState:
       if (!persist) {
         this.resetReduxState()
       }
-      this.reducer = null
       this.setReduxState = null
       this.resetReduxState = null
-      this.batchActions = null
     }
 
     render() {
