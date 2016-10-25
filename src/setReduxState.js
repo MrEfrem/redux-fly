@@ -17,7 +17,7 @@ import { MOUNT_PATH, UUID, BATCH, COMMIT_BATCH, NEW_STATE } from './consts'
  * )
  */
 export default (uuid: string, mountPath: string, dispatch: Function, getState: Function, actionPrefix: string) => (newState: Object | Function, actionType: string, batch: ?Boolean) => {
-  if (!arguments.length) {
+  if (typeof newState === 'undefined' && typeof actionType === 'undefined' && typeof batch === 'undefined') {
     // Commit batch actions
     dispatch({
       type: COMMIT_BATCH,

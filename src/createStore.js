@@ -1,7 +1,6 @@
 // @flow
 import { combineReducers, applyMiddleware, compose } from 'redux'
 import isPlainObject from 'lodash/isPlainObject'
-import { checkOptions } from './utils/checks'
 import warning from './utils/warning'
 import { normalizeMountPath } from './utils/normalize'
 import { BATCH, UUID, MOUNT_PATH, COMMIT_BATCH, ACTIONS } from './consts'
@@ -19,21 +18,13 @@ import { BATCH, UUID, MOUNT_PATH, COMMIT_BATCH, ACTIONS } from './consts'
  * If isn't passed reducer, but passed preloaderState, then preloadedState would uses
  * how default state for new registered reducers.
  */
-const createStore = (createStore: Function) => (reducer?: Function | Object, preloadedState?: Function | Object, enhancer?: Function) => {
+const createStore = (createStore: Function) => (reducer?: Object, preloadedState?: Object, enhancer?: Function) => {
   let store
   let reducers = {}
   let rawReducers = {}
   let rawReducersMap = []
   let batchActions = {}
 
-  if (typeof reducer === 'function' && typeof preloadedState === 'undefined' && typeof enhancer === 'undefined') {
-    enhancer = reducer
-    reducer = undefined
-  }
-  if (typeof preloadedState === 'function' && typeof enhancer === 'undefined') {
-    enhancer = preloadedState
-    preloadedState = undefined
-  }
   if (preloadedState && !isPlainObject(preloadedState)) {
     throw new Error('Preloaded state must be plain object')
   }
@@ -128,7 +119,9 @@ const createStore = (createStore: Function) => (reducer?: Function | Object, pre
         throw new Error('Reducers must be functions')
       }
     })
-    checkOptions(options)
+    if (!isPlainObject(options)) {
+      throw new Error('Options must be plain object ')
+    }
     const defaultOptions = {
       replaceReducers: false
     }

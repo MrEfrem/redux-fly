@@ -1,10 +1,21 @@
 // @flow
 import React from 'react'
-import { checkMountPath, checkPreloadedState, checkOptions } from './utils/checks'
+import { checkMountPath } from './utils/checks'
 import createRegisterReducer from './createRegisterReducer'
 import isPlainObject from 'lodash/isPlainObject'
 import warning from './utils/warning'
 import { normalizeMountPath } from './utils/normalize'
+
+/**
+ * Check preloadedState
+ * @param  {Object} preloadedState
+ * @return {void}
+ */
+const checkPreloadedState = (preloadedState: any) => {
+  if (!isPlainObject(preloadedState)) {
+    throw new Error('PreloadedState must be plain object')
+  }
+}
 
 /**
  * Check listenActions
@@ -21,6 +32,17 @@ const checkListenActions = (listenActions) => {
 const checkPersist = (persist) => {
   if (typeof persist !== 'boolean') {
     throw new Error('Persist must be boolean')
+  }
+}
+
+/**
+ * Check options
+ * @param  {Object} options
+ * @return {void}
+ */
+const checkOptions = (options: any) => {
+  if (typeof options !== 'undefined' && !isPlainObject(options)) {
+    throw new Error('Options must be plain object ')
   }
 }
 
@@ -53,9 +75,9 @@ const checkDetailOptions = (defaultOptions, options) => {
 
 /**
  * Create/mount reducer
- * @param  {string} mountPath
- * @param  {Object} preloadedState
- * @param  {Object} listenActions
+ * @param  {string | Function | Object} mountPath
+ * @param  {Function | Object} preloadedState
+ * @param  {Function | Object} listenActions
  * @param  {Object} options
  * @return {
  *   @param {Object} wrapped React component
@@ -63,12 +85,27 @@ const checkDetailOptions = (defaultOptions, options) => {
  * }
  */
 export default (
-  mountPath?: string,
-  preloadedState: Function | Object,
-  listenActions?: Function | Object,
-  options: Object = {}
+  mountPath: any,
+  preloadedState: any,
+  listenActions: any,
+  options: any
 ) => {
-  if (mountPath || mountPath !== null) {
+  if (!mountPath) {
+    throw new Error('Invalid parameters')
+  }
+  if (typeof mountPath === 'function' || isPlainObject(mountPath)) {
+    if (typeof options !== 'undefined') {
+      throw new Error('Invalid parameters')
+    }
+    if (listenActions) {
+      options = listenActions
+    }
+    listenActions = preloadedState
+    preloadedState = mountPath
+    mountPath = null
+  }
+
+  if (mountPath) {
     checkMountPath(mountPath)
   }
 
@@ -82,6 +119,9 @@ export default (
 
   checkOptions(options)
 
+  if (typeof options === 'undefined') {
+    options = {}
+  }
   const defaultOptions = {
     connectToStore: true,
     persist: false,
