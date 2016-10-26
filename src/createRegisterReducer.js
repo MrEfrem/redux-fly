@@ -35,6 +35,7 @@ export default function createRegisterReducer(mountPath: string, preloadedState:
 
     setReduxState: any
     resetReduxState: any
+    batchUpdate: any
 
     constructor(props: any, context: any) {
       super(props, context)
@@ -50,8 +51,9 @@ export default function createRegisterReducer(mountPath: string, preloadedState:
       store.registerReducers({
         [mountPath]: createBoundedReducer(uuid, mountPath, preloadedState, listenActions || {}),
       })
+      this.batchUpdate = {}
       // Binding setReduxState with redux store
-      this.setReduxState = setReduxState(uuid, mountPath, store.dispatch, store.getState, actionPrefix)
+      this.setReduxState = setReduxState(uuid, mountPath, store.dispatch, store.getState, actionPrefix, this.batchUpdate)
       // Action creator RESET redux state
       this.resetReduxState = () => store.dispatch({
         type: RESET_STATE,
@@ -67,6 +69,7 @@ export default function createRegisterReducer(mountPath: string, preloadedState:
       }
       this.setReduxState = null
       this.resetReduxState = null
+      this.batchUpdate = null
     }
 
     render() {

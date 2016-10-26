@@ -688,19 +688,42 @@ test('Test execute resetReduxState', () => {
     toBe('<div><span>function</span><span>function</span><span>ui component</span><span>{\"text\":\"My first todo\"}</span><span>false</span></div>')
 })
 
-test('Test execute setReduxState in batch mode', () => {
-  const store = createStore(null, null, flyEnhancedStore)
+test('Test execute setReduxState in batch mode and pass newState as function', () => {
+  let actionType = null
+  const middleware = () => (next) => (action) => {
+    if (actionType === 'increment') {
+      expect(action.type).toBe('super-puper/increment')
+    } else {
+      expect(action.type).toBe('super-puper/update_todo')
+    }
+    next(action)
+  }
+  const store = createStore(null, null, compose(applyMiddleware(middleware), flyEnhancedStore))
 
   class Component extends React.Component {
     componentDidMount() {
+      actionType = 'increment'
+      const { setReduxState } = this.props
+      setReduxState((state) => ({
+        num: ++state.num
+      }), true)
+      setReduxState((state) => ({
+        num: ++state.num
+      }), true)
+      setReduxState(null, 'increment', true)
+    }
+
+    handleClick1 = () => {
       const { setReduxState } = this.props
       setReduxState({
         text: 'My second todo',
-      }, 'update_todo', true)
-      setReduxState({
-        text: 'My third todo',
-      }, 'update_todo', true)
-      setReduxState()
+      }, true)
+    }
+
+    handleClick2 = () => {
+      actionType = 'update_todo'
+      const { setReduxState } = this.props
+      setReduxState(null, 'update_todo', true)
     }
 
     render() {
@@ -712,6 +735,8 @@ test('Test execute setReduxState in batch mode', () => {
           <span>{props.reduxMountedPath}</span>
           <span>{JSON.stringify(props.reduxState)}</span>
           <span>{props.persist.toString()}</span>
+          <a id="a1" onClick={this.handleClick1}>Start transaction</a>
+          <a id="a2" onClick={this.handleClick2}>Commit transaction</a>
         </div>
       )
     }
@@ -726,7 +751,11 @@ test('Test execute setReduxState in batch mode', () => {
   const ExtendedComponent = compose(
     createReducer(
       'ui component',
-      { text: 'My first todo' },
+      { text: 'My first todo', num: 1 },
+      null,
+      {
+        actionPrefix: 'super-puper/'
+      }
     )
   )(Component)
 
@@ -737,56 +766,18 @@ test('Test execute setReduxState in batch mode', () => {
   )
 
   expect(component.html()).
-    toBe('<div><span>function</span><span>function</span><span>ui component</span><span>{\"text\":\"My third todo\"}</span><span>false</span></div>')
-})
+    toBe('<div><span>function</span><span>function</span><span>ui component</span><span>{\"text\":\"My first todo\",\"num\":3}' +
+      '</span><span>false</span><a id=\"a1\">Start transaction</a><a id=\"a2\">Commit transaction</a></div>')
 
-test('Test break queue execute setReduxState in batch mode', () => {
-  const store = createStore(null, null, flyEnhancedStore)
-
-  class Component extends React.Component {
-    componentDidMount() {
-      const { setReduxState } = this.props
-      setReduxState({
-        text: 'My second todo',
-      }, 'update_todo', true)
-      setReduxState({
-        title: 'Hello world'
-      }, 'update_todo')
-    }
-
-    render() {
-      const { props } = this
-      return (
-        <div>
-          <span>{typeof props.setReduxState}</span>
-          <span>{typeof props.resetReduxState}</span>
-          <span>{props.reduxMountedPath}</span>
-          <span>{JSON.stringify(props.reduxState)}</span>
-          <span>{props.persist.toString()}</span>
-        </div>
-      )
-    }
-  }
-  Component.propTypes = {
-    setReduxState: PropTypes.func.isRequired,
-    resetReduxState: PropTypes.func.isRequired,
-    reduxMountedPath: PropTypes.string.isRequired,
-    reduxState: PropTypes.object.isRequired,
-    persist: PropTypes.bool.isRequired
-  }
-  const ExtendedComponent = compose(
-    createReducer(
-      'ui component',
-      { text: 'My first todo' },
-    )
-  )(Component)
-
-  const component = mount(
-    <Provider store={store}>
-      <ExtendedComponent />
-    </Provider>
-  )
+  component.find('#a1').simulate('click')
 
   expect(component.html()).
-    toBe('<div><span>function</span><span>function</span><span>ui component</span><span>{\"text\":\"My first todo\",\"title\":\"Hello world\"}</span><span>false</span></div>')
+    toBe('<div><span>function</span><span>function</span><span>ui component</span><span>{\"text\":\"My first todo\",\"num\":3}' +
+      '</span><span>false</span><a id=\"a1\">Start transaction</a><a id=\"a2\">Commit transaction</a></div>')
+
+  component.find('#a2').simulate('click')
+
+  expect(component.html()).
+    toBe('<div><span>function</span><span>function</span><span>ui component</span><span>{\"text\":\"My second todo\",\"num\":3}' +
+      '</span><span>false</span><a id=\"a1\">Start transaction</a><a id=\"a2\">Commit transaction</a></div>')
 })

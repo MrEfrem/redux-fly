@@ -1,9 +1,8 @@
 // @flow
-import { combineReducers, applyMiddleware, compose } from 'redux'
+import { combineReducers } from 'redux'
 import isPlainObject from 'lodash/isPlainObject'
 import warning from './utils/warning'
 import { normalizeMountPath } from './utils/normalize'
-import { BATCH, UUID, MOUNT_PATH, COMMIT_BATCH, ACTIONS } from './consts'
 
 /**
  * Enhancer redux store for runtime management reducers.
@@ -23,53 +22,17 @@ const createStore = (createStore: Function) => (reducer?: Object, preloadedState
   let reducers = {}
   let rawReducers = {}
   let rawReducersMap = []
-  let batchActions = {}
 
   if (preloadedState && !isPlainObject(preloadedState)) {
     throw new Error('Preloaded state must be plain object')
   }
 
-  // Middleware for processing batch actions
-  const processBatch = () => next => action => {
-    if (typeof action[MOUNT_PATH] !== 'undefined' && typeof action[UUID] !== 'undefined') {
-      const mountPath = normalizeMountPath(action[MOUNT_PATH])
-      // Add action in batch
-      if (action[BATCH]) {
-        if (!rawReducersMap.filter(el => el === mountPath).length) {
-          throw new Error(`Reducer mount path ${mountPath} isn't found`)
-        }
-        if (!batchActions[mountPath]) {
-          batchActions[mountPath] = []
-        }
-        batchActions[mountPath].push(action)
-      } else if (action.type === COMMIT_BATCH) { // Commit batch actions
-        if (!batchActions[mountPath]) {
-          throw new Error(`Batch with mount path ${mountPath} isn't found`)
-        }
-        action[ACTIONS] = batchActions[mountPath]
-        next(action)
-        delete batchActions[mountPath]
-      } else {
-        if (batchActions[mountPath]) {
-          delete batchActions[mountPath]
-        }
-        next(action)
-      }
-    } else {
-      next(action)
-    }
-  }
-
   // Create store with middleware for process batch actions
-  let _enhancer = applyMiddleware(processBatch)
-  if (enhancer) {
-    _enhancer = compose(_enhancer, enhancer)
-  }
   if (reducer) {
     registerReducers(reducer)
-    store = createStore(reducers, preloadedState, _enhancer)
+    store = createStore(reducers, preloadedState, enhancer)
   } else {
-    store = createStore(() => ({}), undefined, _enhancer)
+    store = createStore(() => ({}), undefined, enhancer)
   }
 
   // Recreate reducers tree and replace them in store

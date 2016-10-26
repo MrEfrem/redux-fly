@@ -1,6 +1,4 @@
 // @flow
-import isPlainObject from 'lodash/isPlainObject'
-
 /**
  * Check mountPath
  * @param  {string} path
