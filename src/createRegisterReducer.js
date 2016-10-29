@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import storeShape from './utils/storeShape'
 import createBoundedReducer from './createBoundedReducer'
 import setReduxState from './setReduxState'
-import { RESET_STATE, MOUNT_PATH, UUID } from './consts'
+import { RESET_STATE, UUID } from './consts'
 import getState from './getState'
 import genUUIDv4 from './genUUIDv4'
 
@@ -49,15 +49,14 @@ export default function createRegisterReducer(mountPath: string, preloadedState:
       }
       // Creation and registration reducer
       store.registerReducers({
-        [mountPath]: createBoundedReducer(uuid, mountPath, preloadedState, listenActions || {}),
+        [mountPath]: createBoundedReducer(uuid, preloadedState, listenActions || {}, actionPrefix),
       })
       this.batchUpdate = {}
       // Binding setReduxState with redux store
       this.setReduxState = setReduxState(uuid, mountPath, store.dispatch, store.getState, actionPrefix, this.batchUpdate)
       // Action creator RESET redux state
       this.resetReduxState = () => store.dispatch({
-        type: RESET_STATE,
-        [MOUNT_PATH]: mountPath,
+        type: `${actionPrefix}${RESET_STATE}`,
         [UUID]: uuid
       })
     }

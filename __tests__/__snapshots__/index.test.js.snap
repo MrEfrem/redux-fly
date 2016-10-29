@@ -1,8 +1,5 @@
 exports[`test Test library exports 1`] = `
 Object {
-  "consts": Object {
-    "MOUNT_PATH": "@@MOUNT_PATH",
-  },
   "createReducer": [Function],
   "createStore": [Function],
   "getState": [Function],

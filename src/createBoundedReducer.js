@@ -1,6 +1,5 @@
 // @flow
-import { RESET_STATE, MOUNT_PATH, UUID, NEW_STATE } from './consts'
-import { normalizeMountPath } from './utils/normalize'
+import { RESET_STATE, UUID, NEW_STATE } from './consts'
 
 export const mutateState = (prev: Object, next: Object) => {
   return {
@@ -10,14 +9,14 @@ export const mutateState = (prev: Object, next: Object) => {
 }
 
 // Create reducer bounded on mountPath
-export default (uuid: string, mountPath: string, preloadedState: Object, listenActions: Object) =>
+export default (uuid: string, preloadedState: Object, listenActions: Object, actionPrefix: string) =>
   (state: Object = preloadedState, action: Object) => {
-    if ((typeof action[MOUNT_PATH] !== 'undefined' && normalizeMountPath(action[MOUNT_PATH]) === mountPath && typeof action[UUID] !== 'undefined' &&
-      action[UUID] === uuid && (typeof action[NEW_STATE] !== 'undefined' || action.type === RESET_STATE)) ||
+    const resetState = `${actionPrefix}${RESET_STATE}`
+    if (typeof action[UUID] !== 'undefined' && action[UUID] === uuid && (typeof action[NEW_STATE] !== 'undefined' || action.type === resetState) ||
       action.type in listenActions
     ) {
       const reducerMap = {
-        [RESET_STATE]: () => ({
+        [resetState]: () => ({
           ...preloadedState,
         }),
         ...listenActions,

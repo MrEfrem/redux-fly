@@ -36,6 +36,15 @@ const checkPersist = (persist) => {
 }
 
 /**
+ * Check action prefix
+ */
+const checkActionPrefix = (actionPrefix) => {
+  if (typeof actionPrefix !== 'string' || !actionPrefix.length) {
+    throw new Error('ActionPrefix must be non empty string')
+  }
+}
+
+/**
  * Check options
  * @param  {Object} options
  * @return {void}
@@ -57,8 +66,8 @@ const checkDetailOptions = (defaultOptions, options) => {
     throw new Error('ConnectToStore must be boolean')
   }
   checkPersist(options.persist)
-  if (typeof options.actionPrefix !== 'string') {
-    throw new Error('ActionPrefix must be string')
+  if (options.actionPrefix) {
+    checkActionPrefix(options.actionPrefix)
   }
   if (['production', 'test'].indexOf(process.env.NODE_ENV) === -1) {
     const undefinedOptions = Object.keys(options).reduce((prev, next) => {
@@ -147,7 +156,7 @@ export default (
       constructor(props: any) {
         super(props)
 
-        let { reduxMountPath: propMountPath, reduxPersist: propPersist } = props
+        let { reduxMountPath: propMountPath, reduxPersist: propPersist, reduxActionPrefix: propActionPrefix } = props
         // Mount path must be passed in props or options
         if (!mountPath && !propMountPath) {
           throw new Error('Mount path must be defined')
@@ -160,6 +169,17 @@ export default (
           realMountPath = propMountPath
         }
         realMountPath = normalizeMountPath(realMountPath)
+
+        // Priority actionPrefix from props
+        if (typeof propActionPrefix !== 'undefined') {
+          checkActionPrefix(propActionPrefix)
+          _options.actionPrefix = propActionPrefix
+        }
+
+        // Default value for action prefix consist from mount path
+        if (!_options.actionPrefix) {
+          _options.actionPrefix = `${realMountPath}/`
+        }
 
         // Priority persist from props
         if (typeof propPersist !== 'undefined') {
