@@ -1,13 +1,6 @@
 // @flow
 import { RESET_STATE, UUID, NEW_STATE } from './consts'
 
-export const mutateState = (prev: Object, next: Object) => {
-  return {
-    ...prev,
-    ...next,
-  }
-}
-
 // Create reducer bounded on mountPath
 export default (uuid: string, preloadedState: Object, listenActions: Object, actionPrefix: string) =>
   (state: Object = preloadedState, action: Object) => {
@@ -25,7 +18,10 @@ export default (uuid: string, preloadedState: Object, listenActions: Object, act
       if (reducer) {
         return reducer(state, action)
       }
-      return mutateState(state, action[NEW_STATE])
+      return {
+        ...state,
+        ...action[NEW_STATE]
+      }
     }
     return state
   }

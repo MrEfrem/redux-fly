@@ -14,7 +14,7 @@ import genUUIDv4 from './genUUIDv4'
  * @param  {Object} preloadedState
  * @param  {Object} listenActions
  * @param  {Object} options
- * @param {Object} wrapped React component
+ * @param  {Object} wrapped React component
  * @return {Object} React component
  */
 export default function createRegisterReducer(mountPath: string, preloadedState: Object, listenActions?: Object, options: Object,
@@ -35,7 +35,6 @@ export default function createRegisterReducer(mountPath: string, preloadedState:
 
     setReduxState: any
     resetReduxState: any
-    batchUpdate: any
 
     constructor(props: any, context: any) {
       super(props, context)
@@ -51,9 +50,8 @@ export default function createRegisterReducer(mountPath: string, preloadedState:
       store.registerReducers({
         [mountPath]: createBoundedReducer(uuid, preloadedState, listenActions || {}, actionPrefix),
       })
-      this.batchUpdate = {}
       // Binding setReduxState with redux store
-      this.setReduxState = setReduxState(uuid, mountPath, store.dispatch, store.getState, actionPrefix, this.batchUpdate)
+      this.setReduxState = setReduxState(uuid, mountPath, store.dispatch, store.getState, actionPrefix)
       // Action creator RESET redux state
       this.resetReduxState = () => store.dispatch({
         type: `${actionPrefix}${RESET_STATE}`,
@@ -68,19 +66,24 @@ export default function createRegisterReducer(mountPath: string, preloadedState:
       }
       this.setReduxState = null
       this.resetReduxState = null
-      this.batchUpdate = null
     }
 
     render() {
-      return (
+      let Component = (
         <ChildComponent
           {...this.props}
           setReduxState={this.setReduxState}
           resetReduxState={this.resetReduxState}
           reduxMountedPath={mountPath}
-          persist={process.env.NODE_ENV === 'test' ? persist : null}
         />
       )
+      if (process.env.NODE_ENV === 'test') {
+        Component = React.cloneElement(Component, {
+          persist: persist.toString(),
+          actionPrefix
+        })
+      }
+      return Component
     }
   }
 }

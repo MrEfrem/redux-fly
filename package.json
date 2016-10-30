@@ -16,8 +16,8 @@
     "clean": "rimraf lib es",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
-    "test": "NODE_ENV=test jest",
-    "test:watch": "NODE_ENV=test jest --watch",
+    "test": "jest",
+    "test:watch": "jest --watch",
     "flow": "flow; test $? -eq 0 -o $? -eq 2"
   },
   "author": "Efremov Alexander <mr.efrem@gmail.com>",
