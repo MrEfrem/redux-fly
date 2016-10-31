@@ -5,12 +5,10 @@ import storeShape from './utils/storeShape'
 /**
  * Register reducers
  * @param  {Object|function|undefined} reducers
- * @param  {Object} options for store.registerReducers
  * @return {Object} React component
  */
 export default (
   reducers: ?(Function | Object),
-  options: Object,
 ) =>
   (WrappedComponent: any) =>
     class CreateReducer extends React.Component {
@@ -30,8 +28,7 @@ export default (
         }
         if (typeof reducers !== 'undefined') {
           // Registration reducers
-          store.registerReducers(typeof reducers === 'function' ? reducers(props) : reducers,
-            options)
+          store.registerReducers(typeof reducers === 'function' ? reducers(props) : reducers)
         }
       }
 

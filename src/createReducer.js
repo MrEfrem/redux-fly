@@ -69,7 +69,7 @@ const checkDetailOptions = (defaultOptions, options) => {
   if (options.actionPrefix) {
     checkActionPrefix(options.actionPrefix)
   }
-  if (['production', 'test'].indexOf(process.env.NODE_ENV) === -1) {
+  if (process.env.NODE_ENV !== 'production') {
     const undefinedOptions = Object.keys(options).reduce((prev, next) => {
       if (defaultOptions.indexOf(next) === -1) {
         prev = `${prev}${next}, `
@@ -84,7 +84,7 @@ const checkDetailOptions = (defaultOptions, options) => {
 
 /**
  * Create/mount reducer
- * @param  {string | Function | Object} mountPath
+ * @param  {string | Function} mountPath
  * @param  {Function | Object} preloadedState
  * @param  {Function | Object} listenActions
  * @param  {Object} options
@@ -99,22 +99,7 @@ export default (
   listenActions: any,
   options: any
 ) => {
-  if (!mountPath) {
-    throw new Error('Invalid parameters')
-  }
-  if (typeof mountPath === 'function' || isPlainObject(mountPath)) {
-    if (typeof options !== 'undefined') {
-      throw new Error('Invalid parameters')
-    }
-    if (listenActions) {
-      options = listenActions
-    }
-    listenActions = preloadedState
-    preloadedState = mountPath
-    mountPath = null
-  }
-
-  if (mountPath) {
+  if (mountPath && typeof mountPath !== 'function') {
     checkMountPath(mountPath)
   }
 
@@ -143,7 +128,6 @@ export default (
   checkDetailOptions(Object.keys(defaultOptions), _options)
 
   return (WrappedComponent: any) =>
-    // Transferred some parameters is functions
     class CreateReducer extends React.Component {
       RegisterReducer: any
       propMountPath: ?string
@@ -157,18 +141,34 @@ export default (
         super(props)
 
         let { reduxMountPath: propMountPath, reduxPersist: propPersist, reduxActionPrefix: propActionPrefix } = props
-        // Mount path must be passed in props or options
-        if (!mountPath && !propMountPath) {
-          throw new Error('Mount path must be defined')
-        }
 
-        let realMountPath = mountPath
-        // Priority mount path from props
         if (typeof propMountPath !== 'undefined') {
           checkMountPath(propMountPath)
-          realMountPath = propMountPath
+        }
+
+        let originalMountPath = null
+        let realMountPath = null
+        if (typeof mountPath === 'function') {
+          if (!propMountPath) {
+            throw new Error('Mount path must be passed in props')
+          }
+          originalMountPath = propMountPath
+          realMountPath = mountPath(normalizeMountPath(propMountPath))
+          checkMountPath(realMountPath)
+        } else {
+          if (!mountPath && !propMountPath) {
+            throw new Error('Mount path must be defined')
+          }
+          // Priority mountPath from props
+          if (propMountPath) {
+            realMountPath = propMountPath
+          } else {
+            realMountPath = mountPath
+          }
+          originalMountPath = realMountPath
         }
         realMountPath = normalizeMountPath(realMountPath)
+        originalMountPath = normalizeMountPath(originalMountPath)
 
         // Priority actionPrefix from props
         if (typeof propActionPrefix !== 'undefined') {
@@ -176,9 +176,9 @@ export default (
           _options.actionPrefix = propActionPrefix
         }
 
-        // Default value for action prefix consist from mount path
+        // Default value for action prefix contain mount path
         if (!_options.actionPrefix) {
-          _options.actionPrefix = `${realMountPath}/`
+          _options.actionPrefix = `${originalMountPath}/`
         }
 
         // Priority persist from props
@@ -187,21 +187,19 @@ export default (
           _options.persist = propPersist
         }
 
-        // Preloaded state is function
         let _preloadedState = preloadedState
         if (typeof _preloadedState === 'function') {
-          _preloadedState = _preloadedState(props, realMountPath)
+          _preloadedState = _preloadedState(props)
           checkPreloadedState(_preloadedState)
         }
 
-        // Listen actions is function
         let _listenActions = listenActions
         if (typeof _listenActions === 'function') {
-          _listenActions = _listenActions(props, realMountPath)
+          _listenActions = _listenActions(props, _options.actionPrefix)
           checkListenActions(_listenActions)
         }
 
-        this.RegisterReducer = createRegisterReducer(realMountPath, _preloadedState, _listenActions,
+        this.RegisterReducer = createRegisterReducer(originalMountPath, realMountPath, _preloadedState, _listenActions,
           _options, WrappedComponent)
       }
 

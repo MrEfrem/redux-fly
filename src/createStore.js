@@ -1,7 +1,6 @@
 // @flow
 import { combineReducers } from 'redux'
 import isPlainObject from 'lodash/isPlainObject'
-import warning from './utils/warning'
 import { normalizeMountPath } from './utils/normalize'
 
 /**
@@ -70,54 +69,21 @@ const createStore = (createStore: Function) => (reducer?: Object, preloadedState
   }
 
   // Add reducers in store
-  function registerReducers(reducers1: Object, options: Object = {}) {
+  function registerReducers(reducers1: Object) {
     if (!isPlainObject(reducers1) || Object.keys(reducers1).length === 0) {
       throw new Error('The reducers must be non empty object')
     }
     Object.keys(reducers1).forEach(key => {
-      if (typeof key !== 'string') {
-        throw new Error('Reducers mount paths must be strings')
-      }
       if (typeof reducers1[key] !== 'function') {
         throw new Error('Reducers must be functions')
       }
     })
-    if (!isPlainObject(options)) {
-      throw new Error('Options must be plain object ')
-    }
-    const defaultOptions = {
-      replaceReducers: false
-    }
-    const _options = {
-      ...defaultOptions,
-      ...options
-    }
 
-    if (typeof _options.replaceReducers !== 'boolean') {
-      throw new Error('Option replaceReducers must be boolean')
-    }
-    if (['production', 'test'].indexOf(process.env.NODE_ENV) === -1) {
-      const undefinedOptions = Object.keys(_options).reduce((prev, next) => {
-        if (Object.keys(defaultOptions).indexOf(next) === -1) {
-          prev = `${prev}, `
-        }
-        return prev
-      }, '').slice(0, -2)
-      if (undefinedOptions) {
-        warning(`Undefined options: ${undefinedOptions}`)
-      }
-    }
-
-    const { replaceReducers } = _options
-    if (replaceReducers) {
-      rawReducers = {}
-      rawReducersMap = []
-    }
     Object.keys(reducers1).forEach(key => {
       key = normalizeMountPath(key)
       rawReducersMap.forEach(key1 => {
         if ((key.indexOf(key1) === 0 || key1.indexOf(key) === 0) && key1 !== key) {
-          throw new Error(`Reducer mount path ${key1} already busy`)
+          throw new Error(`Reducer mount path "${key1}" already busy`)
         }
       })
       const keys = key.split(' ')

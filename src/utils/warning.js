@@ -6,6 +6,9 @@
  * @returns {void}
  */
 export default function warning(message: string) {
+  if (process.env.NODE_ENV === 'test') {
+    throw new Error(message)
+  }
   /* eslint-disable no-console */
   if (typeof console !== 'undefined' && typeof console.error === 'function') {
     console.error(message)

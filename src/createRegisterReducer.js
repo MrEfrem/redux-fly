@@ -10,6 +10,7 @@ import genUUIDv4 from './genUUIDv4'
 
 /**
  * Create and mount reducer
+ * @param  {string} originalMountPath
  * @param  {string} mountPath
  * @param  {Object} preloadedState
  * @param  {Object} listenActions
@@ -17,7 +18,7 @@ import genUUIDv4 from './genUUIDv4'
  * @param  {Object} wrapped React component
  * @return {Object} React component
  */
-export default function createRegisterReducer(mountPath: string, preloadedState: Object, listenActions?: Object, options: Object,
+export default function createRegisterReducer(originalMountPath: string, mountPath: string, preloadedState: Object, listenActions?: Object, options: Object,
   WrappedComponent: any
 ) {
   const { connectToStore, persist, actionPrefix } = options
@@ -74,7 +75,7 @@ export default function createRegisterReducer(mountPath: string, preloadedState:
           {...this.props}
           setReduxState={this.setReduxState}
           resetReduxState={this.resetReduxState}
-          reduxMountedPath={mountPath}
+          reduxMountPath={originalMountPath}
         />
       )
       if (process.env.NODE_ENV === 'test') {
