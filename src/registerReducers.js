@@ -1,19 +1,23 @@
 // @flow
-import React from 'react'
+import React, { PropTypes } from 'react'
 import storeShape from './utils/storeShape'
+import isPlainObject from 'lodash/isPlainObject'
 
 /**
  * Register reducers
- * @param  {Object|function|undefined} reducers
+ * @param  {Object|function} reducers
  * @return {Object} React component
  */
 export default (
-  reducers: ?(Function | Object),
-) =>
-  (WrappedComponent: any) =>
+  reducers: Function | Object,
+) => {
+  if (typeof reducers !== 'function' && !isPlainObject(reducers)) {
+    throw new Error('Reducers must be plain object or function')
+  }
+  return (WrappedComponent: any) =>
     class CreateReducer extends React.Component {
       static contextTypes = {
-        store: storeShape,
+        store: process.env.NODE_ENV === 'test' ? PropTypes.object : storeShape
       }
 
       constructor(props: any, context: any) {
@@ -23,19 +27,17 @@ export default (
         if (typeof store !== 'object') {
           throw new Error('Redux store must be created')
         }
-        if (typeof store.registerReducers !== 'function' || typeof store.unregisterReducers !== 'function') {
+        if (typeof store.registerReducers !== 'function') {
           throw new Error('Redux store must be enhanced with redux-fly')
         }
-        if (typeof reducers !== 'undefined') {
-          // Registration reducers
-          store.registerReducers(typeof reducers === 'function' ? reducers(props) : reducers)
-        }
+        // Registration reducers
+        store.registerReducers(typeof reducers === 'function' ? reducers(props) : reducers)
       }
 
       render() {
-        const { store } = this.context
         return (
-          <WrappedComponent {...this.props} unregisterReducers={store.unregisterReducers} />
+          <WrappedComponent {...this.props} />
         )
       }
     }
+}

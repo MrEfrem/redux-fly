@@ -2,6 +2,8 @@ import createStore from '../src/createStore'
 import { createStore as baseCreateStore } from 'redux'
 
 test('Test invalid signature', () => {
+  expect(createStore).toThrowError('Create store must be function')
+  expect(createStore.bind(this, 123)).toThrowError('Create store must be function')
   expect(createStore(baseCreateStore).bind(this, 123)).toThrowError('The reducers must be non empty object')
   expect(createStore(baseCreateStore).bind(this, null, 123)).toThrowError('Preloaded state must be plain object')
   expect(createStore(baseCreateStore).bind(this, null, null, 123)).toThrow()
@@ -23,14 +25,14 @@ test('Test invalid signature registerReducers', () => {
 test('Test registerReducers', () => {
   const store = createStore(baseCreateStore)()
   const preloadedState = { text: 'My first todo' }
-  store.registerReducers({ 'ui': () => preloadedState })
+  store.registerReducers({ ' ui  ': () => preloadedState })
   expect(store.getState().ui).toBe(preloadedState)
   expect(store.registerReducers({ 'ui': () => preloadedState })).toBeUndefined()
-  expect(store.registerReducers.bind(store, { 'ui component': () => preloadedState })).toThrowError('Reducer mount path "ui" already busy')
+  expect(store.registerReducers.bind(store, { 'ui   component ': () => preloadedState })).toThrowError('Reducer mount path "ui" already busy')
 
-  store.registerReducers({ 'todo list': () => preloadedState })
+  store.registerReducers({ '  todo list ': () => preloadedState })
   expect(store.registerReducers({ 'todo list': () => preloadedState })).toBeUndefined()
-  expect(store.registerReducers.bind(store, { 'todo': () => preloadedState })).toThrowError('Reducer mount path "todo list" already busy')
+  expect(store.registerReducers.bind(store, { 'todo    ': () => preloadedState })).toThrowError('Reducer mount path "todo list" already busy')
 
   expect(JSON.stringify(store.getState())).toBe('{\"ui\":{\"text\":\"My first todo\"},\"todo\":{\"list\":{\"text\":\"My first todo\"}}}')
 })

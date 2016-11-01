@@ -6,6 +6,5 @@ export default PropTypes.shape({
   dispatch: PropTypes.func.isRequired,
   getState: PropTypes.func.isRequired,
   replaceReducer: PropTypes.func.isRequired,
-  registerReducers: PropTypes.func.isRequired,
-  unregisterReducers: PropTypes.func.isRequired,
+  registerReducers: PropTypes.func.isRequired
 })

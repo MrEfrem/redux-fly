@@ -6,6 +6,5 @@ Object {
   "registerReducers": [Function],
   "replaceReducer": [Function],
   "subscribe": [Function],
-  "unregisterReducers": [Function],
 }
 `;
