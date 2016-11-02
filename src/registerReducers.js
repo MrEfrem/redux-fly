@@ -5,8 +5,10 @@ import isPlainObject from 'lodash/isPlainObject'
 
 /**
  * Register reducers
- * @param  {Object|function} reducers
- * @return {Object} React component
+ * @param {Object | function} reducers
+ * @return {Function}
+ *   @param {Component} WrappedComponent
+ *   @return {Component} new component
  */
 export default (
   reducers: Function | Object,

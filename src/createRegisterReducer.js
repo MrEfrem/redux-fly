@@ -9,16 +9,16 @@ import getState from './getState'
 import genUUIDv4 from './genUUIDv4'
 
 /**
- * Create and mount reducer
+ * Create/registration/mount reducer
  * @param  {string} originalMountPath
  * @param  {string} mountPath
- * @param  {Object} preloadedState
- * @param  {Object} listenActions
+ * @param  {Object} initialState
+ * @param  {Object} listenActions (optional)
  * @param  {Object} options
- * @param  {Object} wrapped React component
- * @return {Object} React component
+ * @param  {Component} WrappedComponent
+ * @return {Component} new component
  */
-export default function createRegisterReducer(originalMountPath: string, mountPath: string, preloadedState: Object, listenActions?: Object, options: Object,
+export default function createRegisterReducer(originalMountPath: string, mountPath: string, initialState: Object, listenActions?: Object, options: Object,
   WrappedComponent: any
 ) {
   const { connectToStore, persist, actionPrefix } = options
@@ -49,7 +49,7 @@ export default function createRegisterReducer(originalMountPath: string, mountPa
       }
       // Creation and registration reducer
       store.registerReducers({
-        [mountPath]: createBoundedReducer(uuid, preloadedState, listenActions || {}, actionPrefix),
+        [mountPath]: createBoundedReducer(uuid, initialState, listenActions || {}, actionPrefix),
       })
       // Binding setReduxState with redux store
       this.setReduxState = setReduxState(uuid, mountPath, store.dispatch, store.getState, actionPrefix)

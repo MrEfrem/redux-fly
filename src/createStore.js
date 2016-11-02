@@ -4,21 +4,20 @@ import isPlainObject from 'lodash/isPlainObject'
 import { normalizeMountPath } from './utils/normalize'
 
 /**
- * Enhancer redux store for runtime management reducers.
- * @param Object createStore
- * @return Function
- *    @param reducer
- *    @param preloadedState
- *    @param enhancer
- *       @return Object:
- *          registerReducers Function,
- *          subscribe: Function,
- *          dispatch: Function,
- *          getState: Function,
- *          replaceReducer: Function
- *
+ * Enhancer redux store for registration reducers in runtime.
  * If isn't passed reducer, but passed preloaderState, then preloadedState would uses
- * how default state for new registered reducers.
+ * how default state for new reducers.
+ * @param {Object} createStore
+ * @return {Function}
+ *   @param {Object} reducer (optional)
+ *   @param {Object} preloadedState (optional)
+ *   @param {Function} enhancer (optional)
+ *   @return {Object}
+ *     {Function} registerReducers,
+ *     {Function} subscribe,
+ *     {Function} dispatch,
+ *     {Function} getState,
+ *     {Function} replaceReducer
  */
 const createStore = (createStore: Function) => {
   if (typeof createStore !== 'function') {
@@ -48,19 +47,19 @@ const createStore = (createStore: Function) => {
       function recreate(node) {
         if (isPlainObject(node) && node.__needRecreate) {
           node.__needRecreate = false
-          const reducers1 = {}
+          const newReducers = {}
           Object.keys(node).forEach(key => {
             if (key !== '__needRecreate') {
               const reducer = recreate(node[key])
               if (reducer) {
-                reducers1[key] = reducer
+                newReducers[key] = reducer
               }
             }
           })
-          if (!Object.keys(reducers1).length) {
+          if (!Object.keys(newReducers).length) {
             return null
           }
-          return combineReducers(reducers1)
+          return combineReducers(newReducers)
         } else {
           return node
         }
@@ -76,18 +75,22 @@ const createStore = (createStore: Function) => {
       return (state = preloadedState, action) => reducer(state, action)
     }
 
-    // Add reducers in store
-    function registerReducers(reducers1: Object) {
-      if (!isPlainObject(reducers1) || Object.keys(reducers1).length === 0) {
+    /**
+     * Add reducers in store
+     * @param {Object} newReducers
+     * @return {void}
+     */
+    function registerReducers(newReducers: Object) {
+      if (!isPlainObject(newReducers) || Object.keys(newReducers).length === 0) {
         throw new Error('The reducers must be non empty object')
       }
-      Object.keys(reducers1).forEach(key => {
-        if (typeof reducers1[key] !== 'function') {
+      Object.keys(newReducers).forEach(key => {
+        if (typeof newReducers[key] !== 'function') {
           throw new Error('Reducers must be functions')
         }
       })
 
-      Object.keys(reducers1).forEach(key => {
+      Object.keys(newReducers).forEach(key => {
         const normalizedKey = normalizeMountPath(key)
         rawReducersMap.forEach(key1 => {
           if ((normalizedKey.indexOf(key1) === 0 || key1.indexOf(normalizedKey) === 0) && key1 !== normalizedKey) {
@@ -108,9 +111,9 @@ const createStore = (createStore: Function) => {
         }, rawReducers)
         const lastKey = keys.slice(-1)
         if (preloadedState1 && preloadedState1[lastKey]) {
-          result[lastKey] = wrapperReducerPreloadedState(reducers1[key], preloadedState1[lastKey])
+          result[lastKey] = wrapperReducerPreloadedState(newReducers[key], preloadedState1[lastKey])
         } else {
-          result[lastKey] = reducers1[key]
+          result[lastKey] = newReducers[key]
         }
         result.__needRecreate = true
         rawReducersMap.push(normalizedKey)

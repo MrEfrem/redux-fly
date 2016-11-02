@@ -1,4 +1,9 @@
 // @flow
+
+/**
+ * Generate RFC4122 version 4 UUID
+ * @return {string} UUID
+ */
 const genUUIDv4 = () =>
   'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
     const r = Math.random() * 16 | 0

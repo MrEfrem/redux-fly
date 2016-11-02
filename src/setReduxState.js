@@ -7,14 +7,13 @@ import getStateByMountPath from './getState'
  * Update state
  * @param  {string} uuid
  * @param  {string} mountPath
- * @param  {function} dispatch
- * @param  {function} getState
+ * @param  {Function} dispatch
+ * @param  {Function} getState
  * @param  {string} actionPrefix
- * @return {
- *   @param {actionType} custom action type
- *   @param {Object | Function} new state
+ * @return {Function}
+ *   @param {string} actionType
+ *   @param {Object | Function} newState
  *   @return {void}
- * )
  */
 export default (uuid: string, mountPath: string, dispatch: Function, getState: Function, actionPrefix: string) =>
 (actionType: string, newState: Object | Function) => {

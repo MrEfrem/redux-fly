@@ -5,11 +5,9 @@ import { normalizeMountPath } from './utils/normalize'
 /**
  * Find state by mountPath
  * @param  {string} mountPath
- * @return {
-    * @param {string} common state
-    * @return finded state
-    * function
-    * }
+ * @return {Function}
+ *   @param {string} state
+ *   @return {Object} finded state
  */
 export default (mountPath: string) => {
   if (typeof mountPath !== 'string' || !mountPath.length) {

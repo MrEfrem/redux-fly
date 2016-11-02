@@ -7,13 +7,13 @@ import warning from './utils/warning'
 import { normalizeMountPath } from './utils/normalize'
 
 /**
- * Check preloadedState
- * @param  {Object} preloadedState
+ * Check initialState
+ * @param  {Object} initialState
  * @return {void}
  */
-const checkPreloadedState = (preloadedState: any) => {
-  if (!isPlainObject(preloadedState)) {
-    throw new Error('PreloadedState must be plain object')
+const checkInitialState = (initialState: any) => {
+  if (!isPlainObject(initialState)) {
+    throw new Error('InitialState must be plain object')
   }
 }
 
@@ -45,87 +45,44 @@ const checkActionPrefix = (actionPrefix) => {
 }
 
 /**
- * Check options
- * @param  {Object} options
- * @return {void}
+ * Create reducer
+ * @param {Object} config
+ * @return {Function}
+ *   @param {Component} WrappedComponent
+ *   @return {Component} new component
  */
-const checkOptions = (options: any) => {
-  if (typeof options !== 'undefined' && !isPlainObject(options)) {
-    throw new Error('Options must be plain object ')
-  }
+type ParamsType = {
+  mountPath?: string | Function,
+  initialState: Object | Function,
+  listenActions?: Object | Function,
+  connectToStore: boolean,
+  persist: boolean,
+  actionPrefix?: string
 }
-
-/**
- * Check properties of an object options
- * @param  {Array}  default options
- * @param  {Object}  options
- * @return {void}
- */
-const checkDetailOptions = (defaultOptions, options) => {
-  if (typeof options.connectToStore !== 'boolean') {
-    throw new Error('ConnectToStore must be boolean')
-  }
-  checkPersist(options.persist)
-  if (options.actionPrefix) {
-    checkActionPrefix(options.actionPrefix)
-  }
-  if (process.env.NODE_ENV !== 'production') {
-    const undefinedOptions = Object.keys(options).reduce((prev, next) => {
-      if (defaultOptions.indexOf(next) === -1) {
-        prev = `${prev}${next}, `
-      }
-      return prev
-    }, '').slice(0, -2)
-    if (undefinedOptions) {
-      warning(`Undefined options: ${undefinedOptions}`)
-    }
-  }
-}
-
-/**
- * Create/mount reducer
- * @param  {string | Function} mountPath
- * @param  {Function | Object} preloadedState
- * @param  {Function | Object} listenActions
- * @param  {Object} options
- * @return {
- *   @param {Object} wrapped React component
- *   @return {Object} React component
- * }
- */
-export default (
-  mountPath: any,
-  preloadedState: any,
-  listenActions: any,
-  options: any
-) => {
+export default ({
+  mountPath,
+  initialState,
+  listenActions,
+  connectToStore = true,
+  persist = false,
+  actionPrefix
+}: ParamsType = {}) => {
   if (mountPath && typeof mountPath !== 'function') {
     checkMountPath(mountPath)
   }
-
-  if (typeof preloadedState !== 'function') {
-    checkPreloadedState(preloadedState)
+  if (typeof initialState !== 'function') {
+    checkInitialState(initialState)
   }
-
   if (listenActions && typeof listenActions !== 'function') {
     checkListenActions(listenActions)
   }
-
-  checkOptions(options)
-
-  if (typeof options === 'undefined') {
-    options = {}
+  if (typeof connectToStore !== 'boolean') {
+    throw new Error('ConnectToStore must be boolean')
   }
-  const defaultOptions = {
-    connectToStore: true,
-    persist: false,
-    actionPrefix: '',
+  checkPersist(persist)
+  if (actionPrefix) {
+    checkActionPrefix(actionPrefix)
   }
-  const _options = {
-    ...defaultOptions,
-    ...options
-  }
-  checkDetailOptions(Object.keys(defaultOptions), _options)
 
   return (WrappedComponent: any) =>
     class CreateReducer extends React.Component {
@@ -143,6 +100,9 @@ export default (
         let { reduxMountPath: propMountPath, reduxPersist: propPersist, reduxActionPrefix: propActionPrefix } = props
 
         if (typeof propMountPath !== 'undefined') {
+          if (process.env.NODE_ENV !== 'production' && typeof mountPath === 'string') {
+            warning('Ignoring reduxMountPath because mountPath pass as string')
+          }
           checkMountPath(propMountPath)
         }
 
@@ -159,48 +119,52 @@ export default (
           if (!mountPath && !propMountPath) {
             throw new Error('Mount path must be defined')
           }
-          // Priority mountPath from props
-          if (propMountPath) {
-            realMountPath = propMountPath
-          } else {
+          if (mountPath) {
             realMountPath = mountPath
+          } else {
+            realMountPath = propMountPath
           }
           originalMountPath = realMountPath
         }
         realMountPath = normalizeMountPath(realMountPath)
         originalMountPath = normalizeMountPath(originalMountPath)
 
+        const options = {
+          connectToStore,
+          persist,
+          actionPrefix,
+        }
         // Priority actionPrefix from props
         if (typeof propActionPrefix !== 'undefined') {
           checkActionPrefix(propActionPrefix)
-          _options.actionPrefix = propActionPrefix
+          options.actionPrefix = propActionPrefix
         }
 
         // Default value for action prefix contain mount path
-        if (!_options.actionPrefix) {
-          _options.actionPrefix = `${originalMountPath}/`
+        if (!options.actionPrefix) {
+          options.actionPrefix = `${originalMountPath}/`
         }
 
         // Priority persist from props
         if (typeof propPersist !== 'undefined') {
           checkPersist(propPersist)
-          _options.persist = propPersist
+          options.persist = propPersist
         }
 
-        let _preloadedState = preloadedState
-        if (typeof _preloadedState === 'function') {
-          _preloadedState = _preloadedState(props)
-          checkPreloadedState(_preloadedState)
+        let _initialState = initialState
+        if (typeof _initialState === 'function') {
+          _initialState = _initialState(props)
+          checkInitialState(_initialState)
         }
 
         let _listenActions = listenActions
         if (typeof _listenActions === 'function') {
-          _listenActions = _listenActions(props, _options.actionPrefix)
+          _listenActions = _listenActions(props, options.actionPrefix)
           checkListenActions(_listenActions)
         }
 
-        this.RegisterReducer = createRegisterReducer(originalMountPath, realMountPath, _preloadedState, _listenActions,
-          _options, WrappedComponent)
+        this.RegisterReducer = createRegisterReducer(originalMountPath, realMountPath, _initialState, _listenActions,
+          options, WrappedComponent)
       }
 
       componentWillUnmount() {
