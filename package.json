@@ -1,8 +1,8 @@
 {
   "name": "redux-fly",
-  "version": "0.0.1-alpha.7",
+  "version": "0.0.1-alpha.8",
   "description": "Easy to manage redux state",
-  "browser": "dist/redux.js",
+  "browser": "dist/redux-fly.js",
   "main": "lib/index.js",
   "module": "es/index.js",
   "jsnext:main": "es/index.js",
