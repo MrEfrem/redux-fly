@@ -1,6 +1,6 @@
 {
   "name": "redux-fly",
-  "version": "0.0.1-alpha.6",
+  "version": "0.0.1-alpha.7",
   "description": "Easy to manage redux state",
   "browser": "dist/redux.js",
   "main": "lib/index.js",
@@ -48,7 +48,8 @@
     "react-test-renderer": "^15.4.0-rc.4",
     "redux": "^3.6.0",
     "rimraf": "^2.5.4",
-    "webpack": "^1.13.3"
+    "webpack": "^1.13.3",
+    "webpack-bundle-analyzer": "^1.4.1"
   },
   "dependencies": {
     "lodash": "^4.16.1"
