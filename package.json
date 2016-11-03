@@ -1,18 +1,23 @@
 {
   "name": "redux-fly",
-  "version": "0.0.1-alpha.4",
+  "version": "0.0.1-alpha.6",
+  "description": "Easy to manage redux state",
+  "browser": "dist/redux.js",
   "main": "lib/index.js",
   "module": "es/index.js",
   "jsnext:main": "es/index.js",
   "files": [
+    "dist",
     "lib",
     "es",
     "src"
   ],
   "scripts": {
-    "build": "npm run clean && npm run build:commonjs && npm run build:es",
+    "build": "npm run clean && npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min",
     "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib",
     "build:es": "cross-env BABEL_ENV=es babel src --out-dir es",
+    "build:umd": "cross-env BABEL_ENV=commonjs NODE_ENV=development webpack src/index.js dist/redux-fly.js",
+    "build:umd:min": "cross-env BABEL_ENV=commonjs NODE_ENV=production webpack src/index.js dist/redux-fly.min.js",
     "clean": "rimraf lib es",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
@@ -26,6 +31,7 @@
     "babel-cli": "^6.14.0",
     "babel-eslint": "^7.0.0",
     "babel-jest": "^16.0.0",
+    "babel-loader": "^6.2.7",
     "babel-preset-latest": "^6.14.0",
     "babel-preset-react": "^6.11.1",
     "babel-preset-stage-2": "^6.13.0",
@@ -41,7 +47,8 @@
     "react-redux": "^4.4.5",
     "react-test-renderer": "^15.4.0-rc.4",
     "redux": "^3.6.0",
-    "rimraf": "^2.5.4"
+    "rimraf": "^2.5.4",
+    "webpack": "^1.13.3"
   },
   "dependencies": {
     "lodash": "^4.16.1"

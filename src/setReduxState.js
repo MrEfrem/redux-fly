@@ -1,11 +1,10 @@
 // @flow
 import isPlainObject from 'lodash/isPlainObject'
-import { UUID, NEW_STATE } from './consts'
+import { MOUNT_PATH, NEW_STATE } from './consts'
 import getStateByMountPath from './getState'
 
 /**
  * Update state
- * @param  {string} uuid
  * @param  {string} mountPath
  * @param  {Function} dispatch
  * @param  {Function} getState
@@ -15,7 +14,7 @@ import getStateByMountPath from './getState'
  *   @param {Object | Function} newState
  *   @return {void}
  */
-export default (uuid: string, mountPath: string, dispatch: Function, getState: Function, actionPrefix: string) =>
+export default (mountPath: string, dispatch: Function, getState: Function, actionPrefix: string) =>
 (actionType: string, newState: Object | Function) => {
   if (typeof actionType !== 'string' || !actionType.length) {
     throw new Error('Action type must be non empty string')
@@ -43,6 +42,6 @@ export default (uuid: string, mountPath: string, dispatch: Function, getState: F
   dispatch({
     type: `${actionPrefix}${actionType}`,
     [NEW_STATE]: _newState,
-    [UUID]: uuid
+    [MOUNT_PATH]: mountPath
   })
 }

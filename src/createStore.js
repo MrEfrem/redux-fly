@@ -45,20 +45,14 @@ const createStore = (createStore: Function) => {
     function recreateReducers () {
       reducers = {}
       function recreate(node) {
-        if (isPlainObject(node) && node.__needRecreate) {
-          node.__needRecreate = false
+        if (isPlainObject(node)) {
           const newReducers = {}
           Object.keys(node).forEach(key => {
-            if (key !== '__needRecreate') {
-              const reducer = recreate(node[key])
-              if (reducer) {
-                newReducers[key] = reducer
-              }
+            const reducer = recreate(node[key])
+            if (reducer) {
+              newReducers[key] = reducer
             }
           })
-          if (!Object.keys(newReducers).length) {
-            return null
-          }
           return combineReducers(newReducers)
         } else {
           return node
@@ -103,7 +97,6 @@ const createStore = (createStore: Function) => {
           if (typeof prev[next] === 'undefined') {
             prev[next] = {}
           }
-          prev.__needRecreate = true
           if (preloadedState1) {
             preloadedState1 = preloadedState1[next]
           }
@@ -115,7 +108,6 @@ const createStore = (createStore: Function) => {
         } else {
           result[lastKey] = newReducers[key]
         }
-        result.__needRecreate = true
         rawReducersMap.push(normalizedKey)
       })
       recreateReducers()

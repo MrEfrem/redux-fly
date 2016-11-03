@@ -64,7 +64,7 @@ export default ({
   initialState,
   listenActions,
   connectToStore = true,
-  persist = false,
+  persist = true,
   actionPrefix
 }: ParamsType = {}) => {
   if (mountPath && typeof mountPath !== 'function') {

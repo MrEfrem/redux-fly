@@ -100,7 +100,7 @@ test('Test valid init component', () => {
   )
   expect(component.html()).
     toBe('<div><span>function</span><span>function</span><span>ui component</span>' +
-      '<span>{\"text\":\"My first todo\"}</span><span>false</span><span>ui component/</span></div>')
+      '<span>{\"text\":\"My first todo\"}</span><span>true</span><span>ui component/</span></div>')
 })
 
 test('Test passed mount path in Component', () => {
@@ -154,7 +154,7 @@ test('Test passed persist in createReducer', () => {
   Component.propTypes = {
     persist: PropTypes.string.isRequired
   }
-  const ExtendedComponent = createReducer({ mountPath: 'ui component', initialState: { text: 'My first todo' }, persist: true })(Component)
+  const ExtendedComponent = createReducer({ mountPath: 'ui component', initialState: { text: 'My first todo' }, persist: false })(Component)
 
   let component = mount(
     <Provider store={store}>
@@ -162,7 +162,7 @@ test('Test passed persist in createReducer', () => {
     </Provider>
   )
   expect(component.html()).
-    toBe('<div>true</div>')
+    toBe('<div>false</div>')
 })
 
 test('Test passed persist in Component', () => {
@@ -178,11 +178,11 @@ test('Test passed persist in Component', () => {
 
   let component = mount(
     <Provider store={store}>
-      <ExtendedComponent reduxPersist={true} />
+      <ExtendedComponent reduxPersist={false} />
     </Provider>
   )
   expect(component.html()).
-    toBe('<div>true</div>')
+    toBe('<div>false</div>')
 })
 
 test('Test passed persist in createReducer and Component', () => {
@@ -347,7 +347,8 @@ test('Test reset state (persist = false) after unmounting component', () => {
   const ExtendedComponent = compose(
     createReducer({
       mountPath: 'ui component',
-      initialState: { text: 'My first todo' }
+      initialState: { text: 'My first todo' },
+      persist: false
     })
   )(Component)
 
@@ -381,8 +382,7 @@ test('Test preserved state (persist = true) after unmounting component', () => {
   const ExtendedComponent = compose(
     createReducer({
       mountPath: 'ui component',
-      initialState: { text: 'My first todo' },
-      persist: true
+      initialState: { text: 'My first todo' }
     })
   )(Component)
 

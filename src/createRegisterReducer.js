@@ -4,9 +4,8 @@ import { connect } from 'react-redux'
 import storeShape from './utils/storeShape'
 import createBoundedReducer from './createBoundedReducer'
 import setReduxState from './setReduxState'
-import { RESET_STATE, UUID } from './consts'
+import { RESET_STATE, MOUNT_PATH } from './consts'
 import getState from './getState'
-import genUUIDv4 from './genUUIDv4'
 
 /**
  * Create/registration/mount reducer
@@ -28,7 +27,6 @@ export default function createRegisterReducer(originalMountPath: string, mountPa
       ({ reduxState: getState(mountPath)(state) })
     )(WrappedComponent)
   }
-  const uuid = genUUIDv4()
   return class RegisterReducer extends React.Component {
     static contextTypes = {
       store: process.env.NODE_ENV === 'test' ? PropTypes.object : storeShape
@@ -49,14 +47,14 @@ export default function createRegisterReducer(originalMountPath: string, mountPa
       }
       // Creation and registration reducer
       store.registerReducers({
-        [mountPath]: createBoundedReducer(uuid, initialState, listenActions || {}, actionPrefix),
+        [mountPath]: createBoundedReducer(mountPath, initialState, listenActions || {}, actionPrefix),
       })
       // Binding setReduxState with redux store
-      this.setReduxState = setReduxState(uuid, mountPath, store.dispatch, store.getState, actionPrefix)
+      this.setReduxState = setReduxState(mountPath, store.dispatch, store.getState, actionPrefix)
       // Action creator RESET redux state
       this.resetReduxState = () => store.dispatch({
         type: `${actionPrefix}${RESET_STATE}`,
-        [UUID]: uuid
+        [MOUNT_PATH]: mountPath
       })
     }
 
