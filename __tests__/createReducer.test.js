@@ -3,7 +3,7 @@ import renderer from 'react-test-renderer'
 import React, { PropTypes } from 'react'
 import { createStore, compose, applyMiddleware } from 'redux'
 import { connect, Provider } from 'react-redux'
-import flyEnhancedStore from '../src/createStore'
+import enhanceStore from '../src/enhanceStore'
 import { mount } from 'enzyme'
 import { RESET_STATE } from '../src/consts'
 
@@ -81,7 +81,7 @@ test('Test valid init component without provide redux store', () => {
 })
 
 test('Test valid init component with provide redux store', () => {
-  const store = createStore(null, null, flyEnhancedStore)
+  const store = createStore(null, enhanceStore)
 
   const Component = (props) => (
     <div>
@@ -112,7 +112,7 @@ test('Test valid init component with provide redux store', () => {
 })
 
 test('Test passed mount path in Component', () => {
-  const store = createStore(null, null, flyEnhancedStore)
+  const store = createStore(null, enhanceStore)
 
   const Component = (props) => (
     <div>{props.reduxMountPath}</div>
@@ -132,7 +132,7 @@ test('Test passed mount path in Component', () => {
 })
 
 test('Test passed mount path in createReducer and in Component', () => {
-  const store = createStore(null, null, flyEnhancedStore)
+  const store = createStore(null, enhanceStore)
 
   const Component = (props) => (
     <div>{props.reduxMountPath}</div>
@@ -154,7 +154,7 @@ test('Test passed mount path in createReducer and in Component', () => {
 })
 
 test('Test passed persist in createReducer', () => {
-  const store = createStore(null, null, flyEnhancedStore)
+  const store = createStore(null, enhanceStore)
 
   const Component = (props) => (
     <div>{props.persist}</div>
@@ -174,7 +174,7 @@ test('Test passed persist in createReducer', () => {
 })
 
 test('Test passed persist in Component', () => {
-  const store = createStore(null, null, flyEnhancedStore)
+  const store = createStore(null, enhanceStore)
 
   const Component = (props) => (
     <div>{props.persist}</div>
@@ -194,7 +194,7 @@ test('Test passed persist in Component', () => {
 })
 
 test('Test passed persist in createReducer and Component', () => {
-  const store = createStore(null, null, flyEnhancedStore)
+  const store = createStore(null, enhanceStore)
 
   const Component = (props) => (
     <div>{props.persist}</div>
@@ -214,7 +214,7 @@ test('Test passed persist in createReducer and Component', () => {
 })
 
 test('Test initialState is function', () => {
-  const store = createStore(null, null, flyEnhancedStore)
+  const store = createStore(null, enhanceStore)
 
   const Component = (props) => (
     <div>{JSON.stringify(props.reduxState)}</div>
@@ -234,7 +234,7 @@ test('Test initialState is function', () => {
 })
 
 test('Test listenActions', () => {
-  const store = createStore(null, null, flyEnhancedStore)
+  const store = createStore(null, enhanceStore)
   const UPDATE_TODO = 'UPDATE_TODO'
 
   class Component extends React.Component {
@@ -272,7 +272,7 @@ test('Test listenActions', () => {
 })
 
 test('Test listenActions is function', () => {
-  const store = createStore(null, null, flyEnhancedStore)
+  const store = createStore(null, enhanceStore)
   const UPDATE_TODO = 'UPDATE_TODO'
 
   class Component extends React.Component {
@@ -312,7 +312,7 @@ test('Test listenActions is function', () => {
 })
 
 test('Test connectToStore: false', () => {
-  const store = createStore(null, null, flyEnhancedStore)
+  const store = createStore(null, enhanceStore)
 
   const Component = (props) => (
     <div>{JSON.stringify(props.reduxState)}</div>
@@ -336,7 +336,7 @@ test('Test connectToStore: false', () => {
 })
 
 test('Test reset state (persist = false) after unmounting component', () => {
-  const store = createStore(null, null, flyEnhancedStore)
+  const store = createStore(null, enhanceStore)
 
   class Component extends React.Component {
     componentDidMount() {
@@ -369,7 +369,7 @@ test('Test reset state (persist = false) after unmounting component', () => {
 })
 
 test('Test preserved state (persist = true) after unmounting component', () => {
-  const store = createStore(null, null, flyEnhancedStore)
+  const store = createStore(null, enhanceStore)
 
   class Component extends React.Component {
     componentDidMount() {
@@ -409,7 +409,7 @@ test('Test empty (default) actionPrefix', () => {
       expect(action.type).toBe('ui component/update_todo')
     }
   }
-  const store = createStore(null, null, compose(applyMiddleware(middleware), flyEnhancedStore))
+  const store = createStore(null, compose(applyMiddleware(middleware), enhanceStore))
 
   class Component extends React.Component {
     componentDidMount() {
@@ -445,7 +445,7 @@ test('Test empty (default) actionPrefix', () => {
 })
 
 test('Test filled actionPrefix in createReducer', () => {
-  const store = createStore(null, null, flyEnhancedStore)
+  const store = createStore(null, enhanceStore)
 
   const Component = ({ actionPrefix }) => {
     return <div>{actionPrefix}</div>
@@ -469,7 +469,7 @@ test('Test filled actionPrefix in createReducer', () => {
 })
 
 test('Test filled actionPrefix in component', () => {
-  const store = createStore(null, null, flyEnhancedStore)
+  const store = createStore(null, enhanceStore)
 
   const Component = ({ actionPrefix }) => {
     return <div>{actionPrefix}</div>
@@ -492,7 +492,7 @@ test('Test filled actionPrefix in component', () => {
 })
 
 test('Test filled actionPrefix in component and createReducer', () => {
-  const store = createStore(null, null, flyEnhancedStore)
+  const store = createStore(null, enhanceStore)
 
   const Component = ({ actionPrefix }) => {
     return <div>{actionPrefix}</div>
@@ -516,7 +516,7 @@ test('Test filled actionPrefix in component and createReducer', () => {
 })
 
 test('Test resetReduxState', () => {
-  const store = createStore(null, null, flyEnhancedStore)
+  const store = createStore(null, enhanceStore)
 
   class Component extends React.Component {
     componentDidMount() {
@@ -567,7 +567,7 @@ test('Test resetReduxState', () => {
 })
 
 test('Test signature setReduxState', () => {
-  const store = createStore(null, null, flyEnhancedStore)
+  const store = createStore(null, enhanceStore)
 
   class Component extends React.Component {
     componentDidMount() {
@@ -596,7 +596,7 @@ test('Test signature setReduxState', () => {
 })
 
 test('Test setReduxState', () => {
-  const store = createStore(null, null, flyEnhancedStore)
+  const store = createStore(null, enhanceStore)
   let numRender = 0
   class Component extends React.Component {
     componentDidMount() {
@@ -646,7 +646,7 @@ test('Test setReduxState', () => {
 })
 
 test('Test replace native state to redux state', () => {
-  const store = createStore(null, null, flyEnhancedStore)
+  const store = createStore(null, enhanceStore)
 
   class Component extends React.Component {
     constructor(props) {

@@ -3,7 +3,7 @@ import { createStore } from 'redux'
 import renderer from 'react-test-renderer'
 import { Provider } from 'react-redux'
 import React from 'react'
-import flyEnhancedStore from '../src/createStore'
+import enhanceStore from '../src/enhanceStore'
 
 test('Test invalid signature', () => {
   expect(registerReducers).toThrowError('Reducers must be plain object or function')
@@ -29,7 +29,7 @@ test('Test invalid redux store', () => {
 
 test('Test reducers as function', () => {
   const Component = () => <div/>
-  const store = createStore(null, null, flyEnhancedStore)
+  const store = createStore(null, enhanceStore)
 
   const ExtendedComponent1 = registerReducers((props) => {
     expect(props.text).toBe('My first todo')
@@ -61,7 +61,7 @@ test('Test reducers as function', () => {
 
 test('Test reducers as object', () => {
   const Component = () => <div/>
-  const store = createStore(null, null, flyEnhancedStore)
+  const store = createStore(null, enhanceStore)
 
   const ExtendedComponent = registerReducers({
     'ui component': () => ({

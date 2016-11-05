@@ -6,7 +6,7 @@ import isPlainObject from 'lodash/isPlainObject'
 import { normalizeMountPath } from './utils/normalize'
 import storeShape from './utils/storeShape'
 import { createStore, compose } from 'redux'
-import flyStoreEnhancer from './createStore'
+import enhanceStore from './enhanceStore'
 import { Provider } from 'react-redux'
 
 /**
@@ -111,7 +111,7 @@ export default ({
             typeof window === 'object' &&
             window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?
               window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({}) : compose
-          this.store = createStore(null, composeEnhancers(flyStoreEnhancer))
+          this.store = createStore(null, composeEnhancers(enhanceStore))
         }
 
         let { reduxMountPath: propMountPath, reduxPersist: propPersist, reduxActionPrefix: propActionPrefix } = props
