@@ -1,7 +1,7 @@
 // @flow
 import React, { PropTypes } from 'react'
-import storeShape from './utils/storeShape'
 import isPlainObject from 'lodash/isPlainObject'
+import storeShape from './utils/storeShape'
 
 /**
  * Register reducers

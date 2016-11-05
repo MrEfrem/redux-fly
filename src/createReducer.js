@@ -1,13 +1,16 @@
 // @flow
 import React, { PropTypes } from 'react'
-import { checkMountPath } from './utils/checks'
-import createRegisterReducer from './createRegisterReducer'
 import isPlainObject from 'lodash/isPlainObject'
+import { createStore, compose } from 'redux'
+import { connect, Provider } from 'react-redux'
+import { checkMountPath } from './utils/checks'
 import { normalizeMountPath } from './utils/normalize'
 import storeShape from './utils/storeShape'
-import { createStore, compose } from 'redux'
 import enhanceStore from './enhanceStore'
-import { Provider } from 'react-redux'
+import createBoundedReducer from './createBoundedReducer'
+import setReduxState from './setReduxState'
+import { RESET_STATE, MOUNT_PATH } from './consts'
+import getState from './getState'
 
 /**
  * Check initialState
@@ -48,7 +51,7 @@ const checkActionPrefix = (actionPrefix) => {
 }
 
 /**
- * Create reducer
+ * Create and register reducer
  * @param {Object} config
  * @return {Function}
  *   @param {Component} WrappedComponent
@@ -93,25 +96,37 @@ export default ({
         store: process.env.NODE_ENV === 'test' ? PropTypes.object : storeShape
       }
 
-      RegisterReducer: any
       propMountPath: ?string
       store: ?Object
+      setReduxState: any
+      resetReduxState: any
+      ChildComponent: any
+      persist: any
+      actionPrefix: any
 
       props: {
         reduxMountPath: string,
-        reduxPersist: boolean
+        reduxPersist: boolean,
+        reduxActionPrefix: string
       }
 
       constructor(props: any, context: any) {
         super(props, context)
 
-        if (!isPlainObject(context.store)) {
+        let { store } = context
+        this.store = null
+        if (!isPlainObject(store)) {
           const composeEnhancers =
             process.env.NODE_ENV !== 'production' &&
             typeof window === 'object' &&
             window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?
               window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({}) : compose
-          this.store = createStore(null, composeEnhancers(enhanceStore))
+          store = createStore(null, composeEnhancers(enhanceStore))
+          this.store = store
+        } else {
+          if (typeof store.registerReducers !== 'function') {
+            throw new Error('Redux store must be enhanced with redux-fly')
+          }
         }
 
         let { reduxMountPath: propMountPath, reduxPersist: propPersist, reduxActionPrefix: propActionPrefix } = props
@@ -123,28 +138,27 @@ export default ({
         if (!mountPath && !propMountPath) {
           throw new Error('Mount path must be defined')
         }
-        const realMountPath = normalizeMountPath(`${propMountPath || ''} ${mountPath || ''}`)
+        const _mountPath = normalizeMountPath(`${propMountPath || ''} ${mountPath || ''}`)
 
-        const options = {
-          connectToStore,
-          persist,
-          actionPrefix,
-        }
+        let _connectToStore = connectToStore
+        this.actionPrefix = actionPrefix
+        this.persist = persist
+
         // Priority actionPrefix from props
         if (typeof propActionPrefix !== 'undefined') {
           checkActionPrefix(propActionPrefix)
-          options.actionPrefix = propActionPrefix
+          this.actionPrefix = propActionPrefix
         }
 
         // Default value for action prefix contain mount path
-        if (!options.actionPrefix) {
-          options.actionPrefix = `${realMountPath}/`
+        if (!this.actionPrefix) {
+          this.actionPrefix = `${_mountPath}/`
         }
 
         // Priority persist from props
         if (typeof propPersist !== 'undefined') {
           checkPersist(propPersist)
-          options.persist = propPersist
+          this.persist = propPersist
         }
 
         let _initialState = initialState
@@ -155,29 +169,67 @@ export default ({
 
         let _listenActions = listenActions
         if (typeof _listenActions === 'function') {
-          _listenActions = _listenActions(props, options.actionPrefix)
+          _listenActions = _listenActions(props, this.actionPrefix)
           checkListenActions(_listenActions)
         }
 
-        this.RegisterReducer = createRegisterReducer(realMountPath, _initialState, _listenActions,
-          options, WrappedComponent)
+        this.ChildComponent = WrappedComponent
+        if (_connectToStore) {
+          this.ChildComponent = connect((state) =>
+            ({ reduxState: getState(_mountPath)(state) })
+          )(WrappedComponent)
+        }
+
+        // Creation and registration reducer
+        store.registerReducers({
+          [_mountPath]: createBoundedReducer(_mountPath, _initialState, _listenActions || {}, this.actionPrefix),
+        })
+        // Binding setReduxState with redux store
+        this.setReduxState = setReduxState(_mountPath, store.dispatch, store.getState, this.actionPrefix)
+        // Action creator RESET redux state
+        this.resetReduxState = () => store.dispatch({
+          type: `${this.actionPrefix}${RESET_STATE}`,
+          [MOUNT_PATH]: _mountPath
+        })
       }
 
       componentWillUnmount() {
-        this.RegisterReducer = null
+        // If component isn't persist then RESET redux state
+        if (!this.persist) {
+          this.resetReduxState()
+        }
         this.store = null
+        this.ChildComponent = null
+        this.setReduxState = null
+        this.actionPrefix = null
+        this.resetReduxState = null
+        this.persist = null
       }
 
       render() {
-        const RegisterReducer = this.RegisterReducer
+        let ChildComponent = this.ChildComponent
+        let Component = (
+          <ChildComponent
+            {...this.props}
+            setReduxState={this.setReduxState}
+            resetReduxState={this.resetReduxState}
+          />
+        )
+        if (process.env.NODE_ENV === 'test') {
+          Component = React.cloneElement(Component, {
+            persist: this.persist.toString(),
+            actionPrefix: this.actionPrefix
+          })
+        }
+
         if (this.store) {
           return (
             <Provider store={this.store}>
-              <RegisterReducer {...this.props} />
+              {Component}
             </Provider>
           )
         }
-        return <RegisterReducer {...this.props} />
+        return Component
       }
     }
 }

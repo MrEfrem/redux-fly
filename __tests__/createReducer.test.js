@@ -335,7 +335,7 @@ test('Test connectToStore: false', () => {
     toBe('<div></div>')
 })
 
-test('Test reset state (persist = false) after unmounting component', () => {
+test('Test reset state (persist = false) after unmounting component', async () => {
   const store = createStore(null, enhanceStore)
 
   class Component extends React.Component {
@@ -352,7 +352,7 @@ test('Test reset state (persist = false) after unmounting component', () => {
     setReduxState: PropTypes.func.isRequired,
   }
   const ExtendedComponent = createReducer({
-    mountPath: 'ui component',
+    mountPath: 'ui component5555',
     initialState: { text: 'My first todo' },
     persist: false
   })(Component)
@@ -362,10 +362,10 @@ test('Test reset state (persist = false) after unmounting component', () => {
       <ExtendedComponent />
     </Provider>
   )
-  expect(JSON.stringify(store.getState())).toBe('{"ui":{"component":{"text":"My second todo"}}}')
+  expect(JSON.stringify(store.getState())).toBe('{"ui":{"component5555":{"text":"My second todo"}}}')
 
   component.unmount()
-  expect(JSON.stringify(store.getState())).toBe('{"ui":{"component":{"text":"My first todo"}}}')
+  expect(JSON.stringify(store.getState())).toBe('{"ui":{"component5555":{"text":"My first todo"}}}')
 })
 
 test('Test preserved state (persist = true) after unmounting component', () => {

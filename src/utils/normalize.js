@@ -2,7 +2,7 @@
 /**
  * Trimmed and collapsed spaces in mount path
  */
-export const normalizeMountPath = (path: any) => {
+export const normalizeMountPath = (path: any): string => {
   if (typeof path !== 'string') {
     throw new Error('Mount path must be string')
   }
