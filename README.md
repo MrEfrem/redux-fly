@@ -1,6 +1,3 @@
-# redux-fly
-Simple redux
-
 Purposes
 ------------
 * Provide simple API for manage React component state stored in Redux.
