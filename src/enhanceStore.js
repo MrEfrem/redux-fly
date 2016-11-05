@@ -19,7 +19,7 @@ import { normalizeMountPath } from './utils/normalize'
  *     {Function} getState,
  *     {Function} replaceReducer
  */
-const createStore = (createStore: Function) => {
+const enhanceStore = (createStore: Function) => {
   if (typeof createStore !== 'function') {
     throw new Error('Create store must be function')
   }
@@ -120,4 +120,4 @@ const createStore = (createStore: Function) => {
   }
 }
 
-export default createStore
+export default enhanceStore
