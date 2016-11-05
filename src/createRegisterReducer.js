@@ -9,7 +9,6 @@ import getState from './getState'
 
 /**
  * Create/registration/mount reducer
- * @param  {string} originalMountPath
  * @param  {string} mountPath
  * @param  {Object} initialState
  * @param  {Object} listenActions (optional)
@@ -17,7 +16,7 @@ import getState from './getState'
  * @param  {Component} WrappedComponent
  * @return {Component} new component
  */
-export default function createRegisterReducer(originalMountPath: string, mountPath: string, initialState: Object, listenActions?: Object, options: Object,
+export default function createRegisterReducer(mountPath: string, initialState: Object, listenActions?: Object, options: Object,
   WrappedComponent: any
 ) {
   const { connectToStore, persist, actionPrefix } = options
@@ -39,9 +38,6 @@ export default function createRegisterReducer(originalMountPath: string, mountPa
       super(props, context)
 
       const { store } = context
-      if (typeof store !== 'object') {
-        throw new Error('Redux store must be created')
-      }
       if (typeof store.registerReducers !== 'function') {
         throw new Error('Redux store must be enhanced with redux-fly')
       }
@@ -73,7 +69,6 @@ export default function createRegisterReducer(originalMountPath: string, mountPa
           {...this.props}
           setReduxState={this.setReduxState}
           resetReduxState={this.resetReduxState}
-          reduxMountPath={originalMountPath}
         />
       )
       if (process.env.NODE_ENV === 'test') {

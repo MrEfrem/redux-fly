@@ -1,7 +1,7 @@
 exports[`test Verify Defined CONSTS 1`] = `
 Object {
   "MOUNT_PATH": "@@MOUNT_PATH",
-  "NEW_STATE": "@@NEW_STATE",
+  "NEW_STATE": "newState",
   "RESET_STATE": "@@COMPONENT_RESET_STATE",
 }
 `;
