@@ -5,115 +5,165 @@
 * Provides simple API for gradual registration reducers in any place of Redux tree.
 
 ## API
-* `enhanceStore`
+### `createReducer`
+### `enhanceStore`
 
-  Extend store object with `registerReducers` method for gradual registration reducers in any place of Redux tree.
+Extend store object with `registerReducers` method for gradual registration reducers in any place of Redux tree.
   
-  #### Example
-  Create enhanced store:
-  ```
-  import { createStore } from 'redux';
-  import { enhanceStore } from 'redux-fly';
-    
-  const store = createStore(null, enhanceStore);
-  ```  
-  or with preloaded state received from server or saved in any storage:  
-  ```  
-  const store = createStore(null, window.__INITIAL_STATE__, enhanceStore);
-  ```
-  <br/>
-  Registration of the reducers together with store creation:
-  ```
-  import { createStore } from 'redux';
-  import { enhanceStore } from 'redux-fly';
-    
-  const reducers = {
-    'ui component': (state, action) => { ... },
-    'ui todo list': (state, action) => { ... }
-  }
-  const store = createStore(reducers, enhanceStore);
-  ```
-  or with preloaded state:
-  ```  
-  const store = createStore(reducers, window.__INITIAL_STATE__, enhanceStore);
-  ```
-  
-  
-* `createReducer`
-* `getState(mountPath)(state)`
+#### Example
+Create enhanced store:
+```javascript
+import { createStore } from 'redux';
+import { enhanceStore } from 'redux-fly';
 
-  Get component state by mount path.
+const store = createStore(null, enhanceStore);
+```  
+or with preloaded state received from server or saved in any storage:  
+```javascript 
+const store = createStore(null, window.__INITIAL_STATE__, enhanceStore);
+```
+<br/>
+Registration of the reducers together with store creation:
+```javascript
+import { createStore } from 'redux';
+import { enhanceStore } from 'redux-fly';
+
+const reducers = {
+  'ui component': (state, action) => { ... },
+  'ui todo list': (state, action) => { ... }
+}
+const store = createStore(reducers, enhanceStore);
+```
+or with preloaded state:
+```javascript  
+const store = createStore(reducers, window.__INITIAL_STATE__, enhanceStore);
+```
   
-  #### Arguments
-  * `mountPath`\(*string*): Path of mounting redux component state.
-  * `state`\(*Function*): All Redux state.
-  
-  #### Example
-  
-  Not reused component.
-  ##### Menu
-  ```
-  import { getState } from 'redux';    
-  
-  const boundedGetState = getState('ui menu');
-            
-  export const isOpened = (state) => boundedGetState(state).opened;
-  export const isCollapsed = (state) => boundedGetState(state).collapsed;
-  ```
-  
-  ##### Any component
-  ```
-  import React, { PropTypes } from 'react';
-  import getContext from 'recompose/getContext' 
-  import { isOpened as menuIsOpened, isCollapsed as menuIsCollapsed } from './Menu';
-  
-  class SideBar extends React.Component {
-    static propTypes = {
-      store: PropTypes.object.isRequired
-    }
-    
-    componentDidMount() {
-      const { store } = this.props;
-      if (menuIsOpened(store.getState())) {
-        ...
-      }
-      if (menuIsCollapsed(store.getState())) {
-        ...
-      }
-    }
-    ...
+### `getState(mountPath)(state)`
+
+Get component state by mount path.
+
+#### Arguments
+* `mountPath`\(*string*): Path of mounting redux component state.
+* `state`\(*Function*): All Redux state.
+
+#### Example
+
+Not reused component.
+##### Menu component
+```javascript
+import { getState } from 'redux';    
+
+const boundedGetState = getState('ui menu');
+
+export const isOpened = (state) => boundedGetState(state).opened;
+export const isCollapsed = (state) => boundedGetState(state).collapsed;
+```
+
+##### Any component
+```javascript
+import React, { PropTypes } from 'react';
+import getContext from 'recompose/getContext' 
+import { isOpened as menuIsOpened, isCollapsed as menuIsCollapsed } from './Menu';
+
+class SideBar extends React.Component {
+  static propTypes = {
+    store: PropTypes.object.isRequired
   }
-  export default getContext({ store: PropTypes.object.isRequired })(SideBar)
-  ```
-  <br/>
-  Reused component.
-  ##### Modal
-  ```
-  import { getState } from 'redux';    
-            
-  export const isOpened = (mountPath, state) => getState(mountPath)(state).opened;
-  ```
-  
-  ##### Any component
-  ```
-  import React, { PropTypes } from 'react';
-  import getContext from 'recompose/getContext' 
-  import { isOpened as modalIsOpened } from './Modal';
-  
-  class Component extends React.Component {
-    static propTypes = {
-      store: PropTypes.object.isRequired
+
+  componentDidMount() {
+    const { store } = this.props;
+    if (menuIsOpened(store.getState())) {
+      ...
     }
-    
-    componentDidMount() {
-      const { store } = this.props;
-      if (modalIsOpened('ui component', store.getState())) {
-        ...
-      }
+    if (menuIsCollapsed(store.getState())) {
+      ...
     }
-    ...
   }
-  export default getContext({ store: PropTypes.object.isRequired })(Component)
-  ```
-  
-* `registerReducers(reducers)`
+  ...
+}
+export default getContext({ store: PropTypes.object.isRequired })(SideBar)
+```
+<br/>
+Reused component.
+##### Modal component
+```javascript
+import React from 'react';
+import { getState } from 'redux';    
+
+export const isOpened = (mountPath, state) => getState(mountPath)(state).opened;
+```
+
+##### Any component
+```javascript
+import React, { PropTypes } from 'react';
+import getContext from 'recompose/getContext' 
+import { isOpened as modalIsOpened } from './Modal';
+
+class Component extends React.Component {
+  static propTypes = {
+    store: PropTypes.object.isRequired
+  }
+
+  componentDidMount() {
+    const { store } = this.props;
+    if (modalIsOpened('ui component', store.getState())) {
+      ...
+    }
+  }
+  ...
+}
+export default getContext({ store: PropTypes.object.isRequired })(Component)
+```
+
+### `registerReducers(reducers)`
+Registration of reducers in Redux store.
+
+#### Arguments
+* `reducers`\(*Object*) 
+  * `key`\(*string*): reducer mounting path. Contains from object keys separate of spaces.  
+  * `value`\(*Function*): reducer.
+* `reducers(props): Object`\(*Function*): function receive props and must return object described above.  
+
+#### Returns
+A React component class that register the passed reducers in Redux store.
+
+#### Remarks
+* It needs to be invoked two times. The first time with its arguments described above, and a second time, with the component: registerReducers(reducers)(MyComponent).
+
+* It does not modify the passed React component. It returns a new component that you should use instead.
+
+#### Example
+
+##### Todo reducer
+```javascript
+export default (state, action) => { ... }
+```
+
+##### Any component
+```javascript
+import React, { PropTypes } from 'react';
+import { registerReducers } from 'redux-fly';
+import { connect } from 'react-redux';
+import { compose } from 'redux';
+import todoReducer from './reducer';
+
+const Component = ({ todo }) => { ... };
+Component.propTypes = {
+  todo: PropTypes.object.isRequired,
+}
+
+export default compose(
+  connect(state => ({ todo: state.ui.todo })),
+  registerReducers({ 'ui todo': todoReducer })  
+)(Component)
+```
+or reducers as Function:
+```javascript
+import { getState } from 'redux-fly';
+...
+export default compose(
+  connect((state, ownProps) => ({ todo: getState(`${ownProps.reduxMountPath} todo`)(state) })),
+  registerReducers(props => ({ [`${props.reduxMountPath} todo`]: todoReducer }))  
+)(Component)
+```
