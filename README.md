@@ -1,14 +1,29 @@
 ## Purposes
 * Provides simple API for manage React component state stored in Redux.
 * Provides simple API for interact between components through API Redux: dispatch actions, state selectors.
-* Provides simple API for creation of the reused components which can placement of a state in the common Redux tree or create incapsulated state.
-* Provides simple API for gradual registration reducers in any place of Redux tree.
+* Provides simple API for creation of the reused components which can placement of a state in the common Redux store or create incapsulated state.
+* Provides simple API for gradual registration reducers in any nested level of Redux store.
 
 ## API
-### `createReducer`
+### `createReducer(config)`
+Creates and registers special reducer in Redux store, and provides simple API for manage of its state.
+
+#### Arguments
+* `config`\(*Object*)
+  * [`mountPath`]\(*string*): reducer mounting path. Contains from object keys separate of spaces.  
+  * `initialState`\(*Object*): reducer initial state.
+  * `initialState(props): Object`\(*Function*): function receive props and must return object described above.  
+  * [`listenActions`]\(*Object*): listen to external actions.
+    * `key`\(*string*): action type.
+    * `value`\(*Function*): reducer.
+  * [`listenActions(props, actionPrefix): Object`]\(*Function*): function receive props and actionPrefix and must return object described above.  
+  * `connectToStore = true`\(*boolean*): connect to current registered reducers by `react-redux` and provides its state in `reduxState` prop (`true`).
+  * `persist = true`\(*boolean*): reset state to `initialState` in case of component is unmounted (`false`). By default is saves state (`true`).
+  * `[actionPrefix]`\(*string*): prefix for actions dispatched in case of change current reducer state by special API.
+
 ### `enhanceStore`
 
-Extend store object with `registerReducers` method for gradual registration reducers in any place of Redux tree.
+Extend store object with `registerReducers` method for gradual registration reducers in any place of Redux store.
   
 #### Example
 Create enhanced store:
@@ -140,7 +155,7 @@ A React component class that register the passed reducers in Redux store.
 export default (state, action) => { ... }
 ```
 
-##### Any component
+##### Not reused component.
 ```javascript
 import React, { PropTypes } from 'react';
 import { registerReducers } from 'redux-fly';
@@ -158,9 +173,10 @@ export default compose(
   registerReducers({ 'ui todo': todoReducer })  
 )(Component)
 ```
-or reducers as Function:
+
+##### Reused component.
 ```javascript
-import { getState } from 'redux-fly';
+import { getState, registerReducers } from 'redux-fly';
 ...
 export default compose(
   connect((state, ownProps) => ({ todo: getState(`${ownProps.reduxMountPath} todo`)(state) })),
