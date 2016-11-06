@@ -2,20 +2,42 @@
 * Provides simple API for manage React component state stored in Redux.
 * Provides simple API for interact between components through API Redux: dispatch actions, state selectors.
 * Provides simple API for creation of the reused components which can placement of a state in the common Redux tree or create incapsulated state.
-* Provides simple API for registration canonical reducers in React lifecycle.
+* Provides simple API for gradual registration reducers in any place of Redux tree.
 
 ## API
 * `enhanceStore`
 
-  Store enhancer. Extend store object with `registerReducers` method for gradual registration of the reducers.
+  Extend store object with `registerReducers` method for gradual registration reducers in any place of Redux tree.
   
   #### Example
+  Create enhanced store:
   ```
   import { createStore } from 'redux';
   import { enhanceStore } from 'redux-fly';
     
   const store = createStore(null, enhanceStore);
+  ```  
+  or with preloaded state received from server or saved in any storage:  
+  ```  
+  const store = createStore(null, window.__INITIAL_STATE__, enhanceStore);
   ```
+  <br/>
+  Registration of the reducers together with store creation:
+  ```
+  import { createStore } from 'redux';
+  import { enhanceStore } from 'redux-fly';
+    
+  const reducers = {
+    'ui component': (state, action) => { ... },
+    'ui todo list': (state, action) => { ... }
+  }
+  const store = createStore(reducers, enhanceStore);
+  ```
+  or with preloaded state:
+  ```  
+  const store = createStore(reducers, window.__INITIAL_STATE__, enhanceStore);
+  ```
+  
   
 * `createReducer`
 * `getState(mountPath)(state)`
