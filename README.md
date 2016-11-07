@@ -9,17 +9,28 @@
 Creates and registers special reducer in Redux store, and provides simple API for manage of its state.
 
 #### Arguments
-* `config`\(*Object*)
-  * [`mountPath`]\(*string*): reducer mounting path. Contains from object keys separate of spaces.  
-  * `initialState`\(*Object*): reducer initial state.
+* `config` (*Object*)
+  * `[mountPath]`\(*string*): if specified, defines reducer mounting path. Contains from object keys separate of spaces.  
+  * `initialState`\(*Object*): initial state.
   * `initialState(props): Object`\(*Function*): function receive props and must return object described above.  
-  * [`listenActions`]\(*Object*): listen to external actions.
+  * `[listenActions]`\(*Object*): if specified, defines listeners to actions.
     * `key`\(*string*): action type.
     * `value`\(*Function*): reducer.
-  * [`listenActions(props, actionPrefix): Object`]\(*Function*): function receive props and actionPrefix and must return object described above.  
-  * `connectToStore = true`\(*boolean*): connect to current registered reducers by `react-redux` and provides its state in `reduxState` prop (`true`).
-  * `persist = true`\(*boolean*): reset state to `initialState` in case of component is unmounted (`false`). By default is saves state (`true`).
-  * `[actionPrefix]`\(*string*): prefix for actions dispatched in case of change current reducer state by special API.
+  * `[listenActions(props, actionPrefix): Object]`\(*Function*): if specified, defines function which receives props and actionPrefix and must return object described above.  
+  * `connectToStore = true`\(*boolean*): defines connect to current registered reducers by `react-redux` and provides its state in `reduxState` prop (`true`). `false` - manual connect.
+  * `persist = true`\(*boolean*): defines need to reset state to `initialState` in case of component is unmounted (`false`). By default is saves state (`true`).
+  * `[actionPrefix]`\(*string*): defines prefix for actions dispatched in case of change current reducer state by special API.
+  
+#### Props
+Are specified for creations the reused components.
+* `[reduxMountPath]`\(*string*) if specified, defines reducer mounting path. Concatenates with `mountPath` transferred through arguments: `reduxMountPath + mountPath`
+* `[reduxPersist]`\(*boolean*) if specified, defines need to reset state to `initialState` in case of component is unmounted. Replaces `persist` transferred through arguments.
+* `[reduxActionPrefix]`\(*string*) if specified, defines prefix for actions dispatched in case of change current reducer state by special API. Replaces `actionPrefix` transferred through arguments.
+
+#### Remarks
+* Mounting path must be filled through `arguments` and(or) `props`.
+* If action prefix isn't specified through `arguments` and `props` then it filled to mounting path.
+* If `redux` store isn't created in app then it would be to automatic created.
 
 ### `enhanceStore`
 
