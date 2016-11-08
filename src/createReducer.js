@@ -51,7 +51,8 @@ const checkActionPrefix = (actionPrefix) => {
 }
 
 /**
- * Create and register reducer
+ * Function creates and registers special reducer in Redux store,
+ * and provides simple API to manage of its state.
  * @param {Object} config
  * @return {Function}
  *   @param {Component} WrappedComponent
@@ -96,7 +97,6 @@ export default ({
         store: process.env.NODE_ENV === 'test' ? PropTypes.object : storeShape
       }
 
-      propMountPath: ?string
       store: ?Object
       setReduxState: any
       resetReduxState: any

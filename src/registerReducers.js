@@ -4,7 +4,7 @@ import isPlainObject from 'lodash/isPlainObject'
 import storeShape from './utils/storeShape'
 
 /**
- * Register reducers
+ * Function registers reducers in Redux store.
  * @param {Object | function} reducers
  * @return {Function}
  *   @param {Component} WrappedComponent

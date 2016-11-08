@@ -3,10 +3,10 @@ import isPlainObject from 'lodash/isPlainObject'
 import { normalizeMountPath } from './utils/normalize'
 
 /**
- * Find state by mountPath
+ * Function to extract part of Redux state through mounting path.
  * @param  {string} mountPath
  * @return {Function}
- *   @param {string} state
+ *   @param {Object} state
  *   @return {Object} finded state
  */
 export default (mountPath: string) => {

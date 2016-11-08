@@ -4,8 +4,9 @@ import isPlainObject from 'lodash/isPlainObject'
 import { normalizeMountPath } from './utils/normalize'
 
 /**
- * Enhancer redux store for registration reducers in runtime.
- * If isn't passed reducer, but passed preloaderState, then preloadedState would uses
+ * Function enhance an object of Redux store with the `registerReducers` method for
+ * gradual registration of reducer at any nesting level of Redux store.
+ * If reducer isn't pass, but pass preloaderState, then preloadedState would uses
  * how default state for new reducers.
  * @param {Object} createStore
  * @return {Function}
