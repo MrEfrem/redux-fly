@@ -2,7 +2,7 @@
 * Library provides simple API for manage React component state stored in Redux.
 * Library provides simple API for interact between components through API Redux: dispatch actions, state selectors.
 * Library provides simple API for creation of the reused components which can placement of a state in the common Redux store or create incapsulated state.
-* Library provides simple API for gradual registration reducers in any nested level of Redux store.
+* Library provides simple API for gradual registration of reducer at any nesting level of Redux store.
 
 ## API
 ### `createReducer(config)`
@@ -10,68 +10,65 @@ Function creates and registers special reducer in Redux store, and provides simp
 
 #### Arguments
 * `config` (*Object*)
-  * `[mountPath]`\(*string*): if specified, the argument defines reducer mounting path. It contains from object keys separated by spaces.  
-  * `initialState`\(*Object*): the argument defines reducer initial state.
+  * `[mountPath]`\(*string*): if argument are specified, it defines reducer mounting path. Argument consist from object keys separated by spaces.
+  * `initialState`\(*Object*): argument defines reducer initial state.
   * `initialState(props): Object`\(*Function*): function receives props and must return object described above.  
-  * `[listenActions]`\(*Object*): if specified, the argument defines listeners to actions.
+  * `[listenActions]`\(*Object*): if argument are specified, it defines listeners to actions.
     * `key`\(*string*): action type.
     * `value`\(*Function*): reducer.
-  * `[listenActions(props, actionPrefix): Object]`\(*Function*): if specified, the argument defines function which receives props and actionPrefix and must return object described above.  
-  * `connectToStore = true`\(*boolean*): by default the argument defines connect to current registered reducer by library `react-redux` and provides its state in `reduxState` prop. If the argument is `false` then need manual connect.
-  * `persist = true`\(*boolean*): by default the argument defines need to keeps current reducer state in case of component is unmounted. If the argument is `false` then reducer resets state.  
-  * `[actionPrefix]`\(*string*): if specified, the argument defines prefix for actions dispatched by `setReduxState` and `resetReduxState` described below.
+  * `[listenActions(props, actionPrefix): Object]`\(*Function*): if argument are specified, it defines function which receives props and actionPrefix and must return object described above.  
+  * `connectToStore = true`\(*boolean*): default argument defines connect to current registered reducer by library `react-redux` and state are transferred in `reduxState` prop. If argument specified to `false` then manual connect needed.
+  * `persist = true`\(*boolean*): default argument defines need to keeps current reducer state in case of component is unmounted. If argument specified to `false` then reducer state to reset.  
+  * `[actionPrefix]`\(*string*): if argument are specified, it defines prefix for actions dispatched by `setReduxState` and `resetReduxState` described below.
   
 #### Props
-Are specified for creations the reused components.
-* `[reduxMountPath]`\(*string*) if specified, defines reducer mounting path. Concatenates with `mountPath` transferred through arguments: `reduxMountPath + mountPath`
-* `[reduxPersist]`\(*boolean*) if specified, defines need to reset state to `initialState` in case of component is unmounted. Replaces `persist` transferred through arguments.
-* `[reduxActionPrefix]`\(*string*) if specified, defines prefix for actions dispatched in case of change current reducer state by special API. Replaces `actionPrefix` transferred through arguments.
+Props must be specified in case reused components creations.
+* `[reduxMountPath]`\(*string*) if prop are specified, it behaves just as `mountPath` argument. If also argument `mountPath` are specified, then they concatenates by rule: `reduxMountPath + mountPath`  
+* `[reduxPersist]`\(*boolean*) if props are specified, it behaves just as `persist` argument. The prop replaces an argument.
+* `[reduxActionPrefix]`\(*string*) if prop are specified, it behaves just as `actionPrefix` argument. The prop replaces an argument.
 
 #### Remarks
-* Mounting path must be filled through `arguments` and(or) `props`.
-* If action prefix isn't specified through `arguments` and `props` then it filled to mounting path.
-* If `redux` store isn't created in app then it would be to automatic created.
+* Mounting path are required and must be transferred through argument and(or) prop.
+* If action prefix isn't transferred through argument and prop, then action prefix will be filled to mounting path.
+* If Redux store isn't created and isn't provides to components, then Redux store will be to automatic created.
 
 ### `enhanceStore`
-
-Extend store object with `registerReducers` method for gradual registration reducers in any place of Redux store.
+Function enhance an object of Redux store with the `registerReducers` method for gradual registration of reducer at any nesting level of Redux store.
   
 #### Example
-Create enhanced store:
+Creation of enhanced store:
 ```javascript
 import { createStore } from 'redux';
 import { enhanceStore } from 'redux-fly';
 
 const store = createStore(null, enhanceStore);
 ```  
-or with preloaded state received from server or saved in any storage:  
+<br/>
+Creation of enhanced store with preloaded state received from server or saved in any storage:  
 ```javascript 
 const store = createStore(null, window.__INITIAL_STATE__, enhanceStore);
 ```
 <br/>
-Registration of the reducers together with store creation:
+Creation of enhanced store and reducers registration:
 ```javascript
-import { createStore } from 'redux';
-import { enhanceStore } from 'redux-fly';
-
 const reducers = {
   'ui component': (state, action) => { ... },
   'ui todo list': (state, action) => { ... }
 }
 const store = createStore(reducers, enhanceStore);
 ```
-or with preloaded state:
+<br/>
+Creation of enhanced store and reducers registration with preloaded state:
 ```javascript  
 const store = createStore(reducers, window.__INITIAL_STATE__, enhanceStore);
 ```
   
 ### `getState(mountPath)(state)`
-
-Get component state by mount path.
+Function to extract part of Redux state through mounting path.
 
 #### Arguments
-* `mountPath`\(*string*): Path of mounting redux component state.
-* `state`\(*Function*): All Redux state.
+* `mountPath`\(*string*): argument defines path of mounting Redux component state.
+* `state`\(*Object*): argument defines Redux state.
 
 #### Example
 
@@ -143,21 +140,20 @@ export default getContext({ store: PropTypes.object.isRequired })(Component)
 ```
 
 ### `registerReducers(reducers)`
-Registration of reducers in Redux store.
+Function registers reducers in Redux store.
 
 #### Arguments
 * `reducers`\(*Object*) 
-  * `key`\(*string*): reducer mounting path. Contains from object keys separate of spaces.  
-  * `value`\(*Function*): reducer.
-* `reducers(props): Object`\(*Function*): function receive props and must return object described above.  
+  * `key`\(*string*): argument defines reducer mounting path. Argument consist from object keys separated by spaces.
+  * `value`\(*Function*): argument defines reducer.
+* `reducers(props): Object`\(*Function*): argument defines function which receives props and function must return an object described above.  
 
 #### Returns
-A React component class that register the passed reducers in Redux store.
+Function to return React component class that register the passed reducers in Redux store.
 
 #### Remarks
-* It needs to be invoked two times. The first time with its arguments described above, and a second time, with the component: registerReducers(reducers)(MyComponent).
-
-* It does not modify the passed React component. It returns a new component that you should use instead.
+* Function must be call two times. The first time with its arguments described above, and a second time, with the component: `registerReducers(reducers)(MyComponent)`.
+* Function does not modify the passed React component. It returns a new component that you should use instead.
 
 #### Example
 
