@@ -1,25 +1,25 @@
 ## Purposes
-* Provides simple API for manage React component state stored in Redux.
-* Provides simple API for interact between components through API Redux: dispatch actions, state selectors.
-* Provides simple API for creation of the reused components which can placement of a state in the common Redux store or create incapsulated state.
-* Provides simple API for gradual registration reducers in any nested level of Redux store.
+* Library provides simple API for manage React component state stored in Redux.
+* Library provides simple API for interact between components through API Redux: dispatch actions, state selectors.
+* Library provides simple API for creation of the reused components which can placement of a state in the common Redux store or create incapsulated state.
+* Library provides simple API for gradual registration reducers in any nested level of Redux store.
 
 ## API
 ### `createReducer(config)`
-Creates and registers special reducer in Redux store, and provides simple API for manage of its state.
+Function creates and registers special reducer in Redux store, and provides simple API to manage of its state.
 
 #### Arguments
 * `config` (*Object*)
-  * `[mountPath]`\(*string*): if specified, defines reducer mounting path. Contains from object keys separate of spaces.  
-  * `initialState`\(*Object*): initial state.
-  * `initialState(props): Object`\(*Function*): function receive props and must return object described above.  
-  * `[listenActions]`\(*Object*): if specified, defines listeners to actions.
+  * `[mountPath]`\(*string*): if specified, the argument defines reducer mounting path. It contains from object keys separated by spaces.  
+  * `initialState`\(*Object*): the argument defines reducer initial state.
+  * `initialState(props): Object`\(*Function*): function receives props and must return object described above.  
+  * `[listenActions]`\(*Object*): if specified, the argument defines listeners to actions.
     * `key`\(*string*): action type.
     * `value`\(*Function*): reducer.
-  * `[listenActions(props, actionPrefix): Object]`\(*Function*): if specified, defines function which receives props and actionPrefix and must return object described above.  
-  * `connectToStore = true`\(*boolean*): defines connect to current registered reducers by `react-redux` and provides its state in `reduxState` prop (`true`). `false` - manual connect.
-  * `persist = true`\(*boolean*): defines need to reset state to `initialState` in case of component is unmounted (`false`). By default is saves state (`true`).
-  * `[actionPrefix]`\(*string*): defines prefix for actions dispatched in case of change current reducer state by special API.
+  * `[listenActions(props, actionPrefix): Object]`\(*Function*): if specified, the argument defines function which receives props and actionPrefix and must return object described above.  
+  * `connectToStore = true`\(*boolean*): by default the argument defines connect to current registered reducer by library `react-redux` and provides its state in `reduxState` prop. If the argument is `false` then need manual connect.
+  * `persist = true`\(*boolean*): by default the argument defines need to keeps current reducer state in case of component is unmounted. If the argument is `false` then reducer resets state.  
+  * `[actionPrefix]`\(*string*): if specified, the argument defines prefix for actions dispatched by `setReduxState` and `resetReduxState` described below.
   
 #### Props
 Are specified for creations the reused components.
