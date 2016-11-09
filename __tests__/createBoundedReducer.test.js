@@ -22,21 +22,9 @@ test('Test no match action', () => {
     { type: 'MEGA_UPDATE', [NEW_STATE]: text, [MOUNT_PATH]: 'todo list' }
   ).text).toBe(preloadedState.text)
 
-  expect(createBoundedReducer('ui todo', preloadedState, {}, 'ui todo/')({ test: 'Second todo!' },
-    { type: RESET_STATE }
-  ).test).not.toBe(preloadedState.text)
-
-  expect(createBoundedReducer('ui todo', preloadedState, {}, 'ui todo/')({ test: 'Second todo!' },
-    { type: `ui todo/${RESET_STATE}` }
-  ).test).not.toBe(preloadedState.text)
-
-  expect(createBoundedReducer('ui todo', preloadedState, {}, 'ui todo/')({ test: 'Second todo!' },
-    { type: RESET_STATE, [MOUNT_PATH]: 'todo list' }
-  ).test).not.toBe(preloadedState.text)
-
-  expect(createBoundedReducer('ui todo', preloadedState, {}, 'ui todo/')({ test: 'Second todo!' },
-    { type: `ui todo/${RESET_STATE}`, [MOUNT_PATH]: 'todo list' }
-  ).test).not.toBe(preloadedState.text)
+  expect(createBoundedReducer('ui todo', preloadedState, {}, 'ui todo/')(undefined,
+    { type: 'ui todo/MEGA_UPDATE', [NEW_STATE]: text, [MOUNT_PATH]: 'todo list' }
+  ).text).toBe(preloadedState.text)
 })
 
 test('Test match action', () => {
@@ -49,10 +37,10 @@ test('Test match action', () => {
 
   // Test reset state
   expect(createBoundedReducer('ui todo', preloadedState, {}, 'ui todo/')(newState,
-    { type: `ui todo/${RESET_STATE}`, [MOUNT_PATH]: 'ui todo' }
+    { type: `ui todo/${RESET_STATE}`, [MOUNT_PATH]: 'ui todo', [NEW_STATE]: preloadedState }
   )).not.toBe(preloadedState)
   expect(createBoundedReducer('ui todo', preloadedState, {}, 'ui todo/')(newState,
-    { type: `ui todo/${RESET_STATE}`, [MOUNT_PATH]: 'ui todo' }
+    { type: `ui todo/${RESET_STATE}`, [MOUNT_PATH]: 'ui todo', [NEW_STATE]: preloadedState }
   ).text).toBe(preloadedState.text)
 
   // Test update state

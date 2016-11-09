@@ -9,7 +9,7 @@ import storeShape from './utils/storeShape'
 import enhanceStore from './enhanceStore'
 import createBoundedReducer from './createBoundedReducer'
 import setReduxState from './setReduxState'
-import { RESET_STATE, MOUNT_PATH } from './consts'
+import { RESET_STATE, MOUNT_PATH, NEW_STATE } from './consts'
 import getState from './getState'
 
 /**
@@ -189,7 +189,8 @@ export default ({
         // Action creator RESET redux state
         this.resetReduxState = () => store.dispatch({
           type: `${this.actionPrefix}${RESET_STATE}`,
-          [MOUNT_PATH]: _mountPath
+          [MOUNT_PATH]: _mountPath,
+          [NEW_STATE]: (_initialState: Object),
         })
       }
 
