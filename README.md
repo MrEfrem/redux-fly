@@ -35,7 +35,8 @@ A React component class that injects into your component an Redux state through 
 #### Remarks
 * Mounting path is required and must be transferred through argument and(or) prop.
 * If action prefix isn't transferred through argument and prop, then action prefix will be filled to mounting path.
-* If Redux store isn't created and isn't provides to components, then Redux store will be to automatic created with support <a href="https://github.com/zalmoxisus/redux-devtools-extension" target="_blank">redux-devtools-extension</a>.
+* If Redux store isn't created and isn't provides to components, then Redux store will be to automatic created with support
+[redux-devtools-extension](https://github.com/zalmoxisus/redux-devtools-extension).
 
 #### Example
 ```javascript
