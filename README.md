@@ -10,25 +10,25 @@ Function creates and registers special reducer in Redux store, and provides simp
 
 #### Arguments
 * `config` (*Object*)
-  * `[mountPath]`\(*string*): if argument are specified, it defines reducer mounting path. Argument consist from object keys separated by spaces.
+  * `[mountPath]`\(*string*): if argument is specified, it defines reducer mounting path. Argument consist from object keys separated by spaces.
   * `initialState`\(*Object*): argument defines reducer initial state.
   * `initialState(props): Object`\(*Function*): function receives props and must return object described above.  
-  * `[listenActions]`\(*Object*): if argument are specified, it defines listeners to actions.
+  * `[listenActions]`\(*Object*): if argument is specified, it defines listeners to actions.
     * `key`\(*string*): action type.
     * `value`\(*Function*): reducer.
-  * `[listenActions(props, actionPrefix): Object]`\(*Function*): if argument are specified, it defines function which receives props and actionPrefix and must return object described above.  
-  * `connectToStore = true`\(*boolean*): default argument defines connect to current registered reducer by library `react-redux` and state are transferred in `reduxState` prop. If argument specified to `false` then manual connect needed.
+  * `[listenActions(props, actionPrefix): Object]`\(*Function*): if argument is specified, it defines function which receives props and actionPrefix and must return object described above.  
+  * `connectToStore = true`\(*boolean*): default argument defines connect to current registered reducer by library `react-redux` and state is transferred in `reduxState` prop. If argument specified to `false` then manual connect needed.
   * `persist = true`\(*boolean*): default argument defines need to keeps current reducer state in case of component is unmounted. If argument specified to `false` then reducer state to reset.  
-  * `[actionPrefix]`\(*string*): if argument are specified, it defines prefix for actions dispatched by `setReduxState` and `resetReduxState` described below.
+  * `[actionPrefix]`\(*string*): if argument is specified, it defines prefix for actions dispatched by `setReduxState` and `resetReduxState` described below.
   
 #### Props
 Props must be specified in case reused components creations.
-* `[reduxMountPath]`\(*string*) if prop are specified, it behaves just as `mountPath` argument. If also argument `mountPath` are specified, then they concatenates by rule: `reduxMountPath + mountPath`  
-* `[reduxPersist]`\(*boolean*) if props are specified, it behaves just as `persist` argument. The prop replaces an argument.
-* `[reduxActionPrefix]`\(*string*) if prop are specified, it behaves just as `actionPrefix` argument. The prop replaces an argument.
+* `[reduxMountPath]`\(*string*) if prop is specified, it behaves just as `mountPath` argument. If also argument `mountPath` is specified, then they concatenates by rule: `reduxMountPath + mountPath`  
+* `[reduxPersist]`\(*boolean*) if prop is specified, it behaves just as `persist` argument. The prop replaces an argument.
+* `[reduxActionPrefix]`\(*string*) if prop is specified, it behaves just as `actionPrefix` argument. The prop replaces an argument.
 
 #### Remarks
-* Mounting path are required and must be transferred through argument and(or) prop.
+* Mounting path is required and must be transferred through argument and(or) prop.
 * If action prefix isn't transferred through argument and prop, then action prefix will be filled to mounting path.
 * If Redux store isn't created and isn't provides to components, then Redux store will be to automatic created.
 
