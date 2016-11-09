@@ -10,27 +10,63 @@ Function creates and registers special reducer in Redux store, and provides simp
 
 #### Arguments
 * `config` (*Object*)
-  * `[mountPath]`\(*string*): if argument is specified, it defines reducer mounting path. Argument consist from object keys separated by spaces.
-  * `initialState`\(*Object*): argument defines reducer initial state.
-  * `initialState(props): Object`\(*Function*): function receives props and must return object described above.  
+  * `[mountPath]`\(*string*): if argument is specified, it defines reducer mounting path. Argument consists from object keys separated by spaces.
+  * `initialState`\(*Object*): it defines reducer initial state.
+  * `initialState(props): Object`\(*Function*): it receives props and must return object described above.  
   * `[listenActions]`\(*Object*): if argument is specified, it defines listeners to actions.
     * `key`\(*string*): action type.
     * `value`\(*Function*): reducer.
   * `[listenActions(props, actionPrefix): Object]`\(*Function*): if argument is specified, it defines function which receives props and actionPrefix and must return object described above.  
   * `connectToStore = true`\(*boolean*): default argument defines connect to current registered reducer by library `react-redux` and state is transferred in `reduxState` prop. If argument specified to `false` then manual connect needed.
   * `persist = true`\(*boolean*): default argument defines need to keeps current reducer state in case of component is unmounted. If argument specified to `false` then reducer state to reset.  
-  * `[actionPrefix]`\(*string*): if argument is specified, it defines prefix for actions dispatched by `setReduxState` and `resetReduxState` described below.
+  * `[actionPrefix]`\(*string*): if argument is specified, it defines prefix for actions dispatched by `reduxSetState` and `reduxResetState` described below.
   
 #### Props
-Props must be specified in case reused components creations.
+It must be specified in case reused components creations.
 * `[reduxMountPath]`\(*string*) if prop is specified, it behaves just as `mountPath` argument. If also argument `mountPath` is specified, then they concatenates by rule: `reduxMountPath + mountPath`  
 * `[reduxPersist]`\(*boolean*) if prop is specified, it behaves just as `persist` argument. The prop replaces an argument.
 * `[reduxActionPrefix]`\(*string*) if prop is specified, it behaves just as `actionPrefix` argument. The prop replaces an argument.
 
+#### Returns
+A React component class that injects into your component an Redux state through prop `reduxState` and injects `reduxSetState`, `reduxResetState` functions for state change.
+* `reduxSetState(actionType, newState)`\(*Function*): it dispatches Redux action with the `action prefix + actionType` type and the `newState` property. `newState` merge with current state through `Object.assign` and new object always returns. 
+* `reduxResetState()`\(*Function*): it dispatches Redux action with the `action prefix + reset action type` type and the `newState` property. `newState` replaces current state and new object always returns. 
+
 #### Remarks
 * Mounting path is required and must be transferred through argument and(or) prop.
 * If action prefix isn't transferred through argument and prop, then action prefix will be filled to mounting path.
-* If Redux store isn't created and isn't provides to components, then Redux store will be to automatic created.
+* If Redux store isn't created and isn't provides to components, then Redux store will be to automatic created with support <a href="https://github.com/zalmoxisus/redux-devtools-extension" target="_blank">redux-devtools-extension</a>.
+
+#### Example
+```javascript
+import { compose, createStore } from 'redux';
+import { Provider } from 'react-redux';
+import { enhanceStore, createReducer } from 'redux-fly'; 
+
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+const store = createStore(null, composeEnhancers(enhanceStore));
+
+const Welcome = ({ reduxState: { text }, reduxSetState, reduxResetState }) => (
+  <div>
+    <h1>{text}</h1>
+    <input value={text} onChange={(e) => reduxSetState('change-text', { text: e.target.value })} />
+    <button onClick={() => reduxResetState()}>Reset</button>
+  </div>
+)
+
+const EnhancedWelcome = createReducer({
+  mountPath: 'welcome',
+  initialState: {
+    text: 'Hello world!'
+  }                                           
+})(Welcome)
+
+ReactDOM.render(
+  <Provider store={store}>
+    <EnhancedWelcome/>
+  </Provider>
+, document.getElementById('root'));
+```
 
 ### `enhanceStore`
 Function enhance an object of Redux store with the `registerReducers` method for gradual registration of reducer at any nesting level of Redux store.
@@ -67,12 +103,12 @@ const store = createStore(reducers, window.__INITIAL_STATE__, enhanceStore);
 Function to extract part of Redux state through mounting path.
 
 #### Arguments
-* `mountPath`\(*string*): argument defines path of mounting Redux component state.
-* `state`\(*Object*): argument defines Redux state.
+* `mountPath`\(*string*): it defines path of mounting Redux component state.
+* `state`\(*Object*): it defines Redux state.
 
 #### Example
 
-Not reused component.
+Not reused component:
 ##### Menu component
 ```javascript
 import { getState } from 'redux';    
@@ -108,7 +144,7 @@ class SideBar extends React.Component {
 export default getContext({ store: PropTypes.object.isRequired })(SideBar)
 ```
 <br/>
-Reused component.
+Reused component:
 ##### Modal component
 ```javascript
 import React from 'react';
@@ -144,12 +180,12 @@ Function registers reducers in Redux store.
 
 #### Arguments
 * `reducers`\(*Object*) 
-  * `key`\(*string*): argument defines reducer mounting path. Argument consist from object keys separated by spaces.
-  * `value`\(*Function*): argument defines reducer.
-* `reducers(props): Object`\(*Function*): argument defines function which receives props and function must return an object described above.  
+  * `key`\(*string*): property defines reducer mounting path. Argument consist from object keys separated by spaces.
+  * `value`\(*Function*): property defines reducer.
+* `reducers(props): Object`\(*Function*): it defines function which receives props and function must return an object described above.  
 
 #### Returns
-Function to return React component class that register the passed reducers in Redux store.
+A React component class that register the passed reducers in Redux store.
 
 #### Remarks
 * Function must be call two times. The first time with its arguments described above, and a second time, with the component: `registerReducers(reducers)(MyComponent)`.
