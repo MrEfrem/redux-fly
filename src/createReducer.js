@@ -8,7 +8,7 @@ import { normalizeMountPath } from './utils/normalize'
 import storeShape from './utils/storeShape'
 import enhanceStore from './enhanceStore'
 import createBoundedReducer from './createBoundedReducer'
-import setReduxState from './setReduxState'
+import reduxSetState from './reduxSetState'
 import { RESET_STATE, MOUNT_PATH, NEW_STATE } from './consts'
 import getState from './getState'
 
@@ -98,8 +98,8 @@ export default ({
       }
 
       store: ?Object
-      setReduxState: any
-      resetReduxState: any
+      reduxSetState: any
+      reduxResetState: any
       ChildComponent: any
       persist: any
       actionPrefix: any
@@ -184,10 +184,10 @@ export default ({
         store.registerReducers({
           [_mountPath]: createBoundedReducer(_mountPath, _initialState, _listenActions || {}, this.actionPrefix),
         })
-        // Binding setReduxState with redux store
-        this.setReduxState = setReduxState(_mountPath, store.dispatch, store.getState, this.actionPrefix)
+        // Binding reduxSetState with redux store
+        this.reduxSetState = reduxSetState(_mountPath, store.dispatch, store.getState, this.actionPrefix)
         // Action creator RESET redux state
-        this.resetReduxState = () => store.dispatch({
+        this.reduxResetState = () => store.dispatch({
           type: `${this.actionPrefix}${RESET_STATE}`,
           [MOUNT_PATH]: _mountPath,
           [NEW_STATE]: (_initialState: Object),
@@ -197,13 +197,13 @@ export default ({
       componentWillUnmount() {
         // If component isn't persist then RESET redux state
         if (!this.persist) {
-          this.resetReduxState()
+          this.reduxResetState()
         }
         this.store = null
         this.ChildComponent = null
-        this.setReduxState = null
+        this.reduxSetState = null
         this.actionPrefix = null
-        this.resetReduxState = null
+        this.reduxResetState = null
         this.persist = null
       }
 
@@ -212,8 +212,8 @@ export default ({
         let Component = (
           <ChildComponent
             {...this.props}
-            setReduxState={this.setReduxState}
-            resetReduxState={this.resetReduxState}
+            reduxSetState={this.reduxSetState}
+            reduxResetState={this.reduxResetState}
           />
         )
         if (process.env.NODE_ENV === 'test') {

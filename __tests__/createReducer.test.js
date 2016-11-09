@@ -58,16 +58,16 @@ test('Test valid init component without provide redux store', () => {
 
   const Component = (props) => (
     <div>
-      <span>{typeof props.setReduxState}</span>
-      <span>{typeof props.resetReduxState}</span>
+      <span>{typeof props.reduxSetState}</span>
+      <span>{typeof props.reduxResetState}</span>
       <span>{JSON.stringify(props.reduxState)}</span>
       <span>{props.persist}</span>
       <span>{props.actionPrefix}</span>
     </div>
   )
   Component.propTypes = {
-    setReduxState: PropTypes.func.isRequired,
-    resetReduxState: PropTypes.func.isRequired,
+    reduxSetState: PropTypes.func.isRequired,
+    reduxResetState: PropTypes.func.isRequired,
     reduxState: PropTypes.object.isRequired,
     persist: PropTypes.string.isRequired,
     actionPrefix: PropTypes.string.isRequired,
@@ -85,16 +85,16 @@ test('Test valid init component with provide redux store', () => {
 
   const Component = (props) => (
     <div>
-      <span>{typeof props.setReduxState}</span>
-      <span>{typeof props.resetReduxState}</span>
+      <span>{typeof props.reduxSetState}</span>
+      <span>{typeof props.reduxResetState}</span>
       <span>{JSON.stringify(props.reduxState)}</span>
       <span>{props.persist}</span>
       <span>{props.actionPrefix}</span>
     </div>
   )
   Component.propTypes = {
-    setReduxState: PropTypes.func.isRequired,
-    resetReduxState: PropTypes.func.isRequired,
+    reduxSetState: PropTypes.func.isRequired,
+    reduxResetState: PropTypes.func.isRequired,
     reduxState: PropTypes.object.isRequired,
     persist: PropTypes.string.isRequired,
     actionPrefix: PropTypes.string.isRequired,
@@ -340,8 +340,8 @@ test('Test reset state (persist = false) after unmounting component', async () =
 
   class Component extends React.Component {
     componentDidMount() {
-      const { setReduxState } = this.props
-      setReduxState('update_todo', {
+      const { reduxSetState } = this.props
+      reduxSetState('update_todo', {
         text: 'My second todo',
       })
     }
@@ -349,7 +349,7 @@ test('Test reset state (persist = false) after unmounting component', async () =
     render() { return null }
   }
   Component.propTypes = {
-    setReduxState: PropTypes.func.isRequired,
+    reduxSetState: PropTypes.func.isRequired,
   }
   const ExtendedComponent = createReducer({
     mountPath: 'ui component5555',
@@ -373,8 +373,8 @@ test('Test preserved state (persist = true) after unmounting component', () => {
 
   class Component extends React.Component {
     componentDidMount() {
-      const { setReduxState } = this.props
-      setReduxState( 'update_todo', {
+      const { reduxSetState } = this.props
+      reduxSetState( 'update_todo', {
         text: 'My second todo',
       })
     }
@@ -382,7 +382,7 @@ test('Test preserved state (persist = true) after unmounting component', () => {
     render() { return null }
   }
   Component.propTypes = {
-    setReduxState: PropTypes.func.isRequired,
+    reduxSetState: PropTypes.func.isRequired,
   }
   const ExtendedComponent = createReducer({
     mountPath: 'ui component',
@@ -413,12 +413,12 @@ test('Test empty (default) actionPrefix', () => {
 
   class Component extends React.Component {
     componentDidMount() {
-      const { setReduxState, resetReduxState } = this.props
-      setReduxState('update_todo', {
+      const { reduxSetState, reduxResetState } = this.props
+      reduxSetState('update_todo', {
         text: 'My second todo',
       })
       actionType = 'reset'
-      resetReduxState()
+      reduxResetState()
     }
 
     render() {
@@ -426,8 +426,8 @@ test('Test empty (default) actionPrefix', () => {
     }
   }
   Component.propTypes = {
-    setReduxState: PropTypes.func.isRequired,
-    resetReduxState: PropTypes.func.isRequired,
+    reduxSetState: PropTypes.func.isRequired,
+    reduxResetState: PropTypes.func.isRequired,
     actionPrefix: PropTypes.string.isRequired,
   }
   const ExtendedComponent = createReducer({
@@ -515,20 +515,20 @@ test('Test filled actionPrefix in component and createReducer', () => {
   expect(component.html()).toBe('<div>component-prefix/</div>')
 })
 
-test('Test resetReduxState', () => {
+test('Test reduxResetState', () => {
   const store = createStore(null, enhanceStore)
 
   class Component extends React.Component {
     componentDidMount() {
-      const { setReduxState } = this.props
-      setReduxState('update_todo', {
+      const { reduxSetState } = this.props
+      reduxSetState('update_todo', {
         text: 'My second todo',
       })
     }
 
     handleClick = () => {
-      const { resetReduxState } = this.props
-      resetReduxState()
+      const { reduxResetState } = this.props
+      reduxResetState()
     }
 
     render() {
@@ -542,8 +542,8 @@ test('Test resetReduxState', () => {
     }
   }
   Component.propTypes = {
-    setReduxState: PropTypes.func.isRequired,
-    resetReduxState: PropTypes.func.isRequired,
+    reduxSetState: PropTypes.func.isRequired,
+    reduxResetState: PropTypes.func.isRequired,
     reduxState: PropTypes.object.isRequired,
   }
   const ExtendedComponent = createReducer({
@@ -566,22 +566,22 @@ test('Test resetReduxState', () => {
     toBe('<div><span>{\"text\":\"My first todo\"}</span><a id=\"a\">Reset redux state</a></div>')
 })
 
-test('Test signature setReduxState', () => {
+test('Test signature reduxSetState', () => {
   const store = createStore(null, enhanceStore)
 
   class Component extends React.Component {
     componentDidMount() {
-      const { setReduxState } = this.props
-      expect(setReduxState).toThrowError('Action type must be non empty string')
-      expect(setReduxState.bind(this, 'increment')).toThrowError('New state must be plain object or function')
-      expect(setReduxState.bind(this, 'increment', 1)).toThrowError('New state must be plain object or function')
-      expect(setReduxState.bind(this, 'increment', () => 123)).toThrowError('New state must be non empty plain object')
+      const { reduxSetState } = this.props
+      expect(reduxSetState).toThrowError('Action type must be non empty string')
+      expect(reduxSetState.bind(this, 'increment')).toThrowError('New state must be plain object or function')
+      expect(reduxSetState.bind(this, 'increment', 1)).toThrowError('New state must be plain object or function')
+      expect(reduxSetState.bind(this, 'increment', () => 123)).toThrowError('New state must be non empty plain object')
     }
 
     render() { return null }
   }
   Component.propTypes = {
-    setReduxState: PropTypes.func.isRequired,
+    reduxSetState: PropTypes.func.isRequired,
   }
   const ExtendedComponent = createReducer({
     mountPath: 'ui component',
@@ -595,18 +595,18 @@ test('Test signature setReduxState', () => {
   )
 })
 
-test('Test setReduxState', () => {
+test('Test reduxSetState', () => {
   const store = createStore(null, enhanceStore)
   let numRender = 0
   class Component extends React.Component {
     componentDidMount() {
-      const { setReduxState, reduxState } = this.props
-      setReduxState('update_todo', { text: 'My second todo' })
-      setReduxState('increment', ({ num }) => ({
+      const { reduxSetState, reduxState } = this.props
+      reduxSetState('update_todo', { text: 'My second todo' })
+      reduxSetState('increment', ({ num }) => ({
         num: ++num
       }))
-      setReduxState('update_todo', { text: 'My third todo' })
-      setReduxState('increment', ({ num }) => {
+      reduxSetState('update_todo', { text: 'My third todo' })
+      reduxSetState('increment', ({ num }) => {
         expect(num).toBe(2)
         return {
           num: num * 2
@@ -625,7 +625,7 @@ test('Test setReduxState', () => {
     }
   }
   Component.propTypes = {
-    setReduxState: PropTypes.func.isRequired,
+    reduxSetState: PropTypes.func.isRequired,
     reduxState: PropTypes.object.isRequired,
   }
   const ExtendedComponent = createReducer({
@@ -652,7 +652,7 @@ test('Test replace native state to redux state', () => {
     constructor(props) {
       super(props)
       this.state = props.reduxState
-      this.setState = props.setReduxState.bind(this, 'todo')
+      this.setState = props.reduxSetState.bind(this, 'todo')
     }
     componentDidMount() {
       this.setState((state) => ({ num: state.num ? ++state.num : 1 }))
@@ -675,7 +675,7 @@ test('Test replace native state to redux state', () => {
   }
   Component.propTypes = {
     reduxState: PropTypes.object.isRequired,
-    setReduxState: PropTypes.func.isRequired,
+    reduxSetState: PropTypes.func.isRequired,
   }
   const ExtendedComponent = createReducer({
     mountPath: 'state',
