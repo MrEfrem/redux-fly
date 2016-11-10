@@ -34,6 +34,8 @@ A React component class that injects into your component an Redux state through 
 
 #### Example
 ```javascript
+import React from 'react';
+import ReactDOM from 'react-dom';
 import { compose, createStore } from 'redux';
 import { Provider } from 'react-redux';
 import { enhanceStore, createReducer } from 'redux-fly'; 
