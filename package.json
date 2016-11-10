@@ -1,6 +1,6 @@
 {
   "name": "redux-fly",
-  "version": "0.0.1-beta.4",
+  "version": "0.0.1-beta.5",
   "description": "Easy to manage redux state",
   "browser": "dist/redux-fly.js",
   "main": "lib/index.js",
@@ -14,7 +14,7 @@
     "lib",
     "es",
     "src"
-  ],  
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/MrEfrem/redux-fly.git"
@@ -23,10 +23,10 @@
     "react",
     "reactjs",
     "redux"
-  ],  
+  ],
   "bugs": {
     "url": "https://github.com/MrEfrem/redux-fly/issues"
-  },  
+  },
   "scripts": {
     "build": "npm run clean && npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min",
     "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib",
@@ -39,7 +39,7 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "flow": "flow; test $? -eq 0 -o $? -eq 2"
-  },  
+  },
   "devDependencies": {
     "babel-cli": "^6.14.0",
     "babel-eslint": "^7.0.0",

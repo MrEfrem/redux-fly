@@ -10,11 +10,6 @@ test('Test invalid signature', () => {
   expect(createStore.bind(this, { ui: 123 }, enhanceStore)).toThrowError('Reducers must be functions')
 })
 
-test('Test createStore to match snapshot', () => {
-  const store = createStore(null, enhanceStore)
-  expect(store).toMatchSnapshot()
-})
-
 test('Test invalid signature registerReducers', () => {
   const store = createStore(null, enhanceStore)
   expect(store.registerReducers).toThrowError('The reducers must be non empty object')
