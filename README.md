@@ -27,4 +27,5 @@ If you don’t yet use npm or a modern module bundler, and would rather prefer a
   * [`registerReducers(reducers)`](docs/API.md#registerreducersreducers)
 
 ## Examples
-* [Counter](examples/counter)
+* [Counter](examples/counter). Example to use `redux-fly` component state.
+* [Async](examples/async). Example to use of mix canonical reducer and `redux-fly` component state.

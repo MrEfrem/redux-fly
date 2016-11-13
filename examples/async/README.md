@@ -1,6 +1,6 @@
-# Redux Counter Example
+# Redux Async Example
 
-Example to use `redux-fly` component state.
+Example to use of mix canonical reducer and `redux-fly` component state.
 This project template was built with [Create React App](https://github.com/facebookincubator/create-react-app).
 
 ## Available Scripts
