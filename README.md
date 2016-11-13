@@ -5,7 +5,7 @@ The purpose of library to provide simple API for:
 * Creation and manage React component state stored in Redux store.
 * Interaction between components through API Redux: actions dispatch, state selectors.
 * Creation of the reused components which can placement own state in the common Redux store or create incapsulated Redux store.
- 
+
 [![Build Status](https://travis-ci.org/MrEfrem/redux-fly.svg?branch=master)](https://travis-ci.org/MrEfrem/redux-fly)
 
 ## Installation
@@ -25,3 +25,6 @@ If you don’t yet use npm or a modern module bundler, and would rather prefer a
   * [`enhanceStore`](docs/API.md#enhancestore)
   * [`getState(mountPath)(state)`](docs/API.md#getstatemountpathstate)
   * [`registerReducers(reducers)`](docs/API.md#registerreducersreducers)
+
+## Examples
+* [Counter](examples/counter)
