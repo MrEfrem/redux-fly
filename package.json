@@ -1,6 +1,6 @@
 {
   "name": "redux-fly",
-  "version": "0.0.1-beta.6",
+  "version": "0.0.1-beta.7",
   "description": "Easy to manage redux state",
   "browser": "dist/redux-fly.js",
   "main": "lib/index.js",
