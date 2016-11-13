@@ -1,7 +1,7 @@
 {
   "name": "redux-fly",
-  "version": "0.0.1-beta.7",
-  "description": "Easy to manage redux state",
+  "version": "0.0.1-beta.8",
+  "description": "Simple redux",
   "browser": "dist/redux-fly.js",
   "main": "lib/index.js",
   "module": "es/index.js",
@@ -68,14 +68,19 @@
     "lodash": "^4.16.1"
   },
   "peerDependencies": {
-    "react": "15.0.0-0",
+    "react": "15.x",
     "redux": "3.x",
     "react-redux": "4.x"
   },
   "jest": {
     "testEnvironment": "node",
     "setupFiles": [
-      "./setup.tests.js"
+      "./__tests__/setup.tests.js"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/examples/",
+      "setup.tests.js"
     ]
   }
 }
