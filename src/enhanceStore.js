@@ -77,7 +77,7 @@ const enhanceStore = (createStore: Function) => {
      */
     function registerReducers(newReducers: Object) {
       if (!isPlainObject(newReducers) || Object.keys(newReducers).length === 0) {
-        throw new Error('The reducers must be non empty object')
+        throw new Error('Reducers must be non empty plain object')
       }
       Object.keys(newReducers).forEach(key => {
         if (typeof newReducers[key] !== 'function') {

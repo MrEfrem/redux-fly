@@ -8,8 +8,8 @@ Function creates and registers special reducer in Redux store, and provides simp
   * `initialState`\(*Object*): it defines reducer initial state.
   * `initialState(props): Object`\(*Function*): it receives props and must return object described above.
   * `[listenActions]`\(*Object*): if argument is specified, it defines listeners to actions.
-    * `key`\(*string*): action type.
-    * `value`\(*Function*): reducer.
+    * `key`\(*string*): it defines action type.
+    * `value`\(*Function*): it defines reducer.
   * `[listenActions(props, actionPrefix): Object]`\(*Function*): if argument is specified, it defines function which receives props and actionPrefix and must return object described above.
   * `connectToStore = true`\(*boolean*): default argument defines connect to current registered reducer by library `react-redux` and state is transferred in `reduxState` prop. If argument specified to `false` then manual connect needed.
   * `persist = true`\(*boolean*): default argument defines need to keeps current reducer state in case of component is unmounted. If argument specified to `false` then reducer state to reset.
@@ -17,7 +17,7 @@ Function creates and registers special reducer in Redux store, and provides simp
 
 #### Props
 It must be specified in case reused components creations.
-* `[reduxMountPath]`\(*string*) if prop is specified, it behaves just as `mountPath` argument. If also argument `mountPath` is specified, then they concatenates by rule: `reduxMountPath + mountPath`
+* `[reduxMountPath]`\(*string*) if prop is specified, it also replaces `mountPath` argument if `mountPath` isn't specified. But if also argument `mountPath` is specified, then they concatenates: `reduxMountPath + mountPath`
 * `[reduxPersist]`\(*boolean*) if prop is specified, it behaves just as `persist` argument. The prop replaces an argument.
 * `[reduxActionPrefix]`\(*string*) if prop is specified, it behaves just as `actionPrefix` argument. The prop replaces an argument.
 
@@ -29,8 +29,7 @@ A React component class that injects into your component an Redux state through 
 #### Remarks
 * Mounting path is required and must be transferred through argument and(or) prop.
 * If action prefix isn't transferred through argument and prop, then action prefix will be filled to mounting path.
-* If Redux store isn't created and isn't provides to components, then Redux store will be to automatic created with support
-[redux-devtools-extension](https://github.com/zalmoxisus/redux-devtools-extension).
+* If Redux store isn't created and isn't provides to components, then Redux store is automatic created with support [redux-devtools-extension](https://github.com/zalmoxisus/redux-devtools-extension).
 
 #### Example
 ```javascript
@@ -177,9 +176,13 @@ Function registers reducers in Redux store.
 
 #### Arguments
 * `reducers`\(*Object*)
-  * `key`\(*string*): property defines reducer mounting path. Argument consist from object keys separated by spaces.
-  * `value`\(*Function*): property defines reducer.
+  * `key`\(*string*): it defines reducer mounting path. Argument consist from object keys separated by spaces.
+  * `value`\(*Function*): it defines reducer.
 * `reducers(props): Object`\(*Function*): it defines function which receives props and function must return an object described above.
+
+#### Props
+It must be specified in case reused components creations.
+* `[reduxMountPath]`\(*string*) if prop is specified, then it concatenates with all keys in `reducers` argument: `reduxMountPath + key`
 
 #### Returns
 A React component class that register the passed reducers in Redux store.
@@ -187,6 +190,7 @@ A React component class that register the passed reducers in Redux store.
 #### Remarks
 * Function must be call two times. The first time with its arguments described above, and a second time, with the component: `registerReducers(reducers)(MyComponent)`.
 * Function does not modify the passed React component. It returns a new component that you should use instead.
+* If Redux store isn't created and isn't provides to components, then Redux store is automatic created with support [redux-devtools-extension](https://github.com/zalmoxisus/redux-devtools-extension).
 
 #### Example
 

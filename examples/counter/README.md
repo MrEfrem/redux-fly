@@ -1,6 +1,6 @@
 # Redux Counter Example
 
-Example to use `redux-fly` component state.
+Example to use `redux-fly` component state.<br/>
 This project template was built with [Create React App](https://github.com/facebookincubator/create-react-app).
 
 ## Available Scripts

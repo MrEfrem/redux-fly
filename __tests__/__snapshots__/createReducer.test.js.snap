@@ -1,0 +1,139 @@
+exports[`test Test connectToStore: false 1`] = `<div />`;
+
+exports[`test Test empty (default) actionPrefix 1`] = `
+<div>
+  ui component/
+</div>
+`;
+
+exports[`test Test filled actionPrefix in component 1`] = `
+<div>
+  component-prefix/
+</div>
+`;
+
+exports[`test Test filled actionPrefix in component and createReducer 1`] = `
+<div>
+  component-prefix/
+</div>
+`;
+
+exports[`test Test filled actionPrefix in createReducer 1`] = `
+<div>
+  reducer-prefix/
+</div>
+`;
+
+exports[`test Test initialState is function 1`] = `
+<div>
+  {\"text\":\"My first todo\"}
+</div>
+`;
+
+exports[`test Test listenActions 1`] = `
+<div>
+  {\"text\":\"My second todo\"}
+</div>
+`;
+
+exports[`test Test listenActions is function 1`] = `
+<div>
+  {\"text\":\"My second todo\",\"num\":\"10\"}
+</div>
+`;
+
+exports[`test Test passed mount path in Component 1`] = `
+<div>
+  ui component
+</div>
+`;
+
+exports[`test Test passed mount path in createReducer and in Component 1`] = `
+<div>
+  ui other-component
+</div>
+`;
+
+exports[`test Test passed persist in Component 1`] = `
+<div>
+  false
+</div>
+`;
+
+exports[`test Test passed persist in createReducer 1`] = `
+<div>
+  false
+</div>
+`;
+
+exports[`test Test passed persist in createReducer and Component 1`] = `
+<div>
+  false
+</div>
+`;
+
+exports[`test Test reduxResetState 1`] = `
+<a
+  onClick={[Function]}>
+  {\"text\":\"My second todo\"}
+</a>
+`;
+
+exports[`test Test reduxResetState 2`] = `
+<a
+  onClick={[Function]}>
+  {\"text\":\"My first todo\"}
+</a>
+`;
+
+exports[`test Test reduxSetState 1`] = `
+<div>
+  {\"text\":\"My third todo\",\"num\":4}
+</div>
+`;
+
+exports[`test Test replace native state to redux state 1`] = `
+<div>
+  {\"text\":\"My third todo\",\"num\":0.25}
+</div>
+`;
+
+exports[`test Test valid init component with provide redux store 1`] = `
+<div>
+  <span>
+    function
+  </span>
+  <span>
+    function
+  </span>
+  <span>
+    {\"text\":\"My first todo\"}
+  </span>
+  <span>
+    true
+  </span>
+  <span>
+    ui component/
+  </span>
+</div>
+`;
+
+exports[`test Test valid init component without provide redux store 1`] = `
+<div>
+  <span>
+    function
+  </span>
+  <span>
+    function
+  </span>
+  <span>
+    {\"text\":\"My first todo\"}
+  </span>
+  <span>
+    true
+  </span>
+  <span>
+    ui component/
+  </span>
+</div>
+`;

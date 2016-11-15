@@ -2,22 +2,35 @@ import registerReducers from '../src/registerReducers'
 import { createStore } from 'redux'
 import renderer from 'react-test-renderer'
 import { Provider } from 'react-redux'
-import React from 'react'
+import React, { PropTypes } from 'react'
 import enhanceStore from '../src/enhanceStore'
 
 test('Test invalid signature', () => {
-  expect(registerReducers).toThrowError('Reducers must be plain object or function')
-  expect(registerReducers.bind(this, 123)).toThrowError('Reducers must be plain object or function')
+  expect(registerReducers).toThrowError('Reducers must be object or function')
+  expect(registerReducers.bind(this, 123)).toThrowError('Reducers must be object or function')
+})
+
+test('Test invalid reducers returned from function', () => {
+  const Component = () => <div/>
+  const ExtendedComponent1 = registerReducers(() => 123)(Component)
+
+  expect(renderer.create.bind(renderer,
+    <ExtendedComponent1/>
+  )).toThrowError('Reducers must be object')
+})
+
+test('Test invalid prop reduxMountPath', () => {
+  const Component = () => <div/>
+  const ExtendedComponent1 = registerReducers({})(Component)
+
+  expect(renderer.create.bind(renderer,
+    <ExtendedComponent1 reduxMountPath={123}/>
+  )).toThrowError('Mount path must be string')
 })
 
 test('Test invalid redux store', () => {
   const Component = () => <div/>
-
   const ExtendedComponent1 = registerReducers({})(Component)
-
-  expect(renderer.create.bind(renderer,
-    <ExtendedComponent1/>
-  )).toThrowError('Redux store must be created')
 
   const store = createStore(() => ({}))
   expect(renderer.create.bind(renderer,
@@ -77,4 +90,44 @@ test('Test reducers as object', () => {
   )
 
   expect(JSON.stringify(store.getState())).toBe('{\"ui\":{\"component\":{\"text\":\"My second todo\"}},\"greeting\":{\"descr\":\"Hello world!\"}}')
+})
+
+test('Test reducers as object without provide redux store', () => {
+  const Component = (undefined, { store }) => (
+    <div>{JSON.stringify(store.getState())}</div>
+  )
+  Component.contextTypes = {
+    store: PropTypes.object.isRequired
+  }
+  const ExtendedComponent = registerReducers({
+    'ui component': () => ({
+      text: 'My second todo'
+    }),
+    'greeting': () => ({ descr: 'Hello world!' })
+  })(Component)
+
+  const component = renderer.create(
+    <ExtendedComponent/>
+  )
+  expect(component.toJSON()).toMatchSnapshot()
+})
+
+test('Test calculated mountPath with passed reduxMountPath', () => {
+  const Component = (undefined, { store }) => (
+    <div>{JSON.stringify(store.getState())}</div>
+  )
+  Component.contextTypes = {
+    store: PropTypes.object.isRequired
+  }
+  const ExtendedComponent = registerReducers({
+    'ui component': () => ({
+      text: 'My second todo'
+    }),
+    'greeting': () => ({ descr: 'Hello world!' })
+  })(Component)
+
+  const component = renderer.create(
+    <ExtendedComponent reduxMountPath=" my first   component" />
+  )
+  expect(component.toJSON()).toMatchSnapshot()
 })

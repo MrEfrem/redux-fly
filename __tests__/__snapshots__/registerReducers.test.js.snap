@@ -1,0 +1,11 @@
+exports[`test Test calculated mountPath with passed reduxMountPath 1`] = `
+<div>
+  {\"my\":{\"first\":{\"component\":{\"ui\":{\"component\":{\"text\":\"My second todo\"}},\"greeting\":{\"descr\":\"Hello world!\"}}}}}
+</div>
+`;
+
+exports[`test Test reducers as object without provide redux store 1`] = `
+<div>
+  {\"ui\":{\"component\":{\"text\":\"My second todo\"}},\"greeting\":{\"descr\":\"Hello world!\"}}
+</div>
+`;

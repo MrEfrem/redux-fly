@@ -115,7 +115,7 @@ export default ({
 
         let { store } = context
         this.store = null
-        if (!isPlainObject(store)) {
+        if (typeof store === 'undefined') {
           const composeEnhancers =
             process.env.NODE_ENV !== 'production' &&
             typeof window === 'object' &&

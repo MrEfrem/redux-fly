@@ -4,7 +4,7 @@ import { createStore } from 'redux'
 test('Test invalid signature', () => {
   expect(enhanceStore).toThrowError('Create store must be function')
   expect(enhanceStore.bind(this, 123)).toThrowError('Create store must be function')
-  expect(createStore.bind(this, 123, enhanceStore)).toThrowError('The reducers must be non empty object')
+  expect(createStore.bind(this, 123, enhanceStore)).toThrowError('Reducers must be non empty plain object')
   expect(createStore.bind(this, null, 123, enhanceStore)).toThrowError('Preloaded state must be plain object')
   expect(createStore.bind(this, null, null, 123)).toThrow()
   expect(createStore.bind(this, { ui: 123 }, enhanceStore)).toThrowError('Reducers must be functions')
@@ -12,8 +12,8 @@ test('Test invalid signature', () => {
 
 test('Test invalid signature registerReducers', () => {
   const store = createStore(null, enhanceStore)
-  expect(store.registerReducers).toThrowError('The reducers must be non empty object')
-  expect(store.registerReducers.bind(store, {})).toThrowError('The reducers must be non empty object')
+  expect(store.registerReducers).toThrowError('Reducers must be non empty plain object')
+  expect(store.registerReducers.bind(store, {})).toThrowError('Reducers must be non empty plain object')
   expect(store.registerReducers.bind(store, { ui: 123 })).toThrowError('Reducers must be functions')
   expect(store.registerReducers.bind(store, { ui: () => {} })).toThrow()
 })

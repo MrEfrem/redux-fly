@@ -55,7 +55,6 @@ test('Test invalid init component', () => {
 })
 
 test('Test valid init component without provide redux store', () => {
-
   const Component = (props) => (
     <div>
       <span>{typeof props.reduxSetState}</span>
@@ -74,10 +73,8 @@ test('Test valid init component without provide redux store', () => {
   }
   const ExtendedComponent = createReducer({ mountPath: 'ui component', initialState: { text: 'My first todo' } })(Component)
 
-  let component = mount(<ExtendedComponent />)
-  expect(component.html()).
-    toBe('<div><span>function</span><span>function</span>' +
-      '<span>{\"text\":\"My first todo\"}</span><span>true</span><span>ui component/</span></div>')
+  const component = renderer.create(<ExtendedComponent />)
+  expect(component.toJSON()).toMatchSnapshot()
 })
 
 test('Test valid init component with provide redux store', () => {
@@ -101,14 +98,12 @@ test('Test valid init component with provide redux store', () => {
   }
   const ExtendedComponent = createReducer({ mountPath: 'ui component', initialState: { text: 'My first todo' } })(Component)
 
-  let component = mount(
+  const component = renderer.create(
     <Provider store={store}>
       <ExtendedComponent />
     </Provider>
   )
-  expect(component.html()).
-    toBe('<div><span>function</span><span>function</span>' +
-      '<span>{\"text\":\"My first todo\"}</span><span>true</span><span>ui component/</span></div>')
+  expect(component.toJSON()).toMatchSnapshot()
 })
 
 test('Test passed mount path in Component', () => {
@@ -122,13 +117,12 @@ test('Test passed mount path in Component', () => {
   }
   const ExtendedComponent = createReducer({ initialState: { text: 'My first todo' } })(Component)
 
-  let component = mount(
+  const component = renderer.create(
     <Provider store={store}>
       <ExtendedComponent reduxMountPath="ui component" />
     </Provider>
   )
-  expect(component.html()).
-    toBe('<div>ui component</div>')
+  expect(component.toJSON()).toMatchSnapshot()
 })
 
 test('Test passed mount path in createReducer and in Component', () => {
@@ -143,13 +137,12 @@ test('Test passed mount path in createReducer and in Component', () => {
   const initialState = { text: 'My first todo' }
   const ExtendedComponent = createReducer({ mountPath: 'state', initialState })(Component)
 
-  let component = mount(
+  const component = renderer.create(
     <Provider store={store}>
       <ExtendedComponent reduxMountPath="ui other-component" />
     </Provider>
   )
-  expect(component.html()).
-    toBe('<div>ui other-component</div>')
+  expect(component.toJSON()).toMatchSnapshot()
   expect(store.getState().ui['other-component'].state).toBe(initialState)
 })
 
@@ -164,13 +157,12 @@ test('Test passed persist in createReducer', () => {
   }
   const ExtendedComponent = createReducer({ mountPath: 'ui component', initialState: { text: 'My first todo' }, persist: false })(Component)
 
-  let component = mount(
+  const component = renderer.create(
     <Provider store={store}>
       <ExtendedComponent />
     </Provider>
   )
-  expect(component.html()).
-    toBe('<div>false</div>')
+  expect(component.toJSON()).toMatchSnapshot()
 })
 
 test('Test passed persist in Component', () => {
@@ -184,13 +176,12 @@ test('Test passed persist in Component', () => {
   }
   const ExtendedComponent = createReducer({ mountPath: 'ui component', initialState: { text: 'My first todo' } })(Component)
 
-  let component = mount(
+  const component = renderer.create(
     <Provider store={store}>
       <ExtendedComponent reduxPersist={false} />
     </Provider>
   )
-  expect(component.html()).
-    toBe('<div>false</div>')
+  expect(component.toJSON()).toMatchSnapshot()
 })
 
 test('Test passed persist in createReducer and Component', () => {
@@ -204,13 +195,12 @@ test('Test passed persist in createReducer and Component', () => {
   }
   const ExtendedComponent = createReducer({ mountPath: 'ui component', initialState: { text: 'My first todo' }, persist: true })(Component)
 
-  let component = mount(
+  const component = renderer.create(
     <Provider store={store}>
       <ExtendedComponent reduxPersist={false} />
     </Provider>
   )
-  expect(component.html()).
-    toBe('<div>false</div>')
+  expect(component.toJSON()).toMatchSnapshot()
 })
 
 test('Test initialState is function', () => {
@@ -224,13 +214,12 @@ test('Test initialState is function', () => {
   }
   const ExtendedComponent = createReducer({ mountPath: 'ui component', initialState: (props) => ({ text: props.text }) })(Component)
 
-  let component = mount(
+  const component = renderer.create(
     <Provider store={store}>
       <ExtendedComponent text="My first todo" />
     </Provider>
   )
-  expect(component.html()).
-    toBe('<div>{\"text\":\"My first todo\"}</div>')
+  expect(component.toJSON()).toMatchSnapshot()
 })
 
 test('Test listenActions', () => {
@@ -262,13 +251,12 @@ test('Test listenActions', () => {
     connect(),
   )(Component)
 
-  let component = mount(
+  const component = renderer.create(
     <Provider store={store}>
       <ExtendedComponent />
     </Provider>
   )
-  expect(component.html()).
-    toBe('<div>{\"text\":\"My second todo\"}</div>')
+  expect(component.toJSON()).toMatchSnapshot()
 })
 
 test('Test listenActions is function', () => {
@@ -302,13 +290,12 @@ test('Test listenActions is function', () => {
     connect(),
   )(Component)
 
-  let component = mount(
+  const component = renderer.create(
     <Provider store={store}>
       <ExtendedComponent text="My second todo" num="10" />
     </Provider>
   )
-  expect(component.html()).
-    toBe('<div>{\"text\":\"My second todo\",\"num\":\"10\"}</div>')
+  expect(component.toJSON()).toMatchSnapshot()
 })
 
 test('Test connectToStore: false', () => {
@@ -326,13 +313,12 @@ test('Test connectToStore: false', () => {
     connectToStore: false
   })(Component)
 
-  let component = mount(
+  const component = renderer.create(
     <Provider store={store}>
       <ExtendedComponent />
     </Provider>
   )
-  expect(component.html()).
-    toBe('<div></div>')
+  expect(component.toJSON()).toMatchSnapshot()
 })
 
 test('Test reset state (persist = false) after unmounting component', async () => {
@@ -435,13 +421,12 @@ test('Test empty (default) actionPrefix', () => {
     initialState: { text: 'My first todo' }
   })(Component)
 
-  const component = mount(
+  const component = renderer.create(
     <Provider store={store}>
       <ExtendedComponent />
     </Provider>
   )
-
-  expect(component.html()).toBe('<div>ui component/</div>')
+  expect(component.toJSON()).toMatchSnapshot()
 })
 
 test('Test filled actionPrefix in createReducer', () => {
@@ -459,13 +444,12 @@ test('Test filled actionPrefix in createReducer', () => {
     actionPrefix: 'reducer-prefix/'
   })(Component)
 
-  const component = mount(
+  const component = renderer.create(
     <Provider store={store}>
       <ExtendedComponent />
     </Provider>
   )
-
-  expect(component.html()).toBe('<div>reducer-prefix/</div>')
+  expect(component.toJSON()).toMatchSnapshot()
 })
 
 test('Test filled actionPrefix in component', () => {
@@ -482,13 +466,12 @@ test('Test filled actionPrefix in component', () => {
     initialState: { text: 'My first todo' }
   })(Component)
 
-  const component = mount(
+  const component = renderer.create(
     <Provider store={store}>
       <ExtendedComponent reduxActionPrefix="component-prefix/"/>
     </Provider>
   )
-
-  expect(component.html()).toBe('<div>component-prefix/</div>')
+  expect(component.toJSON()).toMatchSnapshot()
 })
 
 test('Test filled actionPrefix in component and createReducer', () => {
@@ -506,13 +489,12 @@ test('Test filled actionPrefix in component and createReducer', () => {
     actionPrefix: 'reducer-prefix/'
   })(Component)
 
-  const component = mount(
+  const component = renderer.create(
     <Provider store={store}>
       <ExtendedComponent reduxActionPrefix="component-prefix/"/>
     </Provider>
   )
-
-  expect(component.html()).toBe('<div>component-prefix/</div>')
+  expect(component.toJSON()).toMatchSnapshot()
 })
 
 test('Test reduxResetState', () => {
@@ -526,7 +508,7 @@ test('Test reduxResetState', () => {
       })
     }
 
-    handleClick = () => {
+    onClick = () => {
       const { reduxResetState } = this.props
       reduxResetState()
     }
@@ -534,10 +516,9 @@ test('Test reduxResetState', () => {
     render() {
       const { props } = this
       return (
-        <div>
-          <span>{JSON.stringify(props.reduxState)}</span>
-          <a id="a" onClick={this.handleClick}>Reset redux state</a>
-        </div>
+        <a onClick={this.onClick}>
+          {JSON.stringify(props.reduxState)}
+        </a>
       )
     }
   }
@@ -551,19 +532,17 @@ test('Test reduxResetState', () => {
     initialState: { text: 'My first todo' }
   })(Component)
 
-  const component = mount(
+  const tree = renderer.create(
     <Provider store={store}>
       <ExtendedComponent />
     </Provider>
   )
+  let component = tree.toJSON()
+  expect(component).toMatchSnapshot()
 
-  expect(component.html()).
-    toBe('<div><span>{\"text\":\"My second todo\"}</span><a id=\"a\">Reset redux state</a></div>')
-
-  component.find('#a').simulate('click')
-
-  expect(component.html()).
-    toBe('<div><span>{\"text\":\"My first todo\"}</span><a id=\"a\">Reset redux state</a></div>')
+  component.props.onClick()
+  component = tree.toJSON()
+  expect(component).toMatchSnapshot()
 })
 
 test('Test signature reduxSetState', () => {
@@ -588,7 +567,7 @@ test('Test signature reduxSetState', () => {
     initialState: { text: 'My first todo' }
   })(Component)
 
-  mount(
+  renderer.create(
     <Provider store={store}>
       <ExtendedComponent />
     </Provider>
@@ -633,15 +612,12 @@ test('Test reduxSetState', () => {
     initialState: { text: 'My first todo', num: 1 }
   })(Component)
 
-  const component = mount(
+  const component = renderer.create(
     <Provider store={store}>
       <ExtendedComponent />
     </Provider>
   )
-
-  expect(component.html()).
-    toBe('<div>{\"text\":\"My third todo\",\"num\":4}</div>')
-
+  expect(component.toJSON()).toMatchSnapshot()
   expect(numRender).toBe(2)
 })
 
@@ -682,11 +658,10 @@ test('Test replace native state to redux state', () => {
     initialState: { text: 'My first todo' }
   })(Component)
 
-  const component = mount(
+  const component = renderer.create(
     <Provider store={store}>
       <ExtendedComponent reduxMountPath="ui component" />
     </Provider>
   )
-
-  expect(component.html()).toBe('<div>{\"text\":\"My third todo\",\"num\":0.25}</div>')
+  expect(component.toJSON()).toMatchSnapshot()
 })
