@@ -1,10 +1,7 @@
 # Redux-fly
-
 The purpose of library to provide simple API for:
-* Reducers registration at any time to any place of Redux store.
-* Creation and manage React component state stored in Redux store.
-* Interaction between components through API Redux: actions dispatch, state selectors.
-* Creation of the reused components which can placement own state in the common Redux store or create incapsulated Redux store.
+* Reducers registration at any time to any place in store of Redux. This improvement is providing of code splitting, encapsulation of reducer logic for creation of reused components.
+* Creation and controlling component state which is saved in store of Redux. Providing interaction between components through API Redux: actions dispatch, state selectors.
 
 [![Build Status](https://travis-ci.org/MrEfrem/redux-fly.svg?branch=master)](https://travis-ci.org/MrEfrem/redux-fly)
 
