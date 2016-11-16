@@ -18,7 +18,7 @@ export default (
   reducers: Function | Object,
 ) => {
   if (typeof reducers !== 'function' && typeof reducers !== 'object') {
-    throw new Error('Reducers must be object or function')
+    throw new Error('Reducers must be non empty plain object or function')
   }
   return (WrappedComponent: any) =>
     class CreateReducer extends React.Component {
@@ -56,7 +56,7 @@ export default (
         const _reducers = typeof reducers === 'function' ? reducers(props) : reducers
 
         if (typeof _reducers !== 'object') {
-          throw new Error('Reducers must be object')
+          throw new Error('Reducers must be non empty plain object')
         }
 
         let _normReducers = {}

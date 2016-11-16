@@ -223,7 +223,7 @@ export default compose(
 import { getState, registerReducers } from 'redux-fly';
 ...
 export default compose(
-  registerReducers(props => ({ [`${props.reduxMountPath} todo`]: todoReducer })),
+  registerReducers(props => ({ todo: todoReducer })),
   connect((state, ownProps) => ({ todo: getState(`${ownProps.reduxMountPath} todo`)(state) }))
 )(Component)
 ```

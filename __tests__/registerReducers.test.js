@@ -6,8 +6,8 @@ import React, { PropTypes } from 'react'
 import enhanceStore from '../src/enhanceStore'
 
 test('Test invalid signature', () => {
-  expect(registerReducers).toThrowError('Reducers must be object or function')
-  expect(registerReducers.bind(this, 123)).toThrowError('Reducers must be object or function')
+  expect(registerReducers).toThrowError('Reducers must be non empty plain object or function')
+  expect(registerReducers.bind(this, 123)).toThrowError('Reducers must be non empty plain object or function')
 })
 
 test('Test invalid reducers returned from function', () => {
@@ -16,7 +16,7 @@ test('Test invalid reducers returned from function', () => {
 
   expect(renderer.create.bind(renderer,
     <ExtendedComponent1/>
-  )).toThrowError('Reducers must be object')
+  )).toThrowError('Reducers must be non empty plain object')
 })
 
 test('Test invalid prop reduxMountPath', () => {
