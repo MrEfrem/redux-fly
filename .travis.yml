@@ -10,4 +10,4 @@ cache:
     - ".eslintcache"
 
 before_install:
-  - bash npm i npm@latest
+  - if [[ `npm -v` < 3* ]]; then npm i -g npm; fi
