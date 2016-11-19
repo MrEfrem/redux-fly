@@ -9,7 +9,7 @@ Function creates and registers special reducer in Redux store, and provides simp
   * `initialState(props): Object`\(*Function*): it receives props and must return object described above.
   * `[listenActions]`\(*Object*): if argument is specified, it defines listeners to actions.
     * `key`\(*string*): it defines action type.
-    * `value`\(*Function*): it defines reducer.
+    * `value(state, action): newState`\(*Function*): it defines function which receives into arguments a current state and action object and must be returning new state. New state merge with current state through `Object.assign` and new object always returns.
   * `[listenActions(props, actionPrefix): Object]`\(*Function*): if argument is specified, it defines function which receives props and actionPrefix and must return object described above.
   * `connectToStore = true`\(*boolean*): default argument defines connect to current registered reducer by library `react-redux` and state is transferred in `reduxState` prop. If argument specified to `false` then manual connect needed.
   * `persist = true`\(*boolean*): default argument defines need to keeps current reducer state in case of component is unmounted. If argument specified to `false` then reducer state to reset.

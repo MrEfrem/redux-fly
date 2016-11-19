@@ -18,16 +18,19 @@ export default (mountPath: string, initialState: Object, listenActions: Object, 
     if ((typeof action[MOUNT_PATH] !== 'undefined' && action[MOUNT_PATH] === mountPath && typeof action[NEW_STATE] !== 'undefined') ||
       action.type in listenActions
     ) {
-      const reducerMap = {
-        [resetState]: () => ({
-          ...action[NEW_STATE]
-        }),
-        ...listenActions,
+      // Action is reset state
+      if (action.type === resetState) {
+        return { ...action[NEW_STATE] }
       }
-      const reducer = reducerMap[action.type]
+      // Action found in listenActions
+      const reducer = listenActions[action.type]
       if (reducer) {
-        return reducer(state, action)
+        return {
+          ...state,
+          ...reducer(state, action)
+        }
       }
+      // Action dispatched by setReduxState
       return {
         ...state,
         ...action[NEW_STATE]

@@ -54,18 +54,21 @@ test('Test match action', () => {
 
 test('Test subscribe to actions', () => {
   const preloadedState = {
-    text: 'My first todo!'
+    text: 'My first todo!',
+    num: 1
   }
   const newText = 'My third todo'
   const ACTION = 'OTHER_ACTION'
-  expect(createBoundedReducer('RANDOM_UUID', preloadedState, {
+
+  expect(JSON.stringify(createBoundedReducer('RANDOM_UUID', preloadedState, {
     [ACTION]: (state, action) => ({ text: action.text })
   }, 'ui todo')(undefined,
     { type: ACTION, text: newText }
-  ).text).toBe(newText)
-  expect(createBoundedReducer('RANDOM_UUID', preloadedState, {
+  ))).toBe(JSON.stringify({ text: newText, num: 1 }))
+
+  expect(JSON.stringify(createBoundedReducer('RANDOM_UUID', preloadedState, {
     [ACTION]: (state, action) => ({ text: action.text })
   }, 'ui todo')({ ...preloadedState },
     { type: ACTION, text: newText }
-  ).text).toBe(newText)
+  ))).toBe(JSON.stringify({ text: newText, num: 1 }))
 })

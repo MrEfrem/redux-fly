@@ -246,7 +246,7 @@ test('Test listenActions', () => {
     createReducer({
       mountPath: 'ui component',
       initialState: { text: 'My first todo' },
-      listenActions: { [`ui component/${UPDATE_TODO}`]: (state, action) => ({ ...state,  text: action.text }) }
+      listenActions: { [`ui component/${UPDATE_TODO}`]: (state, action) => ({ text: action.text }) }
     }),
     connect(),
   )(Component)
@@ -285,7 +285,7 @@ test('Test listenActions is function', () => {
       mountPath: 'ui component',
       initialState: { text: 'My first todo' },
       listenActions: (props, actionPrefix) =>
-        ({ [`${actionPrefix}${UPDATE_TODO}`]: (state, action) => ({ ...state,  text: action.text, num: props.num }) })
+        ({ [`${actionPrefix}${UPDATE_TODO}`]: (state, action) => ({ text: action.text, num: props.num }) })
     }),
     connect(),
   )(Component)
