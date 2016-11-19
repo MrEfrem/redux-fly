@@ -26,3 +26,4 @@ If you don’t yet use npm or a modern module bundler, and would rather prefer a
 ## Examples
 * [Counter](examples/counter). Example to use `redux-fly` component state.
 * [Async](examples/async). Example to use of mix canonical reducer and `redux-fly` component state.
+* [Universal](examples/universal). Example to use `redux-fly` component state and provide the universal rendering.
