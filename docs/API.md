@@ -45,7 +45,7 @@ const store = createStore(null, composeEnhancers(enhanceStore));
 const Welcome = ({ reduxState: { text }, reduxSetState, reduxResetState }) => (
   <div>
     <h1>{text}</h1>
-    <input value={text} onChange={(e) => reduxSetState('change-text', { text: e.target.value })} />
+    <input value={text} onChange={(e) => reduxSetState('CHANGE-TEXT', { text: e.target.value })} />
     <button onClick={() => reduxResetState()}>Reset</button>
   </div>
 )

@@ -6,24 +6,32 @@ The purpose of library to provide simple API for:
 [![Build Status](https://travis-ci.org/MrEfrem/redux-fly.svg?branch=master)](https://travis-ci.org/MrEfrem/redux-fly)
 
 ```javascript
+import React from 'react'
+import { createReducer } from 'redux-fly'
+
+export const OPEN_MODAL = 'OPEN-MODAL';
+export const CLOSE_MODAL = 'CLOSE-MODAL';
+
 const Modal = ({ reduxState: { text, open }, reduxSetState }) => (
   <div style={{ display: open ? 'block' : 'none' }}>
-    <p>{text}</p>    
+    <p>{text}</p>
     <button onClick={() => reduxSetState('CLOSE-MODAL', { open: false })}>Close</button>
   </div>
-)
+);
 
-const EnhancedWelcome = createReducer({
-  mountPath: 'modal',
+const EnhancedModal = createReducer({
+  mountPath: 'filters modal',
   initialState: ({ text = 'Hello world!' }) => ({
     open: false,
     text
   }),
   listenActions: {
-    'OPEN-MODAL': (state, action) => ({ open: true }),
-    'CLOSE-MODAL': (state, action) => ({ open: false })
+    [OPEN_MODAL]: (state, action) => ({ open: true }),
+    [CLOSE_MODAL]: (state, action) => ({ open: false })
   }
-})(Modal)
+})(Modal);
+
+export default EnhancedModal;
 ```
 
 ## Installation

@@ -327,7 +327,7 @@ test('Test reset state (persist = false) after unmounting component', async () =
   class Component extends React.Component {
     componentDidMount() {
       const { reduxSetState } = this.props
-      reduxSetState('update_todo', {
+      reduxSetState('UPDATE-TODO', {
         text: 'My second todo',
       })
     }
@@ -360,7 +360,7 @@ test('Test preserved state (persist = true) after unmounting component', () => {
   class Component extends React.Component {
     componentDidMount() {
       const { reduxSetState } = this.props
-      reduxSetState( 'update_todo', {
+      reduxSetState( 'UPDATE-TODO', {
         text: 'My second todo',
       })
     }
@@ -392,7 +392,7 @@ test('Test empty (default) actionPrefix', () => {
     if (actionType === 'reset') {
       expect(action.type).toBe(`ui component/${RESET_STATE}`)
     } else {
-      expect(action.type).toBe('ui component/update_todo')
+      expect(action.type).toBe('ui component/@@UPDATE-TODO')
     }
   }
   const store = createStore(null, compose(applyMiddleware(middleware), enhanceStore))
@@ -400,7 +400,7 @@ test('Test empty (default) actionPrefix', () => {
   class Component extends React.Component {
     componentDidMount() {
       const { reduxSetState, reduxResetState } = this.props
-      reduxSetState('update_todo', {
+      reduxSetState('UPDATE-TODO', {
         text: 'My second todo',
       })
       actionType = 'reset'
@@ -503,7 +503,7 @@ test('Test reduxResetState', () => {
   class Component extends React.Component {
     componentDidMount() {
       const { reduxSetState } = this.props
-      reduxSetState('update_todo', {
+      reduxSetState('UPDATE-TODO', {
         text: 'My second todo',
       })
     }
@@ -552,9 +552,9 @@ test('Test signature reduxSetState', () => {
     componentDidMount() {
       const { reduxSetState } = this.props
       expect(reduxSetState).toThrowError('Action type must be non empty string')
-      expect(reduxSetState.bind(this, 'increment')).toThrowError('New state must be plain object or function')
-      expect(reduxSetState.bind(this, 'increment', 1)).toThrowError('New state must be plain object or function')
-      expect(reduxSetState.bind(this, 'increment', () => 123)).toThrowError('New state must be non empty plain object')
+      expect(reduxSetState.bind(this, 'INCREMENT')).toThrowError('New state must be plain object or function')
+      expect(reduxSetState.bind(this, 'INCREMENT', 1)).toThrowError('New state must be plain object or function')
+      expect(reduxSetState.bind(this, 'INCREMENT', () => 123)).toThrowError('New state must be non empty plain object')
     }
 
     render() { return null }
@@ -580,12 +580,12 @@ test('Test reduxSetState', () => {
   class Component extends React.Component {
     componentDidMount() {
       const { reduxSetState, reduxState } = this.props
-      reduxSetState('update_todo', { text: 'My second todo' })
-      reduxSetState('increment', ({ num }) => ({
+      reduxSetState('UPDATE-TODO', { text: 'My second todo' })
+      reduxSetState('INCREMENT', ({ num }) => ({
         num: ++num
       }))
-      reduxSetState('update_todo', { text: 'My third todo' })
-      reduxSetState('increment', ({ num }) => {
+      reduxSetState('UPDATE-TODO', { text: 'My third todo' })
+      reduxSetState('INCREMENT', ({ num }) => {
         expect(num).toBe(2)
         return {
           num: num * 2
@@ -628,7 +628,7 @@ test('Test replace native state to redux state', () => {
     constructor(props) {
       super(props)
       this.state = props.reduxState
-      this.setState = props.reduxSetState.bind(this, 'todo')
+      this.setState = props.reduxSetState.bind(this, 'UPDATE-TODO')
     }
     componentDidMount() {
       this.setState((state) => ({ num: state.num ? ++state.num : 1 }))
