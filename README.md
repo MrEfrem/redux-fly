@@ -5,6 +5,27 @@ The purpose of library to provide simple API for:
 
 [![Build Status](https://travis-ci.org/MrEfrem/redux-fly.svg?branch=master)](https://travis-ci.org/MrEfrem/redux-fly)
 
+```javascript
+const Modal = ({ reduxState: { text, open }, reduxSetState }) => (
+  <div style={{ display: open ? 'block' : 'none' }}>
+    <p>{text}</p>    
+    <button onClick={() => reduxSetState('CLOSE-MODAL', { open: false })}>Close</button>
+  </div>
+)
+
+const EnhancedWelcome = createReducer({
+  mountPath: 'modal',
+  initialState: ({ text = 'Hello world!' }) => ({
+    open: false,
+    text
+  }),
+  listenActions: {
+    'OPEN-MODAL': (state, action) => ({ open: true }),
+    'CLOSE-MODAL': (state, action) => ({ open: false })
+  }
+})(Modal)
+```
+
 ## Installation
 React-fly requires **React 15.x**, **Redux 3.x** and **React Redux 4.x**.
 ```
