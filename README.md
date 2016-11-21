@@ -7,31 +7,43 @@ The purpose of library to provide simple API for:
 
 ```javascript
 import React from 'react'
-import { createReducer } from 'redux-fly'
+import { createReducer, getState } from 'redux-fly'
 
-export const OPEN_MODAL = 'OPEN-MODAL';
-export const CLOSE_MODAL = 'CLOSE-MODAL';
+const mountPath = 'filters modal'
 
-const Modal = ({ reduxState: { text, open }, reduxSetState }) => (
-  <div style={{ display: open ? 'block' : 'none' }}>
-    <p>{text}</p>
-    <button onClick={() => reduxSetState('CLOSE-MODAL', { open: false })}>Close</button>
+// Public actions
+const OPEN_MODAL = 'OPEN-MODAL'
+const CLOSE_MODAL = 'CLOSE-MODAL'
+
+// To open a modal is public action creator
+export const openModal = () => ({
+  type: OPEN_MODAL
+})
+// To close a modal is public action creator
+export const closeModal = () => ({
+  type: CLOSE_MODAL
+})
+
+// Check is opened modal
+export const isOpened = (mountPath, state) => getState(mountPath)(state).opened
+
+const Modal = ({ reduxState: { opened }, children, reduxSetState }) => (
+  <div style={{ display: opened ? 'block' : 'none' }}>
+    <a onClick={() => reduxSetState('CLOSE-MODAL', { opened: false })}>&times;</a>
+    {children}
   </div>
 );
 
-const EnhancedModal = createReducer({
-  mountPath: 'filters modal',
-  initialState: ({ text = 'Hello world!' }) => ({
-    open: false,
-    text
+export default createReducer({
+  mountPath,
+  initialState: ({
+    opened: false
   }),
-  listenActions: {
+  listenActions: { // Listen public actions
     [OPEN_MODAL]: (state, action) => ({ open: true }),
     [CLOSE_MODAL]: (state, action) => ({ open: false })
   }
 })(Modal);
-
-export default EnhancedModal;
 ```
 
 ## Installation
@@ -56,3 +68,4 @@ If you don’t yet use npm or a modern module bundler, and would rather prefer a
 * [Counter](examples/counter). Example to use `redux-fly` component state.
 * [Async](examples/async). Example to use of mix canonical reducer and `redux-fly` component state.
 * [Universal](examples/universal). Example to use `redux-fly` component state and provide the universal rendering.
+* [Reused components](examples/reused_components). Example to use `redux-fly` component state for creation reused components and providing of API for interaction between they.

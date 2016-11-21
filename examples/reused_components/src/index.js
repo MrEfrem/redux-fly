@@ -1,9 +1,10 @@
+//@flow
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { createStore, compose } from 'redux'
 import { Provider } from 'react-redux'
 import { enhanceStore } from 'redux-fly'
-import App from './App'
+import Layout from './containers/page/Layout'
 
 const composeEnhancers =
     process.env.NODE_ENV !== 'production' &&
@@ -11,7 +12,7 @@ const composeEnhancers =
     window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?
       window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({}) : compose
 
-const store = createStore(null, window.__PRELOADED_STATE__, composeEnhancers(enhanceStore))
+const store = createStore(null, composeEnhancers(enhanceStore))
 const target = document.getElementById('root')
 const render = (Component) => {
   try {
@@ -27,11 +28,11 @@ const render = (Component) => {
   }
 }
 
-render(App)
+render(Layout)
 
 if (module.hot) {
-  module.hot.accept('./App', () => {
-    render(require('./App').default)
+  (module: any).hot.accept('./containers/page/Layout', () => {
+    render(require('./containers/page/Layout').default)
   })
 }
 

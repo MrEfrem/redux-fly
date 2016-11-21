@@ -13,14 +13,19 @@ const composeEnhancers =
       window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({}) : compose
 
 const store = createStore(null, composeEnhancers(enhanceStore, applyMiddleware(thunk)))
-
+const target = document.getElementById('root')
 const render = (Component) => {
-  ReactDOM.render(
-    <Provider store={store}>
-      <Component/>
-    </Provider>,
-    document.getElementById('root')
-  )
+  try {
+    ReactDOM.render(
+      <Provider store={store}>
+        <Component/>
+      </Provider>,
+      target
+    )
+  } catch (err) {
+    const RedBox = require('redbox-react').default
+    ReactDOM.render(<RedBox error={err} />, target)
+  }
 }
 
 render(App)
