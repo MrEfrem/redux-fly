@@ -30,6 +30,14 @@ exports[`test Test initialState is function 1`] = `
 </div>
 `;
 
+exports[`test Test is valid to create of reducer after create of reducer 1`] = `
+<div>
+  <div>
+    Last reducer
+  </div>
+</div>
+`;
+
 exports[`test Test listenActions 1`] = `
 <div>
   {\"text\":\"My second todo\"}

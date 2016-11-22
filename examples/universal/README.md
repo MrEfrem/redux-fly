@@ -1,6 +1,6 @@
 # Redux Universal Example
 
-Example to use `redux-fly` component state and provide the universal rendering.<br/>
+Example to use `redux-fly` for creation of component state and showin how to implement the universal rendering.<br/>
 This project template was built with [Create React App](https://github.com/facebookincubator/create-react-app).
 
 ## Available Scripts

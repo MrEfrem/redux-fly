@@ -665,3 +665,68 @@ test('Test replace native state to redux state', () => {
   )
   expect(component.toJSON()).toMatchSnapshot()
 })
+
+test('Test is valid re-create of reducer', () => {
+  const store = createStore(null, enhanceStore)
+  const Component = () => <div/>
+  const ExtendedComponent = createReducer({
+    mountPath: 'ui component',
+    initialState: {}
+  })(Component)
+
+  renderer.create(
+    <Provider store={store}>
+      <ExtendedComponent />
+    </Provider>
+  )
+  renderer.create(
+    <Provider store={store}>
+      <ExtendedComponent />
+    </Provider>
+  )
+})
+
+test('Test is invalid to create of reducer in same mounting path', () => {
+  const store = createStore(null, enhanceStore)
+  const Component = ({ children }) => <div>{children}</div>
+  Component.propTypes = {
+    children: PropTypes.element
+  }
+  const ExtendedComponent = createReducer({
+    mountPath: 'ui component',
+    initialState: {}
+  })(Component)
+
+  expect(renderer.create.bind(renderer,
+    <Provider store={store}>
+      <ExtendedComponent>
+        <ExtendedComponent/>
+      </ExtendedComponent>
+    </Provider>
+  )).toThrowError('Mount path "ui component" already busy')
+})
+
+test('Test is valid to create of reducer after create of reducer', () => {
+  const store = createStore(null, enhanceStore)
+  const Component = ({ children }) => <div>{children || 'Last reducer'}</div>
+  Component.propTypes = {
+    children: PropTypes.element
+  }
+  const ExtendedComponent = createReducer({
+    mountPath: 'ui component',
+    initialState: {}
+  })(Component)
+
+  const ExtendedComponent1 = createReducer({
+    mountPath: 'ui component1',
+    initialState: {}
+  })(Component)
+
+  expect(renderer.create(
+    <Provider store={store}>
+      <ExtendedComponent>
+        <ExtendedComponent1/>
+      </ExtendedComponent>
+    </Provider>
+  )).toMatchSnapshot()
+})

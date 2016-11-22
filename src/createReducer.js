@@ -94,7 +94,18 @@ export default ({
   return (WrappedComponent: any) =>
     class CreateReducer extends React.Component {
       static contextTypes = {
-        store: process.env.NODE_ENV === 'test' ? PropTypes.object : storeShape
+        store: process.env.NODE_ENV === 'test' ? PropTypes.object : storeShape,
+        reduxMountPaths: PropTypes.arrayOf(PropTypes.string)
+      }
+
+      static childContextTypes = {
+        reduxMountPaths: PropTypes.arrayOf(PropTypes.string)
+      }
+
+      getChildContext() {
+        return {
+          reduxMountPaths: this.reduxMountPaths
+        }
       }
 
       store: ?Object
@@ -103,6 +114,7 @@ export default ({
       ChildComponent: any
       persist: any
       actionPrefix: any
+      reduxMountPaths: any
 
       props: {
         reduxMountPath: string,
@@ -112,9 +124,10 @@ export default ({
 
       constructor(props: any, context: any) {
         super(props, context)
-
-        let { store } = context
+        let { store, reduxMountPaths } = context
+        this.reduxMountPaths = reduxMountPaths || []
         this.store = null
+
         if (typeof store === 'undefined') {
           const composeEnhancers =
             process.env.NODE_ENV !== 'production' &&
@@ -139,6 +152,11 @@ export default ({
           throw new Error('Mount path must be defined')
         }
         const _mountPath = normalizeMountPath(`${propMountPath || ''} ${mountPath || ''}`)
+
+        if (this.reduxMountPaths.indexOf(_mountPath) !== -1) {
+          throw new Error(`Mount path "${_mountPath}" already busy`)
+        }
+        this.reduxMountPaths.push(_mountPath)
 
         let _connectToStore = connectToStore
         this.actionPrefix = actionPrefix
@@ -205,6 +223,7 @@ export default ({
         this.actionPrefix = null
         this.reduxResetState = null
         this.persist = null
+        this.reduxMountPaths = null
       }
 
       render() {

@@ -77,18 +77,21 @@ const enhanceStore = (createStore: Function) => {
      */
     function registerReducers(newReducers: Object) {
       if (!isPlainObject(newReducers) || Object.keys(newReducers).length === 0) {
-        throw new Error('Reducers must be non empty plain object')
+        throw new Error('The reducers parameter must be non empty plain object')
       }
       Object.keys(newReducers).forEach(key => {
         if (typeof newReducers[key] !== 'function') {
-          throw new Error('Reducers must be functions')
+          throw new Error('The values of reducers parameter must be functions')
         }
       })
 
       Object.keys(newReducers).forEach(key => {
         const normalizedKey = normalizeMountPath(key)
         rawReducersMap.forEach(key1 => {
-          if ((normalizedKey.indexOf(key1) === 0 || key1.indexOf(normalizedKey) === 0) && key1 !== normalizedKey) {
+          if (((normalizedKey.indexOf(key1) === 0 && !((normalizedKey.substr(key1.length)[0] || '').trim())) ||
+            (key1.indexOf(normalizedKey) === 0 && !((key1.substr(normalizedKey.length)[0] || '').trim())))
+            && key1 !== normalizedKey
+          ) {
             throw new Error(`Reducer mount path "${key1}" already busy`)
           }
         })
@@ -109,7 +112,9 @@ const enhanceStore = (createStore: Function) => {
         } else {
           result[lastKey] = newReducers[key]
         }
-        rawReducersMap.push(normalizedKey)
+        if (rawReducersMap.indexOf(normalizedKey) === -1) {
+          rawReducersMap.push(normalizedKey)
+        }
       })
       recreateReducers()
     }

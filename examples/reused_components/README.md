@@ -1,6 +1,6 @@
 # Redux Reused components Example
 
-Example to use `redux-fly` component state for creation reused components and providing of API for interaction between they.<br/>
+Example to use `redux-fly` for creation reused components and showin how to implement the interaction between components.<br/>
 This project template was built with [Create React App](https://github.com/facebookincubator/create-react-app).
 
 ## Available Scripts

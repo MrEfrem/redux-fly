@@ -23,16 +23,29 @@ export default (
   return (WrappedComponent: any) =>
     class CreateReducer extends React.Component {
       static contextTypes = {
-        store: process.env.NODE_ENV === 'test' ? PropTypes.object : storeShape
+        store: process.env.NODE_ENV === 'test' ? PropTypes.object : storeShape,
+        reduxMountPaths: PropTypes.arrayOf(PropTypes.string)
+      }
+
+      static childContextTypes = {
+        reduxMountPaths: PropTypes.arrayOf(PropTypes.string)
+      }
+
+      getChildContext() {
+        return {
+          reduxMountPaths: this.reduxMountPaths
+        }
       }
 
       store: ?Object
+      reduxMountPaths: any
 
       constructor(props: any, context: any) {
         super(props, context)
-
-        let { store } = context
+        let { store, reduxMountPaths } = context
+        this.reduxMountPaths = reduxMountPaths || []
         this.store = null
+
         if (typeof store === 'undefined') {
           const composeEnhancers =
             process.env.NODE_ENV !== 'production' &&
@@ -61,7 +74,12 @@ export default (
 
         let _normReducers = {}
         Object.keys(_reducers).forEach(key => {
-          _normReducers[normalizeMountPath(`${propMountPath || ''} ${key || ''}`)] = _reducers[key]
+          const normalizedMountPath = normalizeMountPath(`${propMountPath || ''} ${key || ''}`)
+          if (this.reduxMountPaths.indexOf(normalizedMountPath) !== -1) {
+            throw new Error(`Mount path "${normalizedMountPath}" already busy`)
+          }
+          this.reduxMountPaths.push(normalizedMountPath)
+          _normReducers[normalizedMountPath] = _reducers[key]
         })
 
         // Registration reducers
@@ -70,6 +88,7 @@ export default (
 
       componentWillUnmount() {
         this.store = null
+        this.reduxMountPaths = null
       }
 
       render() {

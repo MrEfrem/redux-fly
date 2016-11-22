@@ -131,3 +131,64 @@ test('Test calculated mountPath with passed reduxMountPath', () => {
   )
   expect(component.toJSON()).toMatchSnapshot()
 })
+
+test('Test is valid re-register of reducer', () => {
+  const store = createStore(null, enhanceStore)
+  const Component = () => <div/>
+  const ExtendedComponent = registerReducers({
+    'ui component': () => ({})
+  })(Component)
+
+  renderer.create(
+    <Provider store={store}>
+      <ExtendedComponent />
+    </Provider>
+  )
+  renderer.create(
+    <Provider store={store}>
+      <ExtendedComponent />
+    </Provider>
+  )
+})
+
+test('Test is invalid to register of reducer in same mounting path', () => {
+  const store = createStore(null, enhanceStore)
+  const Component = ({ children }) => <div>{children}</div>
+  Component.propTypes = {
+    children: PropTypes.element
+  }
+  const ExtendedComponent = registerReducers({
+    'ui component': () => ({})
+  })(Component)
+
+  expect(renderer.create.bind(renderer,
+    <Provider store={store}>
+      <ExtendedComponent>
+        <ExtendedComponent/>
+      </ExtendedComponent>
+    </Provider>
+  )).toThrowError('Mount path "ui component" already busy')
+})
+
+test('Test is valid to register of reducer after register of reducer', () => {
+  const store = createStore(null, enhanceStore)
+  const Component = ({ children }) => <div>{children || 'Last reducer'}</div>
+  Component.propTypes = {
+    children: PropTypes.element
+  }
+  const ExtendedComponent = registerReducers({
+    'ui component': () => ({})
+  })(Component)
+
+  const ExtendedComponent1 = registerReducers({
+    'ui component1': () => ({})
+  })(Component)
+
+  expect(renderer.create(
+    <Provider store={store}>
+      <ExtendedComponent>
+        <ExtendedComponent1/>
+      </ExtendedComponent>
+    </Provider>
+  )).toMatchSnapshot()
+})
