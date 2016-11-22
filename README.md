@@ -5,8 +5,9 @@ The purpose of library to provide simple API for:
 
 [![Build Status](https://travis-ci.org/MrEfrem/redux-fly.svg?branch=master)](https://travis-ci.org/MrEfrem/redux-fly)
 
+#### Example of a modal window component which store the state in Redux and interact with other components through public actions and a state selectors.
 ```javascript
-import React from 'react'
+import React, { PropTypes } from 'react'
 import { createReducer, getState } from 'redux-fly'
 
 const mountPath = 'filters modal'
@@ -25,7 +26,7 @@ export const closeModal = () => ({
 })
 
 // Check is opened modal
-export const isOpened = (mountPath, state) => getState(mountPath)(state).opened
+export const isOpened = (state) => getState(mountPath)(state).opened
 
 const Modal = ({ reduxState: { opened }, children, reduxSetState }) => (
   <div style={{ display: opened ? 'block' : 'none' }}>
@@ -33,6 +34,12 @@ const Modal = ({ reduxState: { opened }, children, reduxSetState }) => (
     {children}
   </div>
 );
+
+Modal.propTypes = {
+  reduxState: PropTypes.object.isRequired,
+  children: PropTypes.element.isRequired,
+  reduxSetState: PropTypes.func.isRequired
+}
 
 export default createReducer({
   mountPath,
@@ -67,5 +74,5 @@ If you don’t yet use npm or a modern module bundler, and would rather prefer a
 ## Examples
 * [Counter](examples/counter). Example to use `redux-fly` component state.
 * [Async](examples/async). Example to use of mix canonical reducer and `redux-fly` component state.
-* [Universal](examples/universal). Example to use `redux-fly` component state and provide the universal rendering.
-* [Reused components](examples/reused_components). Example to use `redux-fly` component state for creation reused components and providing of API for interaction between they.
+* [Universal](examples/universal). Example to use `redux-fly` for creation of component state and show how to implement the universal rendering.
+* [Reused components](examples/reused_components). Example to use `redux-fly` for creation reused components and providing interaction between they.
