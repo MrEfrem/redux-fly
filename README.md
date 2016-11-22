@@ -5,33 +5,33 @@ The purpose of library to provide simple API for:
 
 [![Build Status](https://travis-ci.org/MrEfrem/redux-fly.svg?branch=master)](https://travis-ci.org/MrEfrem/redux-fly)
 
-#### Example of a modal window component which store the state in Redux and interact with other components through public actions and a state selectors.
+#### Example of a modal window component which stores its state in Redux and interacts with other components through public actions and state selectors.
 ```javascript
-import React, { PropTypes } from 'react'
-import { createReducer, getState } from 'redux-fly'
+import React, { PropTypes } from 'react';
+import { createReducer, getState } from 'redux-fly';
+import { MENU_OPEN } from './Menu';
 
-// Path for mounting component state in Redux
-const mountPath = 'filters modal'
-
-// Public actions
-const OPEN_MODAL = 'OPEN-MODAL'
-const CLOSE_MODAL = 'CLOSE-MODAL'
+// --------------- Public API (conversation with other components) ---------------
+// Type of window closing action
+export const PRIVATE_CLOSE_MODAL = 'filters modal/PRIVATE-CLOSE-MODAL';
 
 // To open a modal is public action creator
 export const openModal = () => ({
-  type: OPEN_MODAL
-})
+  type: 'PUBLIC-OPEN-MODAL'
+});
+
 // To close a modal is public action creator
 export const closeModal = () => ({
-  type: CLOSE_MODAL
-})
+  type: 'PUBLIC-CLOSE-MODAL'
+});
 
 // Check is opened modal
-export const isOpened = (state) => getState(mountPath)(state).opened
+export const isOpened = (state) => getState('filters modal')(state).opened;
+// -------------------------------------------------------------------------------
 
 const Modal = ({ reduxState: { opened }, children, reduxSetState }) => (
   <div style={{ display: opened ? 'block' : 'none' }}>
-    <a onClick={() => reduxSetState('CLOSE-MODAL', { opened: false })}>&times;</a>
+    <a onClick={() => reduxSetState('PRIVATE-CLOSE-MODAL', { opened: false })}>&times;</a>
     {children}
   </div>
 );
@@ -40,16 +40,17 @@ Modal.propTypes = {
   reduxState: PropTypes.object.isRequired,
   children: PropTypes.element.isRequired,
   reduxSetState: PropTypes.func.isRequired
-}
+};
 
 export default createReducer({
-  mountPath, // Path for mounting component state in Redux
+  mountPath: 'filters modal', // Path for mounting component state in Redux
   initialState: ({
     opened: false
   }),
   listenActions: { // Listen public actions
-    [OPEN_MODAL]: (state, action) => ({ open: true }),
-    [CLOSE_MODAL]: (state, action) => ({ open: false })
+    'PUBLIC-OPEN-MODAL': (state, action) => ({ opened: true }),
+    'PUBLIC-CLOSE-MODAL': (state, action) => ({ opened: false })
+    [MENU_OPEN]: (state, action) => ({ opened: false }) // Action of other component, for example is opening menu
   }
 })(Modal);
 ```
@@ -75,5 +76,5 @@ If you don’t yet use npm or a modern module bundler, and would rather prefer a
 ## Examples
 * [Counter](examples/counter). Example to use `redux-fly` component state.
 * [Async](examples/async). Example to use of mix canonical reducer and `redux-fly` component state.
-* [Universal](examples/universal). Example to use `redux-fly` for creation of component state and show how to implement the universal rendering.
-* [Reused components](examples/reused_components). Example to use `redux-fly` for creation reused components and providing interaction between they.
+* [Universal](examples/universal). Example to use `redux-fly` for creation of component state and showin how to implement the universal rendering.
+* [Reused components](examples/reused_components). Example to use `redux-fly` for creation reused components and showin how to implement the interaction between components.
