@@ -1,6 +1,6 @@
 //@flow
 import React, { PropTypes } from 'react'
-import Modal, { OPEN_MODAL, CLOSE_MODAL, isOpened } from '../../components/Modal'
+import Modal, { PUBLIC_OPEN_MODAL, PUBLIC_CLOSE_MODAL, PRIVATE_CLOSE_MODAL, isOpened } from '../../components/Modal'
 import { connect } from 'react-redux'
 import { openModal as rightOpenModal, closeModal as rightCloseModal, isOpenedModal as rightIsOpenedModal } from './RightFrame'
 import { compose, getContext } from 'recompose'
@@ -13,12 +13,15 @@ export const isOpenedModal = (state: Object) => isOpened(modalMountPath, state)
 
 // To open a modal is action creator
 export const openModal = () => ({
-  type: `${modalActionPrefix}${OPEN_MODAL}`
+  type: `${modalActionPrefix}${PUBLIC_OPEN_MODAL}`
 })
 // To close a modal is action creator
 export const closeModal = () => ({
-  type: `${modalActionPrefix}${CLOSE_MODAL}`
+  type: `${modalActionPrefix}${PUBLIC_CLOSE_MODAL}`
 })
+
+// Listen private action
+export const privateCloseModal = `${modalActionPrefix}${PRIVATE_CLOSE_MODAL}`
 
 // To toggle opened a right frame modal
 const toggleRight = (dispatch, store) => {
@@ -32,7 +35,7 @@ const toggleRight = (dispatch, store) => {
 const LeftFrame = ({ dispatch, store }: { dispatch: Function, store: Object }) => (
   <div style={{ position: 'relative' }}>
     <h1>Left frame</h1>
-    <button onClick={() => dispatch({ type: `${modalActionPrefix}${OPEN_MODAL}` })}>
+    <button onClick={() => dispatch({ type: `${modalActionPrefix}${PUBLIC_OPEN_MODAL}` })}>
       Open
     </button>
     <br/><br/>

@@ -3,8 +3,11 @@ import React from 'react'
 import { createReducer, getState } from 'redux-fly'
 
 // Public actions
-export const OPEN_MODAL = 'OPEN-MODAL'
-export const CLOSE_MODAL = 'CLOSE-MODAL'
+export const PUBLIC_OPEN_MODAL = 'PUBLIC-OPEN-MODAL'
+export const PUBLIC_CLOSE_MODAL = 'PUBLIC-CLOSE-MODAL'
+
+// Private action
+export const PRIVATE_CLOSE_MODAL = '@@PRIVATE-CLOSE-MODAL'
 
 // Check is opened modal
 export const isOpened = (mountPath: string, state: Object) => getState(mountPath)(state).opened
@@ -37,7 +40,7 @@ const style = {
 type PropsType = { reduxState: Object, children: any, reduxSetState: Function }
 const Modal = ({ reduxState: { opened }, children = 'Hi, I is modal', reduxSetState }: PropsType) => (
   <div style={style.container(opened)}>
-    <a style={style.close} onClick={() => reduxSetState('CLOSE-MODAL', { opened: false })}>&times;</a>
+    <a style={style.close} onClick={() => reduxSetState('PRIVATE-CLOSE-MODAL', { opened: false })}>&times;</a>
     {children}
   </div>
 )
@@ -47,10 +50,10 @@ export default createReducer({
     opened: false
   },
   listenActions: (props, actionPrefix) => ({ // Listen public actions
-    [`${actionPrefix}${OPEN_MODAL}`]: () => ({ // Listen action to open a modal
+    [`${actionPrefix}${PUBLIC_OPEN_MODAL}`]: () => ({ // Listen action to open a modal
       opened: true
     }),
-    [`${actionPrefix}${CLOSE_MODAL}`]: () => ({ // Listen action to close a modal
+    [`${actionPrefix}${PUBLIC_CLOSE_MODAL}`]: () => ({ // Listen action to close a modal
       opened: false
     })
   })
