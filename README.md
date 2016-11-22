@@ -10,6 +10,7 @@ The purpose of library to provide simple API for:
 import React, { PropTypes } from 'react'
 import { createReducer, getState } from 'redux-fly'
 
+// Path for mounting component state in Redux
 const mountPath = 'filters modal'
 
 // Public actions
@@ -42,7 +43,7 @@ Modal.propTypes = {
 }
 
 export default createReducer({
-  mountPath,
+  mountPath, // Path for mounting component state in Redux
   initialState: ({
     opened: false
   }),
