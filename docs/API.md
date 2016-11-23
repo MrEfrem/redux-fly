@@ -22,9 +22,12 @@ It must be specified in case reused components creations.
 * `[reduxActionPrefix]`\(*string*) if prop is specified, it behaves just as `actionPrefix` argument. The prop replaces an argument.
 
 #### Returns
-A React component class that injects into your component an Redux state through prop `reduxState` and injects `reduxSetState`, `reduxResetState` functions for state change.
+A React component class that injects into your component an Redux state through prop `reduxState`, injects `reduxSetState`, `reduxResetState` functions for state change:
 * `reduxSetState(actionType, newState)`\(*Function*): it dispatches Redux action with the `action prefix + actionType` type and the `newState` property. `newState` merge with current state through `Object.assign` and new object always returns.
 * `reduxResetState()`\(*Function*): it dispatches Redux action with the `action prefix + reset action type` type and the `newState` property. `newState` replaces current state and new object always returns.
+* `reduxPersist`\(*boolean*) it contains calculated `reduxPersist`.
+* `reduxActionPrefix`\(*string*) it contains calculated `reduxActionPrefix`.
+* `dispatch`\(*Function*) it is [dispatch](http://redux.js.org/docs/api/Store.html#dispatch) function of Redux store.
 
 #### Remarks
 * Mounting path is required and must be transferred through argument and(or) prop.

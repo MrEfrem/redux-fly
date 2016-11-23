@@ -1,6 +1,6 @@
 {
   "name": "redux-fly",
-  "version": "0.0.1-beta.16",
+  "version": "0.0.1-beta.17",
   "description": "Simple redux",
   "browser": "dist/redux-fly.js",
   "main": "lib/index.js",
@@ -74,10 +74,6 @@
     "react-redux": "4.x"
   },
   "jest": {
-    "testEnvironment": "node",
-    "setupFiles": [
-      "./__tests__/setup.tests.js"
-    ],
     "testPathIgnorePatterns": [
       "/node_modules/",
       "/examples/",

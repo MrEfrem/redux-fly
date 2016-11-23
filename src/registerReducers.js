@@ -46,20 +46,6 @@ export default (
         this.reduxMountPaths = reduxMountPaths || []
         this.store = null
 
-        if (typeof store === 'undefined') {
-          const composeEnhancers =
-            process.env.NODE_ENV !== 'production' &&
-            typeof window === 'object' &&
-            window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?
-              window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({}) : compose
-          store = createStore(null, composeEnhancers(enhanceStore))
-          this.store = store
-        } else {
-          if (typeof store.registerReducers !== 'function') {
-            throw new Error('Redux store must be enhanced with redux-fly')
-          }
-        }
-
         const { reduxMountPath: propMountPath } = props
 
         if (typeof propMountPath !== 'undefined') {
@@ -81,6 +67,25 @@ export default (
           this.reduxMountPaths.push(normalizedMountPath)
           _normReducers[normalizedMountPath] = _reducers[key]
         })
+
+        if (typeof propMountPath !== 'undefined') {
+          if (typeof store === 'undefined') {
+            throw new Error('Redux store must be created')
+          }
+          if (typeof store.registerReducers !== 'function') {
+            throw new Error('Redux store must be enhanced with redux-fly')
+          }
+        }
+
+        if (typeof store === 'undefined' || typeof store.registerReducers !== 'function') {
+          const composeEnhancers =
+            process.env.NODE_ENV !== 'production' &&
+            typeof window === 'object' &&
+            window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?
+              window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({}) : compose
+          store = createStore(null, composeEnhancers(enhanceStore))
+          this.store = store
+        }
 
         // Registration reducers
         store.registerReducers(_normReducers)

@@ -32,15 +32,19 @@ test('Test invalid redux store', () => {
   const Component = () => <div/>
   const ExtendedComponent1 = registerReducers({})(Component)
 
+  expect(renderer.create.bind(renderer,
+    <ExtendedComponent1 reduxMountPath="ui component"/>
+  )).toThrowError('Redux store must be created')
+
   const store = createStore(() => ({}))
   expect(renderer.create.bind(renderer,
     <Provider store={store}>
-      <ExtendedComponent1/>
+      <ExtendedComponent1 reduxMountPath="ui component"/>
     </Provider>
   )).toThrowError('Redux store must be enhanced with redux-fly')
 })
 
-test('Test reducers as function', () => {
+test('Test reducers as function with provide enhanced redux store', () => {
   const Component = () => <div/>
   const store = createStore(null, enhanceStore)
 
@@ -72,7 +76,7 @@ test('Test reducers as function', () => {
   expect(JSON.stringify(store.getState())).toBe('{\"ui\":{\"component\":{\"text\":\"My second todo\"}},\"greeting\":{\"descr\":\"Hello world!\"}}')
 })
 
-test('Test reducers as object', () => {
+test('Test reducers as object with provide enhanced redux store', () => {
   const Component = () => <div/>
   const store = createStore(null, enhanceStore)
 
@@ -112,7 +116,34 @@ test('Test reducers as object without provide redux store', () => {
   expect(component.toJSON()).toMatchSnapshot()
 })
 
+test('Test reducers as object with provide is pure redux store', () => {
+  const store = createStore(null, enhanceStore)
+  const Component = (undefined, { store }) => (
+    <div>
+      <span>{JSON.stringify(store.getState())}</span>
+      <span>{typeof store.registerReducers}</span>
+    </div>
+  )
+  Component.contextTypes = {
+    store: PropTypes.object.isRequired
+  }
+  const ExtendedComponent = registerReducers({
+    'ui component': () => ({
+      text: 'My second todo'
+    }),
+    'greeting': () => ({ descr: 'Hello world!' })
+  })(Component)
+
+  const component = renderer.create(
+    <Provider store={store}>
+      <ExtendedComponent/>
+    </Provider>
+  )
+  expect(component.toJSON()).toMatchSnapshot()
+})
+
 test('Test calculated mountPath with passed reduxMountPath', () => {
+  const store = createStore(null, enhanceStore)
   const Component = (undefined, { store }) => (
     <div>{JSON.stringify(store.getState())}</div>
   )
@@ -127,7 +158,9 @@ test('Test calculated mountPath with passed reduxMountPath', () => {
   })(Component)
 
   const component = renderer.create(
-    <ExtendedComponent reduxMountPath=" my first   component" />
+    <Provider store={store}>
+      <ExtendedComponent reduxMountPath=" my first   component" />
+    </Provider>
   )
   expect(component.toJSON()).toMatchSnapshot()
 })

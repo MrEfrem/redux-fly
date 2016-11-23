@@ -106,7 +106,7 @@ exports[`test Test replace native state to redux state 1`] = `
 </div>
 `;
 
-exports[`test Test valid init component with provide redux store 1`] = `
+exports[`test Test valid init component with provide enhanced redux store 1`] = `
 <div>
   <span>
     function
@@ -122,6 +122,35 @@ exports[`test Test valid init component with provide redux store 1`] = `
   </span>
   <span>
     ui component/
+  </span>
+  <span>
+    function
+  </span>
+</div>
+`;
+
+exports[`test Test valid init component with provide is pure redux store 1`] = `
+<div>
+  <span>
+    function
+  </span>
+  <span>
+    function
+  </span>
+  <span>
+    {\"text\":\"My first todo\"}
+  </span>
+  <span>
+    true
+  </span>
+  <span>
+    ui component/
+  </span>
+  <span>
+    function
+  </span>
+  <span>
+    function
   </span>
 </div>
 `;
@@ -142,6 +171,9 @@ exports[`test Test valid init component without provide redux store 1`] = `
   </span>
   <span>
     ui component/
+  </span>
+  <span>
+    function
   </span>
 </div>
 `;

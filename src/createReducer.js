@@ -115,6 +115,7 @@ export default ({
       persist: any
       actionPrefix: any
       reduxMountPaths: any
+      dispatch: any
 
       props: {
         reduxMountPath: string,
@@ -127,20 +128,6 @@ export default ({
         let { store, reduxMountPaths } = context
         this.reduxMountPaths = reduxMountPaths || []
         this.store = null
-
-        if (typeof store === 'undefined') {
-          const composeEnhancers =
-            process.env.NODE_ENV !== 'production' &&
-            typeof window === 'object' &&
-            window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?
-              window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({}) : compose
-          store = createStore(null, composeEnhancers(enhanceStore))
-          this.store = store
-        } else {
-          if (typeof store.registerReducers !== 'function') {
-            throw new Error('Redux store must be enhanced with redux-fly')
-          }
-        }
 
         let { reduxMountPath: propMountPath, reduxPersist: propPersist, reduxActionPrefix: propActionPrefix } = props
 
@@ -191,6 +178,27 @@ export default ({
           checkListenActions(_listenActions)
         }
 
+        if (typeof propMountPath !== 'undefined') {
+          if (typeof store === 'undefined') {
+            throw new Error('Redux store must be created')
+          }
+          if (typeof store.registerReducers !== 'function') {
+            throw new Error('Redux store must be enhanced with redux-fly')
+          }
+        }
+
+        if (typeof store === 'undefined' || typeof store.registerReducers !== 'function') {
+          const composeEnhancers =
+            process.env.NODE_ENV !== 'production' &&
+            typeof window === 'object' &&
+            window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?
+              window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({}) : compose
+          store = createStore(null, composeEnhancers(enhanceStore))
+          this.store = store
+        }
+
+        this.dispatch = store.dispatch
+
         this.ChildComponent = WrappedComponent
         if (_connectToStore) {
           this.ChildComponent = connect((state) =>
@@ -224,6 +232,7 @@ export default ({
         this.reduxResetState = null
         this.persist = null
         this.reduxMountPaths = null
+        this.dispatch = null
       }
 
       render() {
@@ -233,14 +242,11 @@ export default ({
             {...this.props}
             reduxSetState={this.reduxSetState}
             reduxResetState={this.reduxResetState}
+            reduxActionPrefix={this.actionPrefix}
+            reduxPersist={this.persist}
+            dispatch={this.dispatch}
           />
         )
-        if (process.env.NODE_ENV === 'test') {
-          Component = React.cloneElement(Component, {
-            persist: this.persist.toString(),
-            actionPrefix: this.actionPrefix
-          })
-        }
 
         if (this.store) {
           return (

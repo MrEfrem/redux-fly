@@ -12,6 +12,17 @@ exports[`test Test is valid to register of reducer after register of reducer 1`]
 </div>
 `;
 
+exports[`test Test reducers as object with provide is pure redux store 1`] = `
+<div>
+  <span>
+    {\"ui\":{\"component\":{\"text\":\"My second todo\"}},\"greeting\":{\"descr\":\"Hello world!\"}}
+  </span>
+  <span>
+    function
+  </span>
+</div>
+`;
+
 exports[`test Test reducers as object without provide redux store 1`] = `
 <div>
   {\"ui\":{\"component\":{\"text\":\"My second todo\"}},\"greeting\":{\"descr\":\"Hello world!\"}}
