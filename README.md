@@ -11,23 +11,22 @@ import React, { PropTypes } from 'react';
 import { createReducer, getState } from 'redux-fly';
 import { MENU_OPEN } from './Menu';
 
-// --------------- Public API (conversation with other components) ---------------
-// Type of window closing action
+// Type of window closing action (other components might listen)
 export const PRIVATE_CLOSE_MODAL = 'filters modal/PRIVATE-CLOSE-MODAL';
 
-// To open a modal is public action creator
+// To open a modal is public action creator (other components might control)
 export const openModal = () => ({
   type: 'PUBLIC-OPEN-MODAL'
 });
 
-// To close a modal is public action creator
+// To close a modal is public action creator (other components might control)
 export const closeModal = () => ({
   type: 'PUBLIC-CLOSE-MODAL'
 });
 
-// Check is opened modal
+// Check is opened modal (other components might check)
 export const isOpened = (state) => getState('filters modal')(state).opened;
-// -------------------------------------------------------------------------------
+
 
 const Modal = ({ reduxState: { opened }, children, reduxSetState }) => (
   <div style={{ display: opened ? 'block' : 'none' }}>
