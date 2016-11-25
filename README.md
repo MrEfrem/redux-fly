@@ -2,6 +2,7 @@
 The library is focused on to create simple API for:
 * Reducers registration at any time to any place in store of Redux.
 * Fast creation and mutation of component state (similar to local state) which is saved in store of Redux.
+
 This allow you to creation of reused components, organization effective code splitting and reducing Redux boilerplate.
 
 [![Build Status](https://travis-ci.org/MrEfrem/redux-fly.svg?branch=master)](https://travis-ci.org/MrEfrem/redux-fly)
@@ -15,17 +16,17 @@ import { MENU_OPEN } from './Menu';
 // Type of window closing action (other components might listen in reducers)
 export const PRIVATE_CLOSE_MODAL = 'filters modal/PRIVATE-CLOSE-MODAL';
 
-// To open a modal is public action creator (other components might control)
+// To open a modal is public action creator (other components might control the state)
 export const openModal = () => ({
   type: 'PUBLIC-OPEN-MODAL'
 });
 
-// To close a modal is public action creator (other components might control)
+// To close a modal is public action creator (other components might control the state)
 export const closeModal = () => ({
   type: 'PUBLIC-CLOSE-MODAL'
 });
 
-// Check is opened modal (other components might check)
+// Check is opened modal (other components might check the state)
 export const isOpened = (state) => getState('filters modal')(state).opened;
 
 const Modal = ({ reduxState: { opened }, children, reduxSetState }) => (
@@ -48,7 +49,7 @@ export default createReducer({
   listenActions: { // Listen public actions
     'PUBLIC-OPEN-MODAL': (state, action) => ({ opened: true }),
     'PUBLIC-CLOSE-MODAL': (state, action) => ({ opened: false })
-    [MENU_OPEN]: (state, action) => ({ opened: false }) // Action of other component, for example is opening menu
+    [MENU_OPEN]: (state, action) => ({ opened: false }) // Listen action of other component
   }
 })(Modal);
 ```
@@ -73,7 +74,7 @@ export default () => (
 );
 ```
 
-#### Example of container component creation.
+#### Example of container component creation which stores the state in store of Redux.
 ```javascript
 import React, { PropTypes } from 'react';
 import { createReducer } from 'redux-fly';
