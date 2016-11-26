@@ -203,6 +203,52 @@ test('Test is invalid to register of reducer in same mounting path', () => {
   )).toThrowError('Mount path "ui component" already busy')
 })
 
+test('Test is invalid to register of reducer in partially same mounting path (1)', () => {
+  const store = createStore(null, enhanceStore)
+  const Component = ({ children }) => <div>{children}</div>
+  Component.propTypes = {
+    children: PropTypes.element
+  }
+  const ExtendedComponent = registerReducers({
+    'ui component main': () => ({})
+  })(Component)
+
+  const ExtendedComponent1 = registerReducers({
+    'ui component': () => ({})
+  })(Component)
+
+  expect(renderer.create.bind(renderer,
+    <Provider store={store}>
+      <ExtendedComponent>
+        <ExtendedComponent1/>
+      </ExtendedComponent>
+    </Provider>
+  )).toThrowError('Mount path "ui component" already busy')
+})
+
+test('Test is invalid to register of reducer in partially same mounting path (2)', () => {
+  const store = createStore(null, enhanceStore)
+  const Component = ({ children }) => <div>{children}</div>
+  Component.propTypes = {
+    children: PropTypes.element
+  }
+  const ExtendedComponent = registerReducers({
+    'ui component': () => ({})
+  })(Component)
+
+  const ExtendedComponent1 = registerReducers({
+    'ui component main': () => ({})
+  })(Component)
+
+  expect(renderer.create.bind(renderer,
+    <Provider store={store}>
+      <ExtendedComponent>
+        <ExtendedComponent1/>
+      </ExtendedComponent>
+    </Provider>
+  )).toThrowError('Mount path "ui component main" already busy')
+})
+
 test('Test is valid to register of reducer after register of reducer', () => {
   const store = createStore(null, enhanceStore)
   const Component = ({ children }) => <div>{children || 'Last reducer'}</div>

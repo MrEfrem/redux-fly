@@ -25,28 +25,28 @@ export default (
       static contextTypes = {
         store: process.env.NODE_ENV === 'test' ? PropTypes.object : storeShape,
         reduxMountPaths: PropTypes.arrayOf(PropTypes.string),
-        reduxMountPath: PropTypes.string
+        lastReduxMountPath: PropTypes.string
       }
 
       static childContextTypes = {
         reduxMountPaths: PropTypes.arrayOf(PropTypes.string),
-        reduxMountPath: PropTypes.string
+        lastReduxMountPath: PropTypes.string
       }
 
       getChildContext = () => ({
         reduxMountPaths: this.reduxMountPaths,
-        reduxMountPath: this.reduxMountPath
+        lastReduxMountPath: this.lastReduxMountPath
       });
 
       store: ?Object
       reduxMountPaths: any
-      reduxMountPath: any
+      lastReduxMountPath: ?string
 
       constructor(props: any, context: any) {
         super(props, context)
         let { store } = context
         this.reduxMountPaths = context.reduxMountPaths || []
-        this.reduxMountPath = context.reduxMountPath || ''
+        this.lastReduxMountPath = context.lastReduxMountPath || ''
         this.store = null
 
         const { reduxMountPath: propMountPath } = props
@@ -64,11 +64,14 @@ export default (
         let _normReducers = {}
         Object.keys(_reducers).forEach(key => {
           const normalizedMountPath = normalizeMountPath(`${propMountPath || ''} ${key || ''}`)
-          if (this.reduxMountPaths.indexOf(normalizedMountPath) !== -1) {
+          if (this.reduxMountPaths.some(path =>
+            ((path.indexOf(normalizedMountPath) === 0 && !((path.substr(normalizedMountPath.length)[0] || '').trim())) ||
+              (normalizedMountPath.indexOf(path) === 0 && !((normalizedMountPath.substr(path.length)[0] || '').trim()))))
+          ) {
             throw new Error(`Mount path "${normalizedMountPath}" already busy`)
           }
-          if (this.reduxMountPath && normalizedMountPath.indexOf(this.reduxMountPath) === -1) {
-            throw new Error(`Mount path "${normalizedMountPath}" must be contain "${this.reduxMountPath}"`)
+          if (this.lastReduxMountPath && normalizedMountPath.indexOf(this.lastReduxMountPath) === -1) {
+            throw new Error(`Mount path "${normalizedMountPath}" must be contain "${this.lastReduxMountPath}"`)
           }
           this.reduxMountPaths.push(normalizedMountPath)
           _normReducers[normalizedMountPath] = _reducers[key]
@@ -81,7 +84,7 @@ export default (
           if (typeof store.registerReducers !== 'function') {
             throw new Error('Redux store must be enhanced with redux-fly')
           }
-          this.reduxMountPath = normalizeMountPath(propMountPath)
+          this.lastReduxMountPath = normalizeMountPath(propMountPath)
         }
 
         if (typeof store === 'undefined' || typeof store.registerReducers !== 'function') {
@@ -101,7 +104,7 @@ export default (
       componentWillUnmount() {
         this.store = null
         this.reduxMountPaths = null
-        this.reduxMountPath = null
+        this.lastReduxMountPath = null
       }
 
       render() {

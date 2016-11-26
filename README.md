@@ -9,6 +9,21 @@ This API allow you to creation of reused components, organization effective code
 
 #### Example of container component creation which stores the state in store of Redux.
 ```javascript
+// Root component
+import React from 'react';
+import { createStore } from 'redux';
+import { Provider } from 'react-redux';
+import { enhanceStore } from 'redux-fly';
+import Counter from './Counter';
+
+const store = createStore(null, enhanceStore);
+
+export default () => (
+  <Provider store={store}>
+    <Counter/>
+  </Provider>
+);
+
 // Counter component
 import React from 'react';
 import { createReducer } from 'redux-fly';
@@ -24,26 +39,11 @@ const Counter = ({ reduxState: { counter }, reduxSetState }) => (
 );
 
 export default createReducer({
-  mountPath: 'ui counter',
+  mountPath: 'ui counter', // Reducer mounting path
   initialState: {
     counter: 0
   }
 })(Counter);
-
-// Root component
-import React from 'react';
-import { createStore } from 'redux';
-import { Provider } from 'react-redux';
-import { enhanceStore } from 'redux-fly';
-import Counter from './Counter';
-
-const store = createStore(null, enhanceStore);
-
-export default () => (
-  <Provider store={store}>
-    <Counter/>
-  </Provider>
-);
 ```
 
 #### Example of creation reused modal window component which stores the state in store of Redux.

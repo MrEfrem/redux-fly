@@ -96,28 +96,28 @@ export default ({
       static contextTypes = {
         store: process.env.NODE_ENV === 'test' ? PropTypes.object : storeShape,
         reduxMountPaths: PropTypes.arrayOf(PropTypes.string),
-        reduxMountPath: PropTypes.string
+        lastReduxMountPath: PropTypes.string
       }
 
       static childContextTypes = {
         reduxMountPaths: PropTypes.arrayOf(PropTypes.string),
-        reduxMountPath: PropTypes.string
+        lastReduxMountPath: PropTypes.string
       }
 
       getChildContext = () => ({
         reduxMountPaths: this.reduxMountPaths,
-        reduxMountPath: this.reduxMountPath
+        lastReduxMountPath: this.lastReduxMountPath
       });
 
       store: ?Object
-      reduxSetState: any
+      reduxSetState: ?Function
       reduxResetState: any
       ChildComponent: any
-      persist: any
+      persist: ?boolean
       actionPrefix: any
       reduxMountPaths: any
-      dispatch: any
-      reduxMountPath: any
+      dispatch: ?Function
+      lastReduxMountPath: ?string
 
       props: {
         reduxMountPath: string,
@@ -129,7 +129,7 @@ export default ({
         super(props, context)
         let { store } = context
         this.reduxMountPaths = context.reduxMountPaths || []
-        this.reduxMountPath = context.reduxMountPath || ''
+        this.lastReduxMountPath = context.lastReduxMountPath || ''
         this.store = null
 
         let { reduxMountPath: propMountPath, reduxPersist: propPersist, reduxActionPrefix: propActionPrefix } = props
@@ -143,11 +143,15 @@ export default ({
         }
         const _mountPath = normalizeMountPath(`${propMountPath || ''} ${mountPath || ''}`)
 
-        if (this.reduxMountPaths.indexOf(_mountPath) !== -1) {
+
+        if (this.reduxMountPaths.some(path =>
+          ((path.indexOf(_mountPath) === 0 && !((path.substr(_mountPath.length)[0] || '').trim())) ||
+            (_mountPath.indexOf(path) === 0 && !((_mountPath.substr(path.length)[0] || '').trim()))))
+        ) {
           throw new Error(`Mount path "${_mountPath}" already busy`)
         }
-        if (this.reduxMountPath && _mountPath.indexOf(this.reduxMountPath) === -1) {
-          throw new Error(`Mount path "${_mountPath}" must be contain "${this.reduxMountPath}"`)
+        if (this.lastReduxMountPath && _mountPath.indexOf(this.lastReduxMountPath) === -1) {
+          throw new Error(`Mount path "${_mountPath}" must be contain "${this.lastReduxMountPath}"`)
         }
         this.reduxMountPaths.push(_mountPath)
 
@@ -195,7 +199,7 @@ export default ({
           if (typeof store.registerReducers !== 'function') {
             throw new Error('Redux store must be enhanced with redux-fly')
           }
-          this.reduxMountPath = normalizeMountPath(propMountPath)
+          this.lastReduxMountPath = normalizeMountPath(propMountPath)
         }
 
         if (typeof store === 'undefined' || typeof store.registerReducers !== 'function') {
@@ -244,7 +248,7 @@ export default ({
         this.persist = null
         this.reduxMountPaths = null
         this.dispatch = null
-        this.reduxMountPath = null
+        this.lastReduxMountPath = null
       }
 
       render() {

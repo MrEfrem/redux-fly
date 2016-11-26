@@ -16,7 +16,7 @@ const style = {
   container: (opened) => ({
     display: opened ? 'block' : 'none',
     position: 'absolute',
-    left: '100px',
+    left: 'calc(50% - 130px)',
     top: '150px',
     width: '200px',
     height: '200px',

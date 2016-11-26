@@ -784,6 +784,56 @@ test('Test is invalid to create of reducer in same mounting path', () => {
   )).toThrowError('Mount path "ui component" already busy')
 })
 
+test('Test is invalid to create of reducer in partially same mounting path (1)', () => {
+  const store = createStore(null, enhanceStore)
+  const Component = ({ children }) => <div>{children}</div>
+  Component.propTypes = {
+    children: PropTypes.element
+  }
+  const ExtendedComponent = createReducer({
+    mountPath: 'ui component main',
+    initialState: {}
+  })(Component)
+
+  const ExtendedComponent1 = createReducer({
+    mountPath: 'ui component',
+    initialState: {}
+  })(Component)
+
+  expect(renderer.create.bind(renderer,
+    <Provider store={store}>
+      <ExtendedComponent>
+        <ExtendedComponent1/>
+      </ExtendedComponent>
+    </Provider>
+  )).toThrowError('Mount path "ui component" already busy')
+})
+
+test('Test is invalid to create of reducer in partially same mounting path (2)', () => {
+  const store = createStore(null, enhanceStore)
+  const Component = ({ children }) => <div>{children}</div>
+  Component.propTypes = {
+    children: PropTypes.element
+  }
+  const ExtendedComponent = createReducer({
+    mountPath: 'ui component',
+    initialState: {}
+  })(Component)
+
+  const ExtendedComponent1 = createReducer({
+    mountPath: 'ui component main',
+    initialState: {}
+  })(Component)
+
+  expect(renderer.create.bind(renderer,
+    <Provider store={store}>
+      <ExtendedComponent>
+        <ExtendedComponent1/>
+      </ExtendedComponent>
+    </Provider>
+  )).toThrowError('Mount path "ui component main" already busy')
+})
+
 test('Test is valid to create of reducer after create of reducer', () => {
   const store = createStore(null, enhanceStore)
   const Component = ({ children }) => <div>{children || 'Last reducer'}</div>
