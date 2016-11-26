@@ -12,6 +12,14 @@ exports[`test Test is valid to register of reducer after register of reducer 1`]
 </div>
 `;
 
+exports[`test Test is valid to set the mountPath for reused component which contains in other reused component 1`] = `
+<div>
+  <div>
+    Last reducer
+  </div>
+</div>
+`;
+
 exports[`test Test reducers as object with provide is pure redux store 1`] = `
 <div>
   <span>

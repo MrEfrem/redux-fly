@@ -38,6 +38,14 @@ exports[`test Test is valid to create of reducer after create of reducer 1`] = `
 </div>
 `;
 
+exports[`test Test is valid to set the mountPath for reused component which contains in other reused component 1`] = `
+<div>
+  <div>
+    Last reducer
+  </div>
+</div>
+`;
+
 exports[`test Test listenActions 1`] = `
 <div>
   {\"text\":\"My second todo\"}
@@ -45,6 +53,12 @@ exports[`test Test listenActions 1`] = `
 `;
 
 exports[`test Test listenActions is function 1`] = `
+<div>
+  {\"text\":\"My second todo\",\"num\":\"10\"}
+</div>
+`;
+
+exports[`test Test listenActions is function in reusable component 1`] = `
 <div>
   {\"text\":\"My second todo\",\"num\":\"10\"}
 </div>

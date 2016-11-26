@@ -95,18 +95,19 @@ export default ({
     class CreateReducer extends React.Component {
       static contextTypes = {
         store: process.env.NODE_ENV === 'test' ? PropTypes.object : storeShape,
-        reduxMountPaths: PropTypes.arrayOf(PropTypes.string)
+        reduxMountPaths: PropTypes.arrayOf(PropTypes.string),
+        reduxMountPath: PropTypes.string
       }
 
       static childContextTypes = {
-        reduxMountPaths: PropTypes.arrayOf(PropTypes.string)
+        reduxMountPaths: PropTypes.arrayOf(PropTypes.string),
+        reduxMountPath: PropTypes.string
       }
 
-      getChildContext() {
-        return {
-          reduxMountPaths: this.reduxMountPaths
-        }
-      }
+      getChildContext = () => ({
+        reduxMountPaths: this.reduxMountPaths,
+        reduxMountPath: this.reduxMountPath
+      });
 
       store: ?Object
       reduxSetState: any
@@ -116,6 +117,7 @@ export default ({
       actionPrefix: any
       reduxMountPaths: any
       dispatch: any
+      reduxMountPath: any
 
       props: {
         reduxMountPath: string,
@@ -125,8 +127,9 @@ export default ({
 
       constructor(props: any, context: any) {
         super(props, context)
-        let { store, reduxMountPaths } = context
-        this.reduxMountPaths = reduxMountPaths || []
+        let { store } = context
+        this.reduxMountPaths = context.reduxMountPaths || []
+        this.reduxMountPath = context.reduxMountPath || ''
         this.store = null
 
         let { reduxMountPath: propMountPath, reduxPersist: propPersist, reduxActionPrefix: propActionPrefix } = props
@@ -143,6 +146,9 @@ export default ({
         if (this.reduxMountPaths.indexOf(_mountPath) !== -1) {
           throw new Error(`Mount path "${_mountPath}" already busy`)
         }
+        if (this.reduxMountPath && _mountPath.indexOf(this.reduxMountPath) === -1) {
+          throw new Error(`Mount path "${_mountPath}" must be contain "${this.reduxMountPath}"`)
+        }
         this.reduxMountPaths.push(_mountPath)
 
         let _connectToStore = connectToStore
@@ -157,7 +163,11 @@ export default ({
 
         // Default value for action prefix contain mount path
         if (!this.actionPrefix) {
-          this.actionPrefix = `${_mountPath}/`
+          if (typeof propMountPath !== 'undefined') {
+            this.actionPrefix = `${normalizeMountPath(propMountPath)}/`
+          } else {
+            this.actionPrefix = `${normalizeMountPath(mountPath)}/`
+          }
         }
 
         // Priority persist from props
@@ -185,6 +195,7 @@ export default ({
           if (typeof store.registerReducers !== 'function') {
             throw new Error('Redux store must be enhanced with redux-fly')
           }
+          this.reduxMountPath = normalizeMountPath(propMountPath)
         }
 
         if (typeof store === 'undefined' || typeof store.registerReducers !== 'function') {
@@ -233,6 +244,7 @@ export default ({
         this.persist = null
         this.reduxMountPaths = null
         this.dispatch = null
+        this.reduxMountPath = null
       }
 
       render() {

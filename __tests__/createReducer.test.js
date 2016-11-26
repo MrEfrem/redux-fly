@@ -338,6 +338,44 @@ test('Test listenActions is function', () => {
   expect(component.toJSON()).toMatchSnapshot()
 })
 
+test('Test listenActions is function in reusable component', () => {
+  const store = createStore(null, enhanceStore)
+  const UPDATE_TODO = 'UPDATE_TODO'
+
+  class Component extends React.Component {
+    componentDidMount() {
+      const { dispatch, text } = this.props
+      dispatch({ type: `ui component/${UPDATE_TODO}`, text })
+    }
+    render() {
+      const { props } = this
+      return (
+        <div>{JSON.stringify(props.reduxState)}</div>
+      )
+    }
+  }
+  Component.propTypes = {
+    reduxState: PropTypes.object.isRequired,
+    dispatch: PropTypes.func.isRequired,
+    text: PropTypes.string.isRequired
+  }
+  const ExtendedComponent = compose(
+    createReducer({
+      mountPath: 'main',
+      initialState: { text: 'My first todo' },
+      listenActions: (props, actionPrefix) =>
+        ({ [`${actionPrefix}${UPDATE_TODO}`]: (state, action) => ({ text: action.text, num: props.num }) })
+    })
+  )(Component)
+
+  const component = renderer.create(
+    <Provider store={store}>
+      <ExtendedComponent text="My second todo" num="10" reduxMountPath="ui component" />
+    </Provider>
+  )
+  expect(component.toJSON()).toMatchSnapshot()
+})
+
 test('Test connectToStore: false', () => {
   const store = createStore(null, enhanceStore)
 
@@ -622,7 +660,7 @@ test('Test reduxSetState', () => {
       const { reduxSetState, reduxState } = this.props
       reduxSetState('UPDATE-TODO', { text: 'My second todo' })
       reduxSetState('INCREMENT', ({ num }) => ({
-        num: ++num
+        num: num + 1
       }))
       reduxSetState('UPDATE-TODO', { text: 'My third todo' })
       reduxSetState('INCREMENT', ({ num }) => {
@@ -671,7 +709,7 @@ test('Test replace native state to redux state', () => {
       this.setState = props.reduxSetState.bind(this, 'UPDATE-TODO')
     }
     componentDidMount() {
-      this.setState((state) => ({ num: state.num ? ++state.num : 1 }))
+      this.setState((state) => ({ num: state.num ? state.num + 1 : 1 }))
       this.setState({ text: 'My second todo'})
       this.setState({ text: 'My third todo'})
       this.setState((state) => ({ num: state.num / 4 }))
@@ -765,6 +803,80 @@ test('Test is valid to create of reducer after create of reducer', () => {
   expect(renderer.create(
     <Provider store={store}>
       <ExtendedComponent>
+        <ExtendedComponent1/>
+      </ExtendedComponent>
+    </Provider>
+  )).toMatchSnapshot()
+})
+
+test('Test is invalid to set the mountPath for reused component which contains in other reused component (reduxMountPath + mountPath)', () => {
+  const store = createStore(null, enhanceStore)
+  const Component = ({ children }) => <div>{children || 'Last reducer'}</div>
+  Component.propTypes = {
+    children: PropTypes.element
+  }
+  const ExtendedComponent = createReducer({
+    initialState: {}
+  })(Component)
+
+  const ExtendedComponent1 = createReducer({
+    mountPath: 'todo list',
+    initialState: {}
+  })(Component)
+
+  expect(renderer.create.bind(renderer,
+    <Provider store={store}>
+      <ExtendedComponent reduxMountPath="ui component">
+        <ExtendedComponent1/>
+      </ExtendedComponent>
+    </Provider>
+  )).toThrowError('Mount path "todo list" must be contain "ui component"')
+})
+
+test('Test is invalid to set the mountPath for reused component which contains in other reused component (reduxMountPath + reduxMountPath)', () => {
+  const store = createStore(null, enhanceStore)
+  const Component = ({ children }) => <div>{children || 'Last reducer'}</div>
+  Component.propTypes = {
+    children: PropTypes.element
+  }
+  const ExtendedComponent = createReducer({
+    mountPath: 'main',
+    initialState: {}
+  })(Component)
+
+  const ExtendedComponent1 = createReducer({
+    initialState: {}
+  })(Component)
+
+  expect(renderer.create.bind(renderer,
+    <Provider store={store}>
+      <ExtendedComponent reduxMountPath="ui component">
+        <ExtendedComponent1 reduxMountPath="todo list"/>
+      </ExtendedComponent>
+    </Provider>
+  )).toThrowError('Mount path "todo list" must be contain "ui component"')
+})
+
+test('Test is valid to set the mountPath for reused component which contains in other reused component', () => {
+  const store = createStore(null, enhanceStore)
+  const Component = ({ children, reduxMountPath }) => <div>{children ? React.cloneElement(children, { reduxMountPath }) : 'Last reducer'}</div>
+  Component.propTypes = {
+    children: PropTypes.element,
+    reduxMountPath: PropTypes.string
+  }
+  const ExtendedComponent = createReducer({
+    mountPath: 'main',
+    initialState: {}
+  })(Component)
+
+  const ExtendedComponent1 = createReducer({
+    mountPath: 'todo list',
+    initialState: {}
+  })(Component)
+
+  expect(renderer.create(
+    <Provider store={store}>
+      <ExtendedComponent reduxMountPath="ui component">
         <ExtendedComponent1/>
       </ExtendedComponent>
     </Provider>

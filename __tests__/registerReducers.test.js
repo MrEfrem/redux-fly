@@ -225,3 +225,73 @@ test('Test is valid to register of reducer after register of reducer', () => {
     </Provider>
   )).toMatchSnapshot()
 })
+
+test('Test is invalid to set the mountPath for reused component which contains in other reused component (reduxMountPath + mountPath)', () => {
+  const store = createStore(null, enhanceStore)
+  const Component = ({ children }) => <div>{children || 'Last reducer'}</div>
+  Component.propTypes = {
+    children: PropTypes.element
+  }
+  const ExtendedComponent = registerReducers({
+    reducer1: () => ({})
+  })(Component)
+
+  const ExtendedComponent1 = registerReducers({
+    reducer2: () => ({})
+  })(Component)
+
+  expect(renderer.create.bind(renderer,
+    <Provider store={store}>
+      <ExtendedComponent reduxMountPath="ui component">
+        <ExtendedComponent1/>
+      </ExtendedComponent>
+    </Provider>
+  )).toThrowError('Mount path "reducer2" must be contain "ui component"')
+})
+
+test('Test is invalid to set the mountPath for reused component which contains in other reused component (reduxMountPath + reduxMountPath)', () => {
+  const store = createStore(null, enhanceStore)
+  const Component = ({ children }) => <div>{children || 'Last reducer'}</div>
+  Component.propTypes = {
+    children: PropTypes.element
+  }
+  const ExtendedComponent = registerReducers({
+    reducer1: () => ({})
+  })(Component)
+
+  const ExtendedComponent1 = registerReducers({
+    reducer2: () => ({})
+  })(Component)
+
+  expect(renderer.create.bind(renderer,
+    <Provider store={store}>
+      <ExtendedComponent reduxMountPath="ui component">
+        <ExtendedComponent1 reduxMountPath="todo list"/>
+      </ExtendedComponent>
+    </Provider>
+  )).toThrowError('Mount path "todo list reducer2" must be contain "ui component"')
+})
+
+test('Test is valid to set the mountPath for reused component which contains in other reused component', () => {
+  const store = createStore(null, enhanceStore)
+  const Component = ({ children, reduxMountPath }) => <div>{children ? React.cloneElement(children, { reduxMountPath }) : 'Last reducer'}</div>
+  Component.propTypes = {
+    children: PropTypes.element,
+    reduxMountPath: PropTypes.string
+  }
+  const ExtendedComponent = registerReducers({
+    reducer1: () => ({})
+  })(Component)
+
+  const ExtendedComponent1 = registerReducers({
+    reducer2: () => ({})
+  })(Component)
+
+  expect(renderer.create(
+    <Provider store={store}>
+      <ExtendedComponent reduxMountPath="ui component">
+        <ExtendedComponent1/>
+      </ExtendedComponent>
+    </Provider>
+  )).toMatchSnapshot()
+})

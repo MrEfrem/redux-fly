@@ -24,26 +24,29 @@ export default (
     class CreateReducer extends React.Component {
       static contextTypes = {
         store: process.env.NODE_ENV === 'test' ? PropTypes.object : storeShape,
-        reduxMountPaths: PropTypes.arrayOf(PropTypes.string)
+        reduxMountPaths: PropTypes.arrayOf(PropTypes.string),
+        reduxMountPath: PropTypes.string
       }
 
       static childContextTypes = {
-        reduxMountPaths: PropTypes.arrayOf(PropTypes.string)
+        reduxMountPaths: PropTypes.arrayOf(PropTypes.string),
+        reduxMountPath: PropTypes.string
       }
 
-      getChildContext() {
-        return {
-          reduxMountPaths: this.reduxMountPaths
-        }
-      }
+      getChildContext = () => ({
+        reduxMountPaths: this.reduxMountPaths,
+        reduxMountPath: this.reduxMountPath
+      });
 
       store: ?Object
       reduxMountPaths: any
+      reduxMountPath: any
 
       constructor(props: any, context: any) {
         super(props, context)
-        let { store, reduxMountPaths } = context
-        this.reduxMountPaths = reduxMountPaths || []
+        let { store } = context
+        this.reduxMountPaths = context.reduxMountPaths || []
+        this.reduxMountPath = context.reduxMountPath || ''
         this.store = null
 
         const { reduxMountPath: propMountPath } = props
@@ -64,6 +67,9 @@ export default (
           if (this.reduxMountPaths.indexOf(normalizedMountPath) !== -1) {
             throw new Error(`Mount path "${normalizedMountPath}" already busy`)
           }
+          if (this.reduxMountPath && normalizedMountPath.indexOf(this.reduxMountPath) === -1) {
+            throw new Error(`Mount path "${normalizedMountPath}" must be contain "${this.reduxMountPath}"`)
+          }
           this.reduxMountPaths.push(normalizedMountPath)
           _normReducers[normalizedMountPath] = _reducers[key]
         })
@@ -75,6 +81,7 @@ export default (
           if (typeof store.registerReducers !== 'function') {
             throw new Error('Redux store must be enhanced with redux-fly')
           }
+          this.reduxMountPath = normalizeMountPath(propMountPath)
         }
 
         if (typeof store === 'undefined' || typeof store.registerReducers !== 'function') {
@@ -94,6 +101,7 @@ export default (
       componentWillUnmount() {
         this.store = null
         this.reduxMountPaths = null
+        this.reduxMountPath = null
       }
 
       render() {
