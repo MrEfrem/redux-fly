@@ -139,7 +139,7 @@ export default ({
         }
 
         if (!mountPath && !propMountPath) {
-          throw new Error('Mount path must be defined')
+          throw new Error('Mounting path must be defined')
         }
         const _mountPath = normalizeMountPath(`${propMountPath || ''} ${mountPath || ''}`)
 
@@ -148,10 +148,10 @@ export default ({
           ((path.indexOf(_mountPath) === 0 && !((path.substr(_mountPath.length)[0] || '').trim())) ||
             (_mountPath.indexOf(path) === 0 && !((_mountPath.substr(path.length)[0] || '').trim()))))
         ) {
-          throw new Error(`Mount path "${_mountPath}" already busy`)
+          throw new Error(`Mounting path "${_mountPath}" already busy`)
         }
         if (this.lastReduxMountPath && _mountPath.indexOf(this.lastReduxMountPath) === -1) {
-          throw new Error(`Mount path "${_mountPath}" must be contain "${this.lastReduxMountPath}"`)
+          throw new Error(`Mounting path "${_mountPath}" must be contain "${this.lastReduxMountPath}"`)
         }
         this.reduxMountPaths.push(_mountPath)
 
@@ -165,7 +165,7 @@ export default ({
           this.actionPrefix = propActionPrefix
         }
 
-        // Default value for action prefix contain mount path
+        // Default value for action prefix contain mounting path
         if (!this.actionPrefix) {
           if (typeof propMountPath !== 'undefined') {
             this.actionPrefix = `${normalizeMountPath(propMountPath)}/`

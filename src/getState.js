@@ -11,7 +11,7 @@ import { normalizeMountPath } from './utils/normalize'
  */
 export default (mountPath: string) => {
   if (typeof mountPath !== 'string' || !mountPath.length) {
-    throw new Error('Mount path must be non empty string')
+    throw new Error('Mounting path must be non empty string')
   }
   return (state: Object) => {
     if (!isPlainObject(state)) {

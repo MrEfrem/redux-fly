@@ -68,10 +68,10 @@ export default (
             ((path.indexOf(normalizedMountPath) === 0 && !((path.substr(normalizedMountPath.length)[0] || '').trim())) ||
               (normalizedMountPath.indexOf(path) === 0 && !((normalizedMountPath.substr(path.length)[0] || '').trim()))))
           ) {
-            throw new Error(`Mount path "${normalizedMountPath}" already busy`)
+            throw new Error(`Mounting path "${normalizedMountPath}" already busy`)
           }
           if (this.lastReduxMountPath && normalizedMountPath.indexOf(this.lastReduxMountPath) === -1) {
-            throw new Error(`Mount path "${normalizedMountPath}" must be contain "${this.lastReduxMountPath}"`)
+            throw new Error(`Mounting path "${normalizedMountPath}" must be contain "${this.lastReduxMountPath}"`)
           }
           this.reduxMountPaths.push(normalizedMountPath)
           _normReducers[normalizedMountPath] = _reducers[key]

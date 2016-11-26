@@ -25,7 +25,7 @@ test('Test invalid prop reduxMountPath', () => {
 
   expect(renderer.create.bind(renderer,
     <ExtendedComponent1 reduxMountPath={123}/>
-  )).toThrowError('Mount path must be string')
+  )).toThrowError('Mounting path must be string')
 })
 
 test('Test invalid redux store', () => {
@@ -200,7 +200,7 @@ test('Test is invalid to register of reducer in same mounting path', () => {
         <ExtendedComponent/>
       </ExtendedComponent>
     </Provider>
-  )).toThrowError('Mount path "ui component" already busy')
+  )).toThrowError('Mounting path "ui component" already busy')
 })
 
 test('Test is invalid to register of reducer in partially same mounting path (1)', () => {
@@ -223,7 +223,7 @@ test('Test is invalid to register of reducer in partially same mounting path (1)
         <ExtendedComponent1/>
       </ExtendedComponent>
     </Provider>
-  )).toThrowError('Mount path "ui component" already busy')
+  )).toThrowError('Mounting path "ui component" already busy')
 })
 
 test('Test is invalid to register of reducer in partially same mounting path (2)', () => {
@@ -246,7 +246,7 @@ test('Test is invalid to register of reducer in partially same mounting path (2)
         <ExtendedComponent1/>
       </ExtendedComponent>
     </Provider>
-  )).toThrowError('Mount path "ui component main" already busy')
+  )).toThrowError('Mounting path "ui component main" already busy')
 })
 
 test('Test is valid to register of reducer after register of reducer', () => {
@@ -292,7 +292,7 @@ test('Test is invalid to set the mountPath for reused component which contains i
         <ExtendedComponent1/>
       </ExtendedComponent>
     </Provider>
-  )).toThrowError('Mount path "reducer2" must be contain "ui component"')
+  )).toThrowError('Mounting path "reducer2" must be contain "ui component"')
 })
 
 test('Test is invalid to set the mountPath for reused component which contains in other reused component (reduxMountPath + reduxMountPath)', () => {
@@ -315,7 +315,7 @@ test('Test is invalid to set the mountPath for reused component which contains i
         <ExtendedComponent1 reduxMountPath="todo list"/>
       </ExtendedComponent>
     </Provider>
-  )).toThrowError('Mount path "todo list reducer2" must be contain "ui component"')
+  )).toThrowError('Mounting path "todo list reducer2" must be contain "ui component"')
 })
 
 test('Test is valid to set the mountPath for reused component which contains in other reused component', () => {

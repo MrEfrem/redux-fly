@@ -1,11 +1,11 @@
 // @flow
 /**
- * Check mountPath
+ * Check mounting path
  * @param  {string} path
  * @return {void}
  */
 export const checkMountPath = (path: any) => {
   if (typeof path !== 'string' || !path.trim().length) {
-    throw new Error('Mount path must be string')
+    throw new Error('Mounting path must be string')
   }
 }

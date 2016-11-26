@@ -64,13 +64,13 @@ exports[`test Test listenActions is function in reusable component 1`] = `
 </div>
 `;
 
-exports[`test Test passed mount path in Component 1`] = `
+exports[`test Test passed mounting path in Component 1`] = `
 <div>
   ui component
 </div>
 `;
 
-exports[`test Test passed mount path in createReducer and in Component 1`] = `
+exports[`test Test passed mounting path in createReducer and in Component 1`] = `
 <div>
   ui other-component
 </div>

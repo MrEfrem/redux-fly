@@ -9,7 +9,7 @@ import { RESET_STATE } from '../src/consts'
 
 test('Test invalid signature', () => {
   expect(createReducer).toThrowError('InitialState must be plain object')
-  expect(createReducer.bind(this, { mountPath: 10, initialState: {} })).toThrowError('Mount path must be string')
+  expect(createReducer.bind(this, { mountPath: 10, initialState: {} })).toThrowError('Mounting path must be string')
   expect(createReducer.bind(this, { mountPath: 'ui component' })).toThrowError('InitialState must be plain object')
   expect(createReducer.bind(this, { mountPath: 'ui component', initialState: {}, listenActions: 123 })).toThrowError('ListenActions must be plain object')
   expect(createReducer.bind(this, { mountPath: 'ui component', initialState: {}, connectToStore: null })).toThrowError('ConnectToStore must be boolean')
@@ -24,11 +24,11 @@ test('Test invalid init component', () => {
 
   expect(renderer.create.bind(renderer,
     <ExtendedComponent1/>
-  )).toThrowError('Mount path must be defined')
+  )).toThrowError('Mounting path must be defined')
 
   expect(renderer.create.bind(renderer,
     <ExtendedComponent1 reduxMountPath={['ui component']} />
-  )).toThrowError('Mount path must be string')
+  )).toThrowError('Mounting path must be string')
 
   expect(renderer.create.bind(renderer,
     <ExtendedComponent1 reduxMountPath="ui component" reduxPersist="true" />
@@ -148,7 +148,7 @@ test('Test valid init component with provide enhanced redux store', () => {
   expect(component.toJSON()).toMatchSnapshot()
 })
 
-test('Test passed mount path in Component', () => {
+test('Test passed mounting path in Component', () => {
   const store = createStore(null, enhanceStore)
 
   const Component = (props) => (
@@ -167,7 +167,7 @@ test('Test passed mount path in Component', () => {
   expect(component.toJSON()).toMatchSnapshot()
 })
 
-test('Test passed mount path in createReducer and in Component', () => {
+test('Test passed mounting path in createReducer and in Component', () => {
   const store = createStore(null, enhanceStore)
 
   const Component = (props) => (
@@ -781,7 +781,7 @@ test('Test is invalid to create of reducer in same mounting path', () => {
         <ExtendedComponent/>
       </ExtendedComponent>
     </Provider>
-  )).toThrowError('Mount path "ui component" already busy')
+  )).toThrowError('Mounting path "ui component" already busy')
 })
 
 test('Test is invalid to create of reducer in partially same mounting path (1)', () => {
@@ -806,7 +806,7 @@ test('Test is invalid to create of reducer in partially same mounting path (1)',
         <ExtendedComponent1/>
       </ExtendedComponent>
     </Provider>
-  )).toThrowError('Mount path "ui component" already busy')
+  )).toThrowError('Mounting path "ui component" already busy')
 })
 
 test('Test is invalid to create of reducer in partially same mounting path (2)', () => {
@@ -831,7 +831,7 @@ test('Test is invalid to create of reducer in partially same mounting path (2)',
         <ExtendedComponent1/>
       </ExtendedComponent>
     </Provider>
-  )).toThrowError('Mount path "ui component main" already busy')
+  )).toThrowError('Mounting path "ui component main" already busy')
 })
 
 test('Test is valid to create of reducer after create of reducer', () => {
@@ -880,7 +880,7 @@ test('Test is invalid to set the mountPath for reused component which contains i
         <ExtendedComponent1/>
       </ExtendedComponent>
     </Provider>
-  )).toThrowError('Mount path "todo list" must be contain "ui component"')
+  )).toThrowError('Mounting path "todo list" must be contain "ui component"')
 })
 
 test('Test is invalid to set the mountPath for reused component which contains in other reused component (reduxMountPath + reduxMountPath)', () => {
@@ -904,7 +904,7 @@ test('Test is invalid to set the mountPath for reused component which contains i
         <ExtendedComponent1 reduxMountPath="todo list"/>
       </ExtendedComponent>
     </Provider>
-  )).toThrowError('Mount path "todo list" must be contain "ui component"')
+  )).toThrowError('Mounting path "todo list" must be contain "ui component"')
 })
 
 test('Test is valid to set the mountPath for reused component which contains in other reused component', () => {

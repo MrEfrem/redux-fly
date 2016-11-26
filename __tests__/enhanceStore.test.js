@@ -37,13 +37,13 @@ test('Test registerReducers', () => {
   store.registerReducers({ ' ui  ': reducer1 })
   expect(store.getState().ui).toBe(initialState1)
   expect(store.registerReducers({ ui: reducer1 })).toBeUndefined()
-  expect(store.registerReducers.bind(store, { 'ui   component ': reducer1 })).toThrowError('Reducer mount path "ui" already busy')
+  expect(store.registerReducers.bind(store, { 'ui   component ': reducer1 })).toThrowError('Reducer mounting path "ui" already busy')
   store.dispatch({ type: 'UPDATE-COMPONENT', text: 'My first updated todo 1' })
   expect(JSON.stringify(store.getState())).toBe('{\"ui\":{\"text\":\"My first updated todo 1\"}}')
 
   store.registerReducers({ '  todo list ': reducer2 })
   expect(store.registerReducers({ 'todo list': reducer2 })).toBeUndefined()
-  expect(store.registerReducers.bind(store, { 'todo    ': reducer2 })).toThrowError('Reducer mount path "todo list" already busy')
+  expect(store.registerReducers.bind(store, { 'todo    ': reducer2 })).toThrowError('Reducer mounting path "todo list" already busy')
   expect(store.registerReducers({ 'todo list1': () => ({}) })).toBeUndefined()
 
   expect(JSON.stringify(store.getState())).toBe('{\"ui\":{\"text\":\"My first updated todo 1\"},\"todo\":{\"list\":{\"text\":\"My second todo\"},\"list1\":{}}}')

@@ -32,7 +32,9 @@ A React component class that injects into your component an Redux state through 
 #### Remarks
 * Mounting path is required and must be transferred through argument and(or) prop.
 * If action prefix isn't transferred through argument and prop, then action prefix will be filled to mounting path.
-* If Redux store isn't created and isn't provides to components, then Redux store is automatic created with support [redux-devtools-extension](https://github.com/zalmoxisus/redux-devtools-extension).
+* If prop `reduxMountPath` isn't specified and redux store isn't created and isn't provides to components, then Redux store is automatic created with
+support [redux-devtools-extension](https://github.com/zalmoxisus/redux-devtools-extension). But if prop `reduxMountPath` is specified and redux
+store isn't created and isn't provides to components, then will throwing error, because prop `reduxMountPath` means mount point for state of reused component.
 
 #### Example
 ```javascript
@@ -193,7 +195,9 @@ A React component class that register the passed reducers in Redux store.
 #### Remarks
 * Function must be call two times. The first time with its arguments described above, and a second time, with the component: `registerReducers(reducers)(MyComponent)`.
 * Function does not modify the passed React component. It returns a new component that you should use instead.
-* If Redux store isn't created and isn't provides to components, then Redux store is automatic created with support [redux-devtools-extension](https://github.com/zalmoxisus/redux-devtools-extension).
+* If prop `reduxMountPath` isn't specified and redux store isn't created and isn't provides to components, then Redux store is automatic created with
+support [redux-devtools-extension](https://github.com/zalmoxisus/redux-devtools-extension). But if prop `reduxMountPath` is specified and redux
+store isn't created and isn't provides to components, then will throwing error, because prop `reduxMountPath` means mount point for state of reused component.
 
 #### Example
 

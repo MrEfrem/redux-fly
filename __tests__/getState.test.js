@@ -1,9 +1,9 @@
 import getState from '../src/getState'
 
 test('Test invalid signature', () => {
-  expect(getState).toThrowError('Mount path must be non empty string')
-  expect(getState.bind(this, 123)).toThrowError('Mount path must be non empty string')
-  expect(getState.bind(this, '')).toThrowError('Mount path must be non empty string')
+  expect(getState).toThrowError('Mounting path must be non empty string')
+  expect(getState.bind(this, 123)).toThrowError('Mounting path must be non empty string')
+  expect(getState.bind(this, '')).toThrowError('Mounting path must be non empty string')
   expect(getState('ui component')).toThrowError('State must be plain object')
   expect(getState('ui component').bind(this, 123)).toThrowError('State must be plain object')
 })

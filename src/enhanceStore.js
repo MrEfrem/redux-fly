@@ -92,7 +92,7 @@ const enhanceStore = (createStore: Function) => {
             (key1.indexOf(normalizedKey) === 0 && !((key1.substr(normalizedKey.length)[0] || '').trim())))
             && key1 !== normalizedKey
           ) {
-            throw new Error(`Reducer mount path "${key1}" already busy`)
+            throw new Error(`Reducer mounting path "${key1}" already busy`)
           }
         })
         const keys = normalizedKey.split(' ')
