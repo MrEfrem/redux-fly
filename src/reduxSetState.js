@@ -17,25 +17,21 @@ import getStateByMountPath from './getState'
 export default (mountPath: string, dispatch: Function, getState: Function, actionPrefix: string) =>
 (actionType: string, newState: Object | Function) => {
   if (typeof actionType !== 'string' || !actionType.length) {
-    throw new Error('Action type must be non empty string')
+    throw new Error('ActionType must be non empty string')
   }
-
-  if ((typeof newState !== 'object' && typeof newState !== 'function') &&
-    (process.env.NODE_ENV === 'production' || process.env.NODE_ENV !== 'production' && !isPlainObject(newState))
+  if ((typeof newState !== 'object' && typeof newState !== 'function') ||
+    (typeof newState === 'object' && (!Object.keys(newState).length || (process.env.NODE_ENV !== 'production' && !isPlainObject(newState))))
   ) {
-    throw new Error('New state must be plain object or function')
+    throw new Error('NewState must be non empty plain object or function')
   }
 
-  let _newState
+  let _newState = newState
   if (typeof newState === 'function') {
     // Pass last state as param in newState
     _newState = newState(getStateByMountPath(mountPath)(getState()))
-  } else {
-    _newState = newState
-  }
-
-  if (typeof _newState !== 'object' || !Object.keys(_newState).length || (process.env.NODE_ENV !== 'production' && !isPlainObject(_newState))) {
-    throw new Error('New state must be non empty plain object')
+    if (typeof _newState !== 'object' || !Object.keys(_newState).length || (process.env.NODE_ENV !== 'production' && !isPlainObject(_newState))) {
+      throw new Error('New state returned from function must be non empty plain object')
+    }
   }
 
   // Else dispatch calculated state

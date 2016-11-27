@@ -143,11 +143,7 @@ export default ({
         }
         const _mountPath = normalizeMountPath(`${propMountPath || ''} ${mountPath || ''}`)
 
-
-        if (this.reduxMountPaths.some(path =>
-          ((path.indexOf(_mountPath) === 0 && !((path.substr(_mountPath.length)[0] || '').trim())) ||
-            (_mountPath.indexOf(path) === 0 && !((_mountPath.substr(path.length)[0] || '').trim()))))
-        ) {
+        if (this.reduxMountPaths.some(path => path === _mountPath)) {
           throw new Error(`Mounting path "${_mountPath}" already busy`)
         }
         if (this.lastReduxMountPath && _mountPath.indexOf(this.lastReduxMountPath) === -1) {

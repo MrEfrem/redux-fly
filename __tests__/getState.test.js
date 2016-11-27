@@ -6,6 +6,7 @@ test('Test invalid signature', () => {
   expect(getState.bind(this, '')).toThrowError('Mounting path must be non empty string')
   expect(getState('ui component')).toThrowError('State must be plain object')
   expect(getState('ui component').bind(this, 123)).toThrowError('State must be plain object')
+  expect(getState('ui component').bind(this, Object.create({ a: 1 }))).toThrowError('State must be plain object')
 })
 
 test('Test valid signature', () => {

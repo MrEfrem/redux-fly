@@ -64,10 +64,7 @@ export default (
         let _normReducers = {}
         Object.keys(_reducers).forEach(key => {
           const normalizedMountPath = normalizeMountPath(`${propMountPath || ''} ${key || ''}`)
-          if (this.reduxMountPaths.some(path =>
-            ((path.indexOf(normalizedMountPath) === 0 && !((path.substr(normalizedMountPath.length)[0] || '').trim())) ||
-              (normalizedMountPath.indexOf(path) === 0 && !((normalizedMountPath.substr(path.length)[0] || '').trim()))))
-          ) {
+          if (this.reduxMountPaths.some(path => path === normalizedMountPath)) {
             throw new Error(`Mounting path "${normalizedMountPath}" already busy`)
           }
           if (this.lastReduxMountPath && normalizedMountPath.indexOf(this.lastReduxMountPath) === -1) {

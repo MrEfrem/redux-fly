@@ -22,29 +22,29 @@ import { normalizeMountPath } from './utils/normalize'
  */
 const enhanceStore = (createStore: Function) => {
   if (typeof createStore !== 'function') {
-    throw new Error('Create store must be function')
+    throw new Error('CreateStore must be function')
   }
   return (reducer?: Object, preloadedState?: Object, enhancer?: Function) => {
     let store
-    let reducers = {}
+    let combinedReducers = {}
     let rawReducers = {}
     let rawReducersMap = []
 
     if (preloadedState && !isPlainObject(preloadedState)) {
-      throw new Error('Preloaded state must be plain object')
+      throw new Error('PreloadedState must be plain object')
     }
 
     // Create store with middleware for process batch actions
     if (reducer) {
       registerReducers(reducer)
-      store = createStore(reducers, preloadedState, enhancer)
+      store = createStore(combinedReducers, preloadedState, enhancer)
     } else {
       store = createStore(() => ({}), undefined, enhancer)
     }
 
     // Recreate reducers tree and replace them in store
     function recreateReducers () {
-      reducers = {}
+      combinedReducers = {}
       function recreate(node) {
         if (isPlainObject(node)) {
           const newReducers = {}
@@ -59,9 +59,9 @@ const enhanceStore = (createStore: Function) => {
           return node
         }
       }
-      reducers = recreate(rawReducers)
+      combinedReducers = recreate(rawReducers)
       if (store) {
-        store.replaceReducer(reducers)
+        store.replaceReducer(combinedReducers)
       }
     }
 
@@ -72,27 +72,27 @@ const enhanceStore = (createStore: Function) => {
 
     /**
      * Add reducers in store
-     * @param {Object} newReducers
+     * @param {Object} reducers
      * @return {void}
      */
-    function registerReducers(newReducers: Object) {
-      if (!isPlainObject(newReducers) || Object.keys(newReducers).length === 0) {
-        throw new Error('The reducers parameter must be non empty plain object')
+    function registerReducers(reducers: Object) {
+      if (!isPlainObject(reducers) || Object.keys(reducers).length === 0) {
+        throw new Error('Reducers must be non empty plain object')
       }
-      Object.keys(newReducers).forEach(key => {
-        if (typeof newReducers[key] !== 'function') {
-          throw new Error('The values of reducers parameter must be functions')
+      Object.keys(reducers).forEach(key => {
+        if (typeof reducers[key] !== 'function') {
+          throw new Error('Reducers has to contain functions')
         }
       })
 
-      Object.keys(newReducers).forEach(key => {
+      Object.keys(reducers).forEach(key => {
         const normalizedKey = normalizeMountPath(key)
         rawReducersMap.forEach(key1 => {
           if (((normalizedKey.indexOf(key1) === 0 && !((normalizedKey.substr(key1.length)[0] || '').trim())) ||
             (key1.indexOf(normalizedKey) === 0 && !((key1.substr(normalizedKey.length)[0] || '').trim())))
             && key1 !== normalizedKey
           ) {
-            throw new Error(`Reducer mounting path "${key1}" already busy`)
+            throw new Error(`Mounting path "${key1.length < normalizedKey.length ? key1 : normalizedKey}" already busy`)
           }
         })
         const keys = normalizedKey.split(' ')
@@ -108,9 +108,9 @@ const enhanceStore = (createStore: Function) => {
         }, rawReducers)
         const lastKey = keys.slice(-1)
         if (preloadedState1 && preloadedState1[lastKey]) {
-          result[lastKey] = wrapperReducerPreloadedState(newReducers[key], preloadedState1[lastKey])
+          result[lastKey] = wrapperReducerPreloadedState(reducers[key], preloadedState1[lastKey])
         } else {
-          result[lastKey] = newReducers[key]
+          result[lastKey] = reducers[key]
         }
         if (rawReducersMap.indexOf(normalizedKey) === -1) {
           rawReducersMap.push(normalizedKey)

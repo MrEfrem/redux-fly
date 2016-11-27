@@ -11,7 +11,9 @@ test('Test invalid signature', () => {
   expect(createReducer).toThrowError('InitialState must be plain object')
   expect(createReducer.bind(this, { mountPath: 10, initialState: {} })).toThrowError('Mounting path must be string')
   expect(createReducer.bind(this, { mountPath: 'ui component' })).toThrowError('InitialState must be plain object')
+  expect(createReducer.bind(this, { mountPath: 'ui component', initialState: Object.create({ a: 1 }) })).toThrowError('InitialState must be plain object')
   expect(createReducer.bind(this, { mountPath: 'ui component', initialState: {}, listenActions: 123 })).toThrowError('ListenActions must be plain object')
+  expect(createReducer.bind(this, { mountPath: 'ui component', initialState: {}, listenActions: Object.create({ a: 1 }) })).toThrowError('ListenActions must be plain object')
   expect(createReducer.bind(this, { mountPath: 'ui component', initialState: {}, connectToStore: null })).toThrowError('ConnectToStore must be boolean')
   expect(createReducer.bind(this, { mountPath: 'ui component', initialState: {}, persist: null })).toThrowError('Persist must be boolean')
   expect(createReducer.bind(this, { mountPath: 'ui component', initialState: {}, actionPrefix: 123 })).toThrowError('ActionPrefix must be non empty string')
@@ -629,10 +631,14 @@ test('Test signature reduxSetState', () => {
   class Component extends React.Component {
     componentDidMount() {
       const { reduxSetState } = this.props
-      expect(reduxSetState).toThrowError('Action type must be non empty string')
-      expect(reduxSetState.bind(this, 'INCREMENT')).toThrowError('New state must be plain object or function')
-      expect(reduxSetState.bind(this, 'INCREMENT', 1)).toThrowError('New state must be plain object or function')
-      expect(reduxSetState.bind(this, 'INCREMENT', () => 123)).toThrowError('New state must be non empty plain object')
+      expect(reduxSetState).toThrowError('ActionType must be non empty string')
+      expect(reduxSetState.bind(this, 'INCREMENT')).toThrowError('NewState must be non empty plain object or function')
+      expect(reduxSetState.bind(this, 'INCREMENT', 1)).toThrowError('NewState must be non empty plain object or function')
+      expect(reduxSetState.bind(this, 'INCREMENT', {})).toThrowError('NewState must be non empty plain object or function')
+      expect(reduxSetState.bind(this, 'INCREMENT', Object.create({ a: 1 }))).toThrowError('NewState must be non empty plain object or function')
+      expect(reduxSetState.bind(this, 'INCREMENT', () => 123)).toThrowError('New state returned from function must be non empty plain object')
+      expect(reduxSetState.bind(this, 'INCREMENT', () => ({}))).toThrowError('New state returned from function must be non empty plain object')
+      expect(reduxSetState.bind(this, 'INCREMENT', () => Object.create({ a: 1 }))).toThrowError('New state returned from function must be non empty plain object')
     }
 
     render() { return null }
@@ -831,7 +837,7 @@ test('Test is invalid to create of reducer in partially same mounting path (2)',
         <ExtendedComponent1/>
       </ExtendedComponent>
     </Provider>
-  )).toThrowError('Mounting path "ui component main" already busy')
+  )).toThrowError('Mounting path "ui component" already busy')
 })
 
 test('Test is valid to create of reducer after create of reducer', () => {

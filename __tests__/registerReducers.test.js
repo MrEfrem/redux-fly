@@ -246,7 +246,7 @@ test('Test is invalid to register of reducer in partially same mounting path (2)
         <ExtendedComponent1/>
       </ExtendedComponent>
     </Provider>
-  )).toThrowError('Mounting path "ui component main" already busy')
+  )).toThrowError('Mounting path "ui component" already busy')
 })
 
 test('Test is valid to register of reducer after register of reducer', () => {

@@ -2,19 +2,23 @@ import enhanceStore from '../src/enhanceStore'
 import { createStore } from 'redux'
 
 test('Test invalid signature', () => {
-  expect(enhanceStore).toThrowError('Create store must be function')
-  expect(enhanceStore.bind(this, 123)).toThrowError('Create store must be function')
-  expect(createStore.bind(this, 123, enhanceStore)).toThrowError('The reducers parameter must be non empty plain object')
-  expect(createStore.bind(this, null, 123, enhanceStore)).toThrowError('Preloaded state must be plain object')
+  expect(enhanceStore).toThrowError('CreateStore must be function')
+  expect(enhanceStore.bind(this, 123)).toThrowError('CreateStore must be function')
+  expect(createStore.bind(this, 123, enhanceStore)).toThrowError('Reducers must be non empty plain object')
+  expect(createStore.bind(this, {}, enhanceStore)).toThrowError('Reducers must be non empty plain object')
+  expect(createStore.bind(this, Object.create({ a: () => ({}) }), enhanceStore)).toThrowError('Reducers must be non empty plain object')
+  expect(createStore.bind(this, null, 123, enhanceStore)).toThrowError('PreloadedState must be plain object')
+  expect(createStore.bind(this, null, Object.create({}), enhanceStore)).toThrowError('PreloadedState must be plain object')
   expect(createStore.bind(this, null, null, 123)).toThrow()
-  expect(createStore.bind(this, { ui: 123 }, enhanceStore)).toThrowError('The values of reducers parameter must be functions')
+  expect(createStore.bind(this, { ui: 123 }, enhanceStore)).toThrowError('Reducers has to contain functions')
 })
 
 test('Test invalid signature registerReducers', () => {
   const store = createStore(null, enhanceStore)
-  expect(store.registerReducers).toThrowError('The reducers parameter must be non empty plain object')
-  expect(store.registerReducers.bind(store, {})).toThrowError('The reducers parameter must be non empty plain object')
-  expect(store.registerReducers.bind(store, { ui: 123 })).toThrowError('The values of reducers parameter must be functions')
+  expect(store.registerReducers).toThrowError('Reducers must be non empty plain object')
+  expect(store.registerReducers.bind(store, {})).toThrowError('Reducers must be non empty plain object')
+  expect(store.registerReducers.bind(store, Object.create({ ui: () => {} }))).toThrowError('Reducers must be non empty plain object')
+  expect(store.registerReducers.bind(store, { ui: 123 })).toThrowError('Reducers has to contain functions')
   expect(store.registerReducers.bind(store, { ui: () => {} })).toThrow()
 })
 
@@ -37,13 +41,13 @@ test('Test registerReducers', () => {
   store.registerReducers({ ' ui  ': reducer1 })
   expect(store.getState().ui).toBe(initialState1)
   expect(store.registerReducers({ ui: reducer1 })).toBeUndefined()
-  expect(store.registerReducers.bind(store, { 'ui   component ': reducer1 })).toThrowError('Reducer mounting path "ui" already busy')
+  expect(store.registerReducers.bind(store, { 'ui   component ': reducer1 })).toThrowError('Mounting path "ui" already busy')
   store.dispatch({ type: 'UPDATE-COMPONENT', text: 'My first updated todo 1' })
   expect(JSON.stringify(store.getState())).toBe('{\"ui\":{\"text\":\"My first updated todo 1\"}}')
 
   store.registerReducers({ '  todo list ': reducer2 })
   expect(store.registerReducers({ 'todo list': reducer2 })).toBeUndefined()
-  expect(store.registerReducers.bind(store, { 'todo    ': reducer2 })).toThrowError('Reducer mounting path "todo list" already busy')
+  expect(store.registerReducers.bind(store, { 'todo    ': reducer2 })).toThrowError('Mounting path "todo" already busy')
   expect(store.registerReducers({ 'todo list1': () => ({}) })).toBeUndefined()
 
   expect(JSON.stringify(store.getState())).toBe('{\"ui\":{\"text\":\"My first updated todo 1\"},\"todo\":{\"list\":{\"text\":\"My second todo\"},\"list1\":{}}}')
