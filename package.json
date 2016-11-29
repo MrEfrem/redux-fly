@@ -1,6 +1,6 @@
 {
   "name": "redux-fly",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "description": "Reduce Redux boilerplate",
   "browser": "dist/redux-fly.js",
   "main": "lib/index.js",
