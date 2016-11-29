@@ -72,6 +72,11 @@ ReactDOM.render(
 ### `enhanceStore`
 Function enhance an object of Redux store with the `registerReducers` method for gradual registration of reducer at any nesting level of Redux store.
 
+#### `store.registerReducers(reducers)`
+* `reducers`\(*Object*)
+  * `key`\(*string*): it defines reducer mounting path. Argument consist from object keys separated by spaces.
+  * `value`\(*Function*): it defines reducer.
+
 #### Example
 Creation of enhanced store:
 ```javascript
@@ -98,6 +103,18 @@ const store = createStore(reducers, enhanceStore);
 Creation of enhanced store and reducers registration with preloaded state:
 ```javascript
 const store = createStore(reducers, window.__INITIAL_STATE__, enhanceStore);
+```
+
+<br/>
+Creation of enhanced store and registration of reducers later:
+```javascript
+import { createStore } from 'redux';
+import { enhanceStore } from 'redux-fly';
+
+const store = createStore(null, enhanceStore);
+...
+const reducer = (state, action) => { ... };
+store.registerReducers({ 'ui component': reducer });
 ```
 
 ### `getState(mountPath)(state)`

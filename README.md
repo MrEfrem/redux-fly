@@ -1,5 +1,5 @@
 # Redux-fly
-The library is focused on to create simple API for:
+The library is focused on to providing simple API for:
 * Reducers registration at any time to any place in store of Redux.
 * Fast creation and mutation of component state (similar to local state) which is saved in store of Redux.
 
@@ -110,7 +110,7 @@ export default compose(
   registerReducers({
     'ui counter': reducer
   }),
-  connect((state) => ({ counter: state.ui.counter }), actionCreators)
+  connect((state) => ({ counter: state.ui.counter.value }), actionCreators)
 )(Counter);
 ```
 
@@ -134,7 +134,8 @@ If you don’t yet use npm or a modern module bundler, and would rather prefer a
   * [`getState(mountPath)(state)`](docs/API.md#getstatemountpathstate)
   * [`registerReducers(reducers)`](docs/API.md#registerreducersreducers)
 
-## Examples
+## Examples ([view](https://mrefrem.github.io/))
+All examples use [redux-devtools-extension](https://github.com/zalmoxisus/redux-devtools-extension) if it is installed in browser.
 * [Counter](examples/counter). Example to use `redux-fly` component state.
 * [Async](examples/async). Example to use of mix canonical reducer and `redux-fly` component state.
 * [Universal](examples/universal). Example to use `redux-fly` for creation of component state and showin how to implement the universal rendering.
