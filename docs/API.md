@@ -45,7 +45,7 @@ import { Provider } from 'react-redux';
 import { enhanceStore, createReducer } from 'redux-fly';
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-const store = createStore(null, composeEnhancers(enhanceStore));
+const store = createStore(() => {}, composeEnhancers(enhanceStore));
 
 const Welcome = ({ reduxState: { text }, reduxSetState, reduxResetState }) => (
   <div>
@@ -83,12 +83,12 @@ Creation of enhanced store:
 import { createStore } from 'redux';
 import { enhanceStore } from 'redux-fly';
 
-const store = createStore(null, enhanceStore);
+const store = createStore(() => {}, enhanceStore);
 ```
 <br/>
 Creation of enhanced store with preloaded state received from server or saved in any storage:
 ```javascript
-const store = createStore(null, window.__INITIAL_STATE__, enhanceStore);
+const store = createStore(() => {}, window.__INITIAL_STATE__, enhanceStore);
 ```
 <br/>
 Creation of enhanced store and reducers registration:
@@ -111,7 +111,7 @@ Creation of enhanced store and registration of reducers later:
 import { createStore } from 'redux';
 import { enhanceStore } from 'redux-fly';
 
-const store = createStore(null, enhanceStore);
+const store = createStore(() => {}, enhanceStore);
 ...
 const reducer = (state, action) => { ... };
 store.registerReducers({ 'ui component': reducer });

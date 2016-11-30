@@ -15,7 +15,7 @@ import { Provider } from 'react-redux';
 import { enhanceStore } from 'redux-fly';
 import Counter from './Counter';
 
-const store = createStore(null, enhanceStore);
+const store = createStore(() => {}, enhanceStore);
 
 export default () => (
   <Provider store={store}>

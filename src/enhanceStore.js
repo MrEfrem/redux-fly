@@ -24,7 +24,7 @@ const enhanceStore = (createStore: Function) => {
   if (typeof createStore !== 'function') {
     throw new Error('CreateStore must be function')
   }
-  return (reducer?: Object, preloadedState?: Object, enhancer?: Function) => {
+  return (reducer: Object, preloadedState: ?Object, enhancer: ?Function) => {
     let store
     let combinedReducers = {}
     let rawReducers = {}
@@ -35,11 +35,11 @@ const enhanceStore = (createStore: Function) => {
     }
 
     // Create store with middleware for process batch actions
-    if (reducer) {
+    if (reducer && typeof reducer !== 'function') {
       registerReducers(reducer)
       store = createStore(combinedReducers, preloadedState, enhancer)
     } else {
-      store = createStore(() => ({}), undefined, enhancer)
+      store = createStore(() => {}, undefined, enhancer)
     }
 
     // Recreate reducers tree and replace them in store

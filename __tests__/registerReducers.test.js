@@ -46,7 +46,7 @@ test('Test invalid redux store', () => {
 
 test('Test reducers as function with provide enhanced redux store', () => {
   const Component = () => <div/>
-  const store = createStore(null, enhanceStore)
+  const store = createStore(() => {}, enhanceStore)
 
   const ExtendedComponent1 = registerReducers((props) => {
     expect(props.text).toBe('My first todo')
@@ -78,7 +78,7 @@ test('Test reducers as function with provide enhanced redux store', () => {
 
 test('Test reducers as object with provide enhanced redux store', () => {
   const Component = () => <div/>
-  const store = createStore(null, enhanceStore)
+  const store = createStore(() => {}, enhanceStore)
 
   const ExtendedComponent = registerReducers({
     'ui component': () => ({
@@ -117,7 +117,7 @@ test('Test reducers as object without provide redux store', () => {
 })
 
 test('Test reducers as object with provide is pure redux store', () => {
-  const store = createStore(null, enhanceStore)
+  const store = createStore(() => {}, enhanceStore)
   const Component = (undefined, { store }) => (
     <div>
       <span>{JSON.stringify(store.getState())}</span>
@@ -143,7 +143,7 @@ test('Test reducers as object with provide is pure redux store', () => {
 })
 
 test('Test calculated mountPath with passed reduxMountPath', () => {
-  const store = createStore(null, enhanceStore)
+  const store = createStore(() => {}, enhanceStore)
   const Component = (undefined, { store }) => (
     <div>{JSON.stringify(store.getState())}</div>
   )
@@ -166,7 +166,7 @@ test('Test calculated mountPath with passed reduxMountPath', () => {
 })
 
 test('Test is valid re-register of reducer', () => {
-  const store = createStore(null, enhanceStore)
+  const store = createStore(() => {}, enhanceStore)
   const Component = () => <div/>
   const ExtendedComponent = registerReducers({
     'ui component': () => ({})
@@ -185,7 +185,7 @@ test('Test is valid re-register of reducer', () => {
 })
 
 test('Test is invalid to register of reducer in same mounting path', () => {
-  const store = createStore(null, enhanceStore)
+  const store = createStore(() => {}, enhanceStore)
   const Component = ({ children }) => <div>{children}</div>
   Component.propTypes = {
     children: PropTypes.element
@@ -204,7 +204,7 @@ test('Test is invalid to register of reducer in same mounting path', () => {
 })
 
 test('Test is invalid to register of reducer in partially same mounting path (1)', () => {
-  const store = createStore(null, enhanceStore)
+  const store = createStore(() => {}, enhanceStore)
   const Component = ({ children }) => <div>{children}</div>
   Component.propTypes = {
     children: PropTypes.element
@@ -227,7 +227,7 @@ test('Test is invalid to register of reducer in partially same mounting path (1)
 })
 
 test('Test is invalid to register of reducer in partially same mounting path (2)', () => {
-  const store = createStore(null, enhanceStore)
+  const store = createStore(() => {}, enhanceStore)
   const Component = ({ children }) => <div>{children}</div>
   Component.propTypes = {
     children: PropTypes.element
@@ -250,7 +250,7 @@ test('Test is invalid to register of reducer in partially same mounting path (2)
 })
 
 test('Test is valid to register of reducer after register of reducer', () => {
-  const store = createStore(null, enhanceStore)
+  const store = createStore(() => {}, enhanceStore)
   const Component = ({ children }) => <div>{children || 'Last reducer'}</div>
   Component.propTypes = {
     children: PropTypes.element
@@ -273,7 +273,7 @@ test('Test is valid to register of reducer after register of reducer', () => {
 })
 
 test('Test is invalid to set the mountPath for reused component which contains in other reused component (reduxMountPath + mountPath)', () => {
-  const store = createStore(null, enhanceStore)
+  const store = createStore(() => {}, enhanceStore)
   const Component = ({ children }) => <div>{children || 'Last reducer'}</div>
   Component.propTypes = {
     children: PropTypes.element
@@ -296,7 +296,7 @@ test('Test is invalid to set the mountPath for reused component which contains i
 })
 
 test('Test is invalid to set the mountPath for reused component which contains in other reused component (reduxMountPath + reduxMountPath)', () => {
-  const store = createStore(null, enhanceStore)
+  const store = createStore(() => {}, enhanceStore)
   const Component = ({ children }) => <div>{children || 'Last reducer'}</div>
   Component.propTypes = {
     children: PropTypes.element
@@ -319,7 +319,7 @@ test('Test is invalid to set the mountPath for reused component which contains i
 })
 
 test('Test is valid to set the mountPath for reused component which contains in other reused component', () => {
-  const store = createStore(null, enhanceStore)
+  const store = createStore(() => {}, enhanceStore)
   const Component = ({ children, reduxMountPath }) => <div>{children ? React.cloneElement(children, { reduxMountPath }) : 'Last reducer'}</div>
   Component.propTypes = {
     children: PropTypes.element,

@@ -7,13 +7,15 @@
     "es6": true
   },
   "plugins": [
-    "react"
+    "react",
+    "flowtype"
   ],
   "extends": [
     "eslint:recommended",
     "plugin:import/errors",
     "plugin:import/warnings",
-    "plugin:react/recommended"
+    "plugin:react/recommended",
+    "plugin:flowtype/recommended"
   ],
   "rules": {
     "indent": [2, 2, {

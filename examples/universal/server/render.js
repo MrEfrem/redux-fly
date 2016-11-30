@@ -31,7 +31,7 @@ export default function* () { // eslint-disable-line
   const initialState = { counter: { value: counter } }
 
   // Create a new Redux store instance
-  const store = createStore(null, initialState, enhanceStore)
+  const store = createStore(() => {}, initialState, enhanceStore)
 
   // Delete the App component cache for live editing
   delete require.cache[require.resolve('../src/App')]

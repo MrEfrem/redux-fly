@@ -14,7 +14,7 @@ test('Test invalid signature', () => {
 })
 
 test('Test invalid signature registerReducers', () => {
-  const store = createStore(null, enhanceStore)
+  const store = createStore(() => {}, enhanceStore)
   expect(store.registerReducers).toThrowError('Reducers must be non empty plain object')
   expect(store.registerReducers.bind(store, {})).toThrowError('Reducers must be non empty plain object')
   expect(store.registerReducers.bind(store, Object.create({ ui: () => {} }))).toThrowError('Reducers must be non empty plain object')
@@ -23,7 +23,7 @@ test('Test invalid signature registerReducers', () => {
 })
 
 test('Test registerReducers', () => {
-  const store = createStore(null, null, enhanceStore)
+  const store = createStore(() => {}, null, enhanceStore)
   const initialState1 = { text: 'My first todo' }
   const initialState2 = { text: 'My second todo' }
   const reducer1 = (state = initialState1, action) => {
@@ -61,7 +61,7 @@ test('Test registerReducers', () => {
 
 test('Test createStore with preloadedState', () => {
   const preloadedState = { ui: { todo: { text: 'My second todo' } } }
-  const store = createStore(null, preloadedState, enhanceStore)
+  const store = createStore(() => {}, preloadedState, enhanceStore)
   const initialState = { text: 'My first todo' }
   const reducer = (state = initialState) => state
   store.registerReducers({

@@ -1,6 +1,6 @@
 {
   "name": "redux-fly",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Rapid React + Redux development",
   "browser": "dist/redux-fly.js",
   "main": "lib/index.js",
@@ -28,11 +28,12 @@
     "url": "https://github.com/MrEfrem/redux-fly/issues"
   },
   "scripts": {
-    "build": "npm run clean && npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min",
+    "build": "npm run clean && npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min && npm run build:flow",
     "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib",
     "build:es": "cross-env BABEL_ENV=es babel src --out-dir es",
     "build:umd": "cross-env BABEL_ENV=commonjs NODE_ENV=development webpack src/index.js dist/redux-fly.js",
     "build:umd:min": "cross-env BABEL_ENV=commonjs NODE_ENV=production webpack src/index.js dist/redux-fly.min.js",
+    "build:flow": "flow-copy-source -v src lib && flow-copy-source -v src es",
     "clean": "rimraf lib es",
     "lint": "eslint src __tests__",
     "lint:fix": "eslint src --fix",
@@ -52,9 +53,11 @@
     "cross-env": "^3.0.0",
     "enzyme": "^2.5.1",
     "eslint": "^3.5.0",
+    "eslint-plugin-flowtype": "^2.28.2",
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-react": "^6.3.0",
     "flow-bin": "^0.36.0",
+    "flow-copy-source": "^1.1.0",
     "jest-cli": "^17.0.0",
     "react": "^15.4.0",
     "react-addons-test-utils": "^15.4.0",

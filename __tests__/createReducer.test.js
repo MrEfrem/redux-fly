@@ -120,7 +120,7 @@ test('Test valid init component with provide is pure redux store', () => {
 })
 
 test('Test valid init component with provide enhanced redux store', () => {
-  const store = createStore(null, enhanceStore)
+  const store = createStore(() => {}, enhanceStore)
 
   const Component = (props) => (
     <div>
@@ -151,7 +151,7 @@ test('Test valid init component with provide enhanced redux store', () => {
 })
 
 test('Test passed mounting path in Component', () => {
-  const store = createStore(null, enhanceStore)
+  const store = createStore(() => {}, enhanceStore)
 
   const Component = (props) => (
     <div>{props.reduxMountPath}</div>
@@ -170,7 +170,7 @@ test('Test passed mounting path in Component', () => {
 })
 
 test('Test passed mounting path in createReducer and in Component', () => {
-  const store = createStore(null, enhanceStore)
+  const store = createStore(() => {}, enhanceStore)
 
   const Component = (props) => (
     <div>{props.reduxMountPath}</div>
@@ -191,7 +191,7 @@ test('Test passed mounting path in createReducer and in Component', () => {
 })
 
 test('Test passed persist in createReducer', () => {
-  const store = createStore(null, enhanceStore)
+  const store = createStore(() => {}, enhanceStore)
 
   const Component = (props) => (
     <div>{props.reduxPersist.toString()}</div>
@@ -210,7 +210,7 @@ test('Test passed persist in createReducer', () => {
 })
 
 test('Test passed persist in Component', () => {
-  const store = createStore(null, enhanceStore)
+  const store = createStore(() => {}, enhanceStore)
 
   const Component = (props) => (
     <div>{props.reduxPersist.toString()}</div>
@@ -229,7 +229,7 @@ test('Test passed persist in Component', () => {
 })
 
 test('Test passed persist in createReducer and Component', () => {
-  const store = createStore(null, enhanceStore)
+  const store = createStore(() => {}, enhanceStore)
 
   const Component = (props) => (
     <div>{props.reduxPersist.toString()}</div>
@@ -248,7 +248,7 @@ test('Test passed persist in createReducer and Component', () => {
 })
 
 test('Test initialState is function', () => {
-  const store = createStore(null, enhanceStore)
+  const store = createStore(() => {}, enhanceStore)
 
   const Component = (props) => (
     <div>{JSON.stringify(props.reduxState)}</div>
@@ -267,7 +267,7 @@ test('Test initialState is function', () => {
 })
 
 test('Test listenActions', () => {
-  const store = createStore(null, enhanceStore)
+  const store = createStore(() => {}, enhanceStore)
   const UPDATE_TODO = 'UPDATE_TODO'
 
   class Component extends React.Component {
@@ -303,7 +303,7 @@ test('Test listenActions', () => {
 })
 
 test('Test listenActions is function', () => {
-  const store = createStore(null, enhanceStore)
+  const store = createStore(() => {}, enhanceStore)
   const UPDATE_TODO = 'UPDATE_TODO'
 
   class Component extends React.Component {
@@ -341,7 +341,7 @@ test('Test listenActions is function', () => {
 })
 
 test('Test listenActions is function in reusable component', () => {
-  const store = createStore(null, enhanceStore)
+  const store = createStore(() => {}, enhanceStore)
   const UPDATE_TODO = 'UPDATE_TODO'
 
   class Component extends React.Component {
@@ -379,7 +379,7 @@ test('Test listenActions is function in reusable component', () => {
 })
 
 test('Test connectToStore: false', () => {
-  const store = createStore(null, enhanceStore)
+  const store = createStore(() => {}, enhanceStore)
 
   const Component = (props) => (
     <div>{JSON.stringify(props.reduxState)}</div>
@@ -402,7 +402,7 @@ test('Test connectToStore: false', () => {
 })
 
 test('Test reset state (persist = false) after unmounting component', async () => {
-  const store = createStore(null, enhanceStore)
+  const store = createStore(() => {}, enhanceStore)
 
   class Component extends React.Component {
     componentDidMount() {
@@ -435,7 +435,7 @@ test('Test reset state (persist = false) after unmounting component', async () =
 })
 
 test('Test preserved state (persist = true) after unmounting component', () => {
-  const store = createStore(null, enhanceStore)
+  const store = createStore(() => {}, enhanceStore)
 
   class Component extends React.Component {
     componentDidMount() {
@@ -475,7 +475,7 @@ test('Test empty (default) actionPrefix', () => {
       expect(action.type).toBe('ui component/@@UPDATE-TODO')
     }
   }
-  const store = createStore(null, compose(applyMiddleware(middleware), enhanceStore))
+  const store = createStore(() => {}, compose(applyMiddleware(middleware), enhanceStore))
 
   class Component extends React.Component {
     componentDidMount() {
@@ -510,7 +510,7 @@ test('Test empty (default) actionPrefix', () => {
 })
 
 test('Test filled actionPrefix in createReducer', () => {
-  const store = createStore(null, enhanceStore)
+  const store = createStore(() => {}, enhanceStore)
 
   const Component = ({ reduxActionPrefix }) => {
     return <div>{reduxActionPrefix}</div>
@@ -533,7 +533,7 @@ test('Test filled actionPrefix in createReducer', () => {
 })
 
 test('Test filled actionPrefix in component', () => {
-  const store = createStore(null, enhanceStore)
+  const store = createStore(() => {}, enhanceStore)
 
   const Component = ({ reduxActionPrefix }) => {
     return <div>{reduxActionPrefix}</div>
@@ -555,7 +555,7 @@ test('Test filled actionPrefix in component', () => {
 })
 
 test('Test filled actionPrefix in component and createReducer', () => {
-  const store = createStore(null, enhanceStore)
+  const store = createStore(() => {}, enhanceStore)
 
   const Component = ({ reduxActionPrefix }) => {
     return <div>{reduxActionPrefix}</div>
@@ -578,7 +578,7 @@ test('Test filled actionPrefix in component and createReducer', () => {
 })
 
 test('Test reduxResetState', () => {
-  const store = createStore(null, enhanceStore)
+  const store = createStore(() => {}, enhanceStore)
 
   class Component extends React.Component {
     componentDidMount() {
@@ -626,7 +626,7 @@ test('Test reduxResetState', () => {
 })
 
 test('Test signature reduxSetState', () => {
-  const store = createStore(null, enhanceStore)
+  const store = createStore(() => {}, enhanceStore)
 
   class Component extends React.Component {
     componentDidMount() {
@@ -659,7 +659,7 @@ test('Test signature reduxSetState', () => {
 })
 
 test('Test reduxSetState', () => {
-  const store = createStore(null, enhanceStore)
+  const store = createStore(() => {}, enhanceStore)
   let numRender = 0
   class Component extends React.Component {
     componentDidMount() {
@@ -706,7 +706,7 @@ test('Test reduxSetState', () => {
 })
 
 test('Test replace native state to redux state', () => {
-  const store = createStore(null, enhanceStore)
+  const store = createStore(() => {}, enhanceStore)
 
   class Component extends React.Component {
     constructor(props) {
@@ -751,7 +751,7 @@ test('Test replace native state to redux state', () => {
 })
 
 test('Test is valid re-create of reducer', () => {
-  const store = createStore(null, enhanceStore)
+  const store = createStore(() => {}, enhanceStore)
   const Component = () => <div/>
   const ExtendedComponent = createReducer({
     mountPath: 'ui component',
@@ -771,7 +771,7 @@ test('Test is valid re-create of reducer', () => {
 })
 
 test('Test is invalid to create of reducer in same mounting path', () => {
-  const store = createStore(null, enhanceStore)
+  const store = createStore(() => {}, enhanceStore)
   const Component = ({ children }) => <div>{children}</div>
   Component.propTypes = {
     children: PropTypes.element
@@ -791,7 +791,7 @@ test('Test is invalid to create of reducer in same mounting path', () => {
 })
 
 test('Test is invalid to create of reducer in partially same mounting path (1)', () => {
-  const store = createStore(null, enhanceStore)
+  const store = createStore(() => {}, enhanceStore)
   const Component = ({ children }) => <div>{children}</div>
   Component.propTypes = {
     children: PropTypes.element
@@ -816,7 +816,7 @@ test('Test is invalid to create of reducer in partially same mounting path (1)',
 })
 
 test('Test is invalid to create of reducer in partially same mounting path (2)', () => {
-  const store = createStore(null, enhanceStore)
+  const store = createStore(() => {}, enhanceStore)
   const Component = ({ children }) => <div>{children}</div>
   Component.propTypes = {
     children: PropTypes.element
@@ -841,7 +841,7 @@ test('Test is invalid to create of reducer in partially same mounting path (2)',
 })
 
 test('Test is valid to create of reducer after create of reducer', () => {
-  const store = createStore(null, enhanceStore)
+  const store = createStore(() => {}, enhanceStore)
   const Component = ({ children }) => <div>{children || 'Last reducer'}</div>
   Component.propTypes = {
     children: PropTypes.element
@@ -866,7 +866,7 @@ test('Test is valid to create of reducer after create of reducer', () => {
 })
 
 test('Test is invalid to set the mountPath for reused component which contains in other reused component (reduxMountPath + mountPath)', () => {
-  const store = createStore(null, enhanceStore)
+  const store = createStore(() => {}, enhanceStore)
   const Component = ({ children }) => <div>{children || 'Last reducer'}</div>
   Component.propTypes = {
     children: PropTypes.element
@@ -890,7 +890,7 @@ test('Test is invalid to set the mountPath for reused component which contains i
 })
 
 test('Test is invalid to set the mountPath for reused component which contains in other reused component (reduxMountPath + reduxMountPath)', () => {
-  const store = createStore(null, enhanceStore)
+  const store = createStore(() => {}, enhanceStore)
   const Component = ({ children }) => <div>{children || 'Last reducer'}</div>
   Component.propTypes = {
     children: PropTypes.element
@@ -914,7 +914,7 @@ test('Test is invalid to set the mountPath for reused component which contains i
 })
 
 test('Test is valid to set the mountPath for reused component which contains in other reused component', () => {
-  const store = createStore(null, enhanceStore)
+  const store = createStore(() => {}, enhanceStore)
   const Component = ({ children, reduxMountPath }) => <div>{children ? React.cloneElement(children, { reduxMountPath }) : 'Last reducer'}</div>
   Component.propTypes = {
     children: PropTypes.element,

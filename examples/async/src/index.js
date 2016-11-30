@@ -11,7 +11,7 @@ const composeEnhancers =
   window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?
     window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({}) : compose
 
-const store = createStore(null, composeEnhancers(enhanceStore, applyMiddleware(thunk)))
+const store = createStore(() => {}, composeEnhancers(enhanceStore, applyMiddleware(thunk)))
 const target = document.getElementById('root')
 const render = (Component) => {
   try {

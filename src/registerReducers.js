@@ -6,6 +6,7 @@ import { createStore, compose } from 'redux'
 import { checkMountPath } from './utils/checks'
 import { normalizeMountPath } from './utils/normalize'
 import { Provider } from 'react-redux'
+import type { store as typeStore } from './types'
 
 /**
  * Function registers reducers in Redux store.
@@ -20,7 +21,7 @@ export default (
   if (typeof reducers !== 'function' && typeof reducers !== 'object') {
     throw new Error('Reducers must be non empty plain object or function')
   }
-  return (WrappedComponent: any) =>
+  return (WrappedComponent: ReactClass<*>) =>
     class CreateReducer extends React.Component {
       static contextTypes = {
         store: process.env.NODE_ENV === 'test' ? PropTypes.object : storeShape,
@@ -44,7 +45,7 @@ export default (
 
       constructor(props: any, context: any) {
         super(props, context)
-        let { store } = context
+        let { store }: { store: typeStore } = context
         this.reduxMountPaths = context.reduxMountPaths || []
         this.lastReduxMountPath = context.lastReduxMountPath || ''
         this.store = null
@@ -90,7 +91,7 @@ export default (
             typeof window === 'object' &&
             window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?
               window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({}) : compose
-          store = createStore(null, composeEnhancers(enhanceStore))
+          store = (createStore(() => {}, composeEnhancers(enhanceStore)): typeStore)
           this.store = store
         }
 

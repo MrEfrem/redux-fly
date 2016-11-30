@@ -11,6 +11,7 @@ import createBoundedReducer from './createBoundedReducer'
 import reduxSetState from './reduxSetState'
 import { RESET_STATE, MOUNT_PATH, NEW_STATE } from './consts'
 import getState from './getState'
+import type { store as typeStore } from './types'
 
 /**
  * Check initialState
@@ -91,7 +92,7 @@ export default ({
     checkActionPrefix(actionPrefix)
   }
 
-  return (WrappedComponent: any) =>
+  return (WrappedComponent: ReactClass<*>) =>
     class CreateReducer extends React.Component {
       static contextTypes = {
         store: process.env.NODE_ENV === 'test' ? PropTypes.object : storeShape,
@@ -127,7 +128,7 @@ export default ({
 
       constructor(props: any, context: any) {
         super(props, context)
-        let { store } = context
+        let { store }: { store: typeStore } = context
         this.reduxMountPaths = context.reduxMountPaths || []
         this.lastReduxMountPath = context.lastReduxMountPath || ''
         this.store = null
@@ -204,7 +205,7 @@ export default ({
             typeof window === 'object' &&
             window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?
               window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({}) : compose
-          store = createStore(null, composeEnhancers(enhanceStore))
+          store = (createStore(() => {}, composeEnhancers(enhanceStore)): typeStore)
           this.store = store
         }
 
