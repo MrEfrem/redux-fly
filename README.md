@@ -1,9 +1,8 @@
 # Redux-fly
 The library is focused on to providing simple API for:
 * Reducers registration at any time to any place in store of Redux.
-* Fast creation and mutation of component state (similar to local state) which is saved in store of Redux.
-
-This API allow you to creation of reused components, organization effective code splitting and reducing Redux boilerplate.
+* Simple creation and mutation of component state, similar to local state, which is stored in store of Redux.
+* Creation of reused components which store own state in store of Redux.
 
 [![Build Status](https://travis-ci.org/MrEfrem/redux-fly.svg?branch=master)](https://travis-ci.org/MrEfrem/redux-fly)
 
@@ -54,7 +53,7 @@ import { createReducer, getState } from 'redux-fly';
 import { MENU_OPEN } from './Menu'; // Action of other component
 
 // Type of window closing action (other components might listen in reducers)
-export const actionPrivateCloseModal = (actionPrefix) => `${actionPrefix}PRIVATE-CLOSE-MODAL`;
+export const actionPrivateCloseModal = (actionPrefix) => `${actionPrefix}@@PRIVATE-CLOSE-MODAL`;
 
 // To open a modal is public action creator (other components might control the state)
 export const openModal = (actionPrefix) => ({
