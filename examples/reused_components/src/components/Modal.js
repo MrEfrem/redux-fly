@@ -2,15 +2,24 @@
 import React from 'react'
 import { createReducer, getState } from 'redux-fly'
 
-// Public actions (other components might control)
-export const PUBLIC_OPEN_MODAL = 'PUBLIC-OPEN-MODAL'
-export const PUBLIC_CLOSE_MODAL = 'PUBLIC-CLOSE-MODAL'
+// Type of window closing action (other components might listen in reducers)
+export const actionPrivateCloseModal = (actionPrefix: string) => `${actionPrefix}/@PRIVATE-CLOSE-MODAL`
 
-// Private action (other components might listen)
-export const PRIVATE_CLOSE_MODAL = '@@PRIVATE-CLOSE-MODAL'
+// To open a modal is public action creator (other components might control the state)
+export const createActionOpenModal = (actionPrefix: string) => ({ type: `${actionPrefix}/PUBLIC-OPEN-MODAL` })
+
+// To close a modal is public action creator (other components might control the state)
+export const createActionCloseModal = (actionPrefix: string) => ({ type: `${actionPrefix}/PUBLIC-CLOSE-MODAL` })
 
 // Check is opened modal (other components might check)
-export const isOpened = (mountPath: string, state: Object) => getState(mountPath)(state).opened
+export const isOpened = (mountPath: string, allState: Object) => {
+  const state = getState(mountPath)(allState)
+  if (state) {
+    return state.opened
+  } else {
+    throw new Error(`Mounting path ${mountPath} isn't valid`)
+  }
+}
 
 const style = {
   container: (opened) => ({
@@ -45,7 +54,7 @@ const Modal = ({ reduxState: { opened }, children = 'Hi, I is modal', reduxSetSt
   <div style={style.container(opened)}>
     <a style={style.linkClose} onClick={() => reduxSetState('PRIVATE-CLOSE-MODAL', { opened: false })}>&times;</a>
     {children}
-    <button style={style.buttonClose} onClick={() => dispatch({ type: `${reduxActionPrefix}${PUBLIC_CLOSE_MODAL}` })}>
+    <button style={style.buttonClose} onClick={() => dispatch(createActionCloseModal(reduxActionPrefix))}>
       Close by public action
     </button>
   </div>
@@ -56,10 +65,10 @@ export default createReducer({
     opened: false
   },
   listenActions: (props, actionPrefix) => ({ // Listen public actions
-    [`${actionPrefix}${PUBLIC_OPEN_MODAL}`]: () => ({ // Listen action to open a modal
+    [createActionOpenModal(actionPrefix).type]: () => ({ // Listen action to open a modal
       opened: true
     }),
-    [`${actionPrefix}${PUBLIC_CLOSE_MODAL}`]: () => ({ // Listen action to close a modal
+    [createActionCloseModal(actionPrefix).type]: () => ({ // Listen action to close a modal
       opened: false
     })
   })

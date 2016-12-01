@@ -165,9 +165,9 @@ export default ({
         // Default value for action prefix contain mounting path
         if (!this.actionPrefix) {
           if (typeof propMountPath !== 'undefined') {
-            this.actionPrefix = `${normalizeMountPath(propMountPath)}/`
+            this.actionPrefix = `${normalizeMountPath(propMountPath)}`
           } else {
-            this.actionPrefix = `${normalizeMountPath(mountPath)}/`
+            this.actionPrefix = `${normalizeMountPath(mountPath)}`
           }
         }
 
@@ -226,7 +226,7 @@ export default ({
         this.reduxSetState = reduxSetState(_mountPath, store.dispatch, store.getState, this.actionPrefix)
         // Action creator RESET redux state
         this.reduxResetState = () => store.dispatch({
-          type: `${this.actionPrefix}${RESET_STATE}`,
+          type: `${this.actionPrefix}/${RESET_STATE}`,
           [MOUNT_PATH]: _mountPath,
           [NEW_STATE]: (_initialState: Object),
         })

@@ -1,7 +1,7 @@
 {
   "name": "redux-fly",
-  "version": "0.1.2",
-  "description": "Rapid React + Redux development",
+  "version": "0.2.0",
+  "description": "The rapid development of scaling applications on React and Redux",
   "browser": "dist/redux-fly.js",
   "main": "lib/index.js",
   "module": "es/index.js",

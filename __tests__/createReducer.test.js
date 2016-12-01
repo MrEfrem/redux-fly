@@ -272,8 +272,8 @@ test('Test listenActions', () => {
 
   class Component extends React.Component {
     componentDidMount() {
-      const { dispatch } = this.props
-      dispatch({ type: `ui component/${UPDATE_TODO}`, text: 'My second todo' })
+      const { dispatch, reduxActionPrefix } = this.props
+      dispatch({ type: `${reduxActionPrefix}/${UPDATE_TODO}`, text: 'My second todo' })
     }
     render() {
       const { props } = this
@@ -284,7 +284,8 @@ test('Test listenActions', () => {
   }
   Component.propTypes = {
     reduxState: PropTypes.object.isRequired,
-    dispatch: PropTypes.func.isRequired
+    dispatch: PropTypes.func.isRequired,
+    reduxActionPrefix: PropTypes.string.isRequired
   }
   const ExtendedComponent = compose(
     createReducer({
@@ -308,8 +309,8 @@ test('Test listenActions is function', () => {
 
   class Component extends React.Component {
     componentDidMount() {
-      const { dispatch, text } = this.props
-      dispatch({ type: `ui component/${UPDATE_TODO}`, text })
+      const { dispatch, text, reduxActionPrefix } = this.props
+      dispatch({ type: `${reduxActionPrefix}/${UPDATE_TODO}`, text })
     }
     render() {
       const { props } = this
@@ -321,14 +322,15 @@ test('Test listenActions is function', () => {
   Component.propTypes = {
     reduxState: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
-    text: PropTypes.string.isRequired
+    text: PropTypes.string.isRequired,
+    reduxActionPrefix: PropTypes.string.isRequired
   }
   const ExtendedComponent = compose(
     createReducer({
       mountPath: 'ui component',
       initialState: { text: 'My first todo' },
       listenActions: (props, actionPrefix) =>
-        ({ [`${actionPrefix}${UPDATE_TODO}`]: (state, action) => ({ text: action.text, num: props.num }) })
+        ({ [`${actionPrefix}/${UPDATE_TODO}`]: (state, action) => ({ text: action.text, num: props.num }) })
     })
   )(Component)
 
@@ -346,8 +348,8 @@ test('Test listenActions is function in reusable component', () => {
 
   class Component extends React.Component {
     componentDidMount() {
-      const { dispatch, text } = this.props
-      dispatch({ type: `ui component/${UPDATE_TODO}`, text })
+      const { dispatch, text, reduxActionPrefix } = this.props
+      dispatch({ type: `${reduxActionPrefix}/${UPDATE_TODO}`, text })
     }
     render() {
       const { props } = this
@@ -359,14 +361,15 @@ test('Test listenActions is function in reusable component', () => {
   Component.propTypes = {
     reduxState: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
-    text: PropTypes.string.isRequired
+    text: PropTypes.string.isRequired,
+    reduxActionPrefix: PropTypes.string.isRequired
   }
   const ExtendedComponent = compose(
     createReducer({
       mountPath: 'main',
       initialState: { text: 'My first todo' },
       listenActions: (props, actionPrefix) =>
-        ({ [`${actionPrefix}${UPDATE_TODO}`]: (state, action) => ({ text: action.text, num: props.num }) })
+        ({ [`${actionPrefix}/${UPDATE_TODO}`]: (state, action) => ({ text: action.text, num: props.num }) })
     })
   )(Component)
 
@@ -472,7 +475,7 @@ test('Test empty (default) actionPrefix', () => {
     if (actionType === 'reset') {
       expect(action.type).toBe(`ui component/${RESET_STATE}`)
     } else {
-      expect(action.type).toBe('ui component/@@UPDATE-TODO')
+      expect(action.type).toBe('ui component/@UPDATE-TODO')
     }
   }
   const store = createStore(() => {}, compose(applyMiddleware(middleware), enhanceStore))

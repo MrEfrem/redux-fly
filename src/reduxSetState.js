@@ -36,7 +36,7 @@ export default (mountPath: string, dispatch: Function, getState: Function, actio
 
   // Else dispatch calculated state
   dispatch({
-    type: `${actionPrefix}@@${actionType}`,
+    type: `${actionPrefix}/@${actionType}`,
     [NEW_STATE]: _newState,
     [MOUNT_PATH]: mountPath
   })

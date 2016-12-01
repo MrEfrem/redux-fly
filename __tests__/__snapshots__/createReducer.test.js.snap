@@ -2,7 +2,7 @@ exports[`test Test connectToStore: false 1`] = `<div />`;
 
 exports[`test Test empty (default) actionPrefix 1`] = `
 <div>
-  ui component/
+  ui component
 </div>
 `;
 
@@ -135,7 +135,7 @@ exports[`test Test valid init component with provide enhanced redux store 1`] = 
     true
   </span>
   <span>
-    ui component/
+    ui component
   </span>
   <span>
     function
@@ -158,7 +158,7 @@ exports[`test Test valid init component with provide is pure redux store 1`] = `
     true
   </span>
   <span>
-    ui component/
+    ui component
   </span>
   <span>
     function
@@ -184,7 +184,7 @@ exports[`test Test valid init component without provide redux store 1`] = `
     true
   </span>
   <span>
-    ui component/
+    ui component
   </span>
   <span>
     function

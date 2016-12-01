@@ -21,11 +21,11 @@ export default createReducer({
     logs: []
   },
   listenActions: {
-    [leftOpenModal().type]: saveLog('Left frame open modal (public action)'),
-    [leftCloseModal().type]: saveLog('Left frame close modal (public action)'),
+    [leftOpenModal.type]: saveLog('Left frame open modal (public action)'),
+    [leftCloseModal.type]: saveLog('Left frame close modal (public action)'),
     [leftPrivateCloseModal]: saveLog('Left frame close modal (private action)'),
-    [rightOpenModal().type]: saveLog('Right frame open modal (public action)'),
-    [rightCloseModal().type]: saveLog('Right frame close modal (public action)'),
+    [rightOpenModal.type]: saveLog('Right frame open modal (public action)'),
+    [rightCloseModal.type]: saveLog('Right frame close modal (public action)'),
     [rightPrivateCloseModal]: saveLog('Right frame close modal (private action)'),
   }
 })(Footer)

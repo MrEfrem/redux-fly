@@ -53,20 +53,23 @@ import { createReducer, getState } from 'redux-fly';
 import { MENU_OPEN } from './Menu'; // Action of other component
 
 // Type of window closing action (other components might listen in reducers)
-export const actionPrivateCloseModal = (actionPrefix) => `${actionPrefix}@@PRIVATE-CLOSE-MODAL`;
+export const actionPrivateCloseModal = (actionPrefix) => `${actionPrefix}/@PRIVATE-CLOSE-MODAL`;
 
 // To open a modal is public action creator (other components might control the state)
-export const openModal = (actionPrefix) => ({
-  type: `${actionPrefix}PUBLIC-OPEN-MODAL`
-});
+export const createActionOpenModal = (actionPrefix) => ({ type: `${actionPrefix}/PUBLIC-OPEN-MODAL` });
 
 // To close a modal is public action creator (other components might control the state)
-export const closeModal = (actionPrefix) => ({
-  type: `${actionPrefix}PUBLIC-CLOSE-MODAL`
-});
+export const createActionCloseModal = (actionPrefix) => ({ type: `${actionPrefix}/PUBLIC-CLOSE-MODAL` });
 
 // Check is opened modal (other components might check the state)
-export const isOpened = (mountPath) => (state) => getState(mountPath)(state).opened;
+export const isOpened = (mountPath, allState) => {
+  const state = getState(mountPath)(allState)
+  if (state) {
+    return state.opened
+  } else {
+    throw new Error(`Mounting path ${mountPath} isn't valid`)
+  }
+}
 
 const Modal = ({ reduxState: { opened }, children, reduxSetState }) => (
   <div style={{ display: opened ? 'block' : 'none' }}>
@@ -80,8 +83,8 @@ export default createReducer({
     opened: false
   }),
   listenActions: (props, actionPrefix) => ({ // Listen public actions
-    [`${actionPrefix}PUBLIC-OPEN-MODAL`]: (state, action) => ({ opened: true }),
-    [`${actionPrefix}PUBLIC-CLOSE-MODAL`]: (state, action) => ({ opened: false })
+    [createActionOpenModal(actionPrefix).type]: (state, action) => ({ opened: true }),
+    [createActionCloseModal(actionPrefix).type]: (state, action) => ({ opened: false })
     [MENU_OPEN]: (state, action) => ({ opened: false }) // Listen action of other component
   })
 })(Modal);

@@ -4,7 +4,7 @@ import { createReducer } from 'redux-fly'
 import Button from './Button'
 
 // Public actions (other components might control)
-export const PUBLIC_OPEN_MODAL = 'PUBLIC-OPEN-MODAL'
+export const createActionOpenModal = (actionPrefix: string) => ({ type: `${actionPrefix}/PUBLIC-OPEN-MODAL` })
 
 const style = {
   container: (opened) => ({
@@ -49,7 +49,7 @@ export default createReducer({
     opened: false
   },
   listenActions: (props, actionPrefix) => ({ // Listen public actions
-    [`${actionPrefix}${PUBLIC_OPEN_MODAL}`]: () => ({ // Listen action to open a modal
+    [createActionOpenModal(actionPrefix).type]: () => ({ // Listen action to open a modal
       opened: true
     })
   })
