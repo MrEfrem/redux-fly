@@ -2,7 +2,7 @@
 
 Example to use [Redux-fly](https://github.com/MrEfrem/redux-fly) for building scalable React + Redux application.<br/>
 It is based on the famous RandomGif ([JS](https://github.com/jarvisaoieong/redux-architecture) / [Elm](https://github.com/evancz/elm-architecture-tutorial)
-example that is often used to showcase Elm architecture.<br/>
+example that is often used to showcase Elm architecture).<br/>
 This project template was built with [Create React App](https://github.com/facebookincubator/create-react-app).
 
 ## Available Scripts
