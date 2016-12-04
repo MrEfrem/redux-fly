@@ -152,4 +152,4 @@ All examples use [redux-devtools-extension](https://github.com/zalmoxisus/redux-
 * [Reused components](examples/reused_components). Example to use `redux-fly` for creation reused components and showin how to implement the interaction between components.
 * [Nested reused components](examples/nested_reused_components). Example to use `redux-fly` for creation nested reused in reused components.
 * [RandomGif](examples/random_gif). Example is based on the famous RandomGif ([JS](https://github.com/jarvisaoieong/redux-architecture) / [Elm](https://github.com/evancz/elm-architecture-tutorial)
-  example that is often used to showcase Elm architecture.<br/>
+  example that is often used to showcase Elm architecture).<br/>
