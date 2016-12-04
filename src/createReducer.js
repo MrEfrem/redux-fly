@@ -25,15 +25,6 @@ const checkInitialState = (initialState: any) => {
 }
 
 /**
- * Check listenActions
- */
-const checkListenActions = (listenActions) => {
-  if (!isPlainObject(listenActions)) {
-    throw new Error('ListenActions must be plain object')
-  }
-}
-
-/**
  * Check persist
  */
 const checkPersist = (persist) => {
@@ -62,7 +53,7 @@ const checkActionPrefix = (actionPrefix) => {
 type ParamsType = {
   mountPath?: string,
   initialState: Object | Function,
-  listenActions?: Object | Function,
+  listenActions?: Function,
   connectToStore: boolean,
   persist: boolean,
   actionPrefix?: string
@@ -82,7 +73,7 @@ export default ({
     checkInitialState(initialState)
   }
   if (listenActions && typeof listenActions !== 'function') {
-    checkListenActions(listenActions)
+    throw new Error('ListenActions must be function')
   }
   if (typeof connectToStore !== 'boolean') {
     throw new Error('ConnectToStore must be boolean')
@@ -183,12 +174,6 @@ export default ({
           checkInitialState(_initialState)
         }
 
-        let _listenActions = listenActions
-        if (typeof _listenActions === 'function') {
-          _listenActions = _listenActions(props, this.actionPrefix)
-          checkListenActions(_listenActions)
-        }
-
         if (typeof propMountPath !== 'undefined') {
           if (typeof store === 'undefined') {
             throw new Error('Redux store must be created')
@@ -220,7 +205,7 @@ export default ({
 
         // Creation and registration reducer
         store.registerReducers({
-          [_mountPath]: createBoundedReducer(_mountPath, _initialState, _listenActions || {}, this.actionPrefix),
+          [_mountPath]: createBoundedReducer(_mountPath, _initialState, listenActions, this.actionPrefix, props),
         })
         // Binding reduxSetState with redux store
         this.reduxSetState = reduxSetState(_mountPath, store.dispatch, store.getState, this.actionPrefix)

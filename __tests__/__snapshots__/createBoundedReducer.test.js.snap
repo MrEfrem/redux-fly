@@ -1,0 +1,14 @@
+exports[`test Test signature of listenActions 1`] = `
+Array [
+  Object {
+    "text": "My first todo",
+  },
+  Object {
+    "type": "TEST_ACTION",
+  },
+  Object {
+    "num": 1,
+  },
+  "ui todo/",
+]
+`;

@@ -12,8 +12,7 @@ test('Test invalid signature', () => {
   expect(createReducer.bind(this, { mountPath: 10, initialState: {} })).toThrowError('Mounting path must be string')
   expect(createReducer.bind(this, { mountPath: 'ui component' })).toThrowError('InitialState must be plain object')
   expect(createReducer.bind(this, { mountPath: 'ui component', initialState: Object.create({ a: 1 }) })).toThrowError('InitialState must be plain object')
-  expect(createReducer.bind(this, { mountPath: 'ui component', initialState: {}, listenActions: 123 })).toThrowError('ListenActions must be plain object')
-  expect(createReducer.bind(this, { mountPath: 'ui component', initialState: {}, listenActions: Object.create({ a: 1 }) })).toThrowError('ListenActions must be plain object')
+  expect(createReducer.bind(this, { mountPath: 'ui component', initialState: {}, listenActions: 123 })).toThrowError('ListenActions must be function')
   expect(createReducer.bind(this, { mountPath: 'ui component', initialState: {}, connectToStore: null })).toThrowError('ConnectToStore must be boolean')
   expect(createReducer.bind(this, { mountPath: 'ui component', initialState: {}, persist: null })).toThrowError('Persist must be boolean')
   expect(createReducer.bind(this, { mountPath: 'ui component', initialState: {}, actionPrefix: 123 })).toThrowError('ActionPrefix must be non empty string')
@@ -40,12 +39,6 @@ test('Test invalid init component', () => {
   expect(renderer.create.bind(renderer,
     <ExtendedComponent2/>
   )).toThrowError('InitialState must be plain object')
-
-
-  const ExtendedComponent3 = createReducer({ mountPath: 'ui component', initialState: {}, listenActions: () => undefined })(Component)
-  expect(renderer.create.bind(renderer,
-    <ExtendedComponent3/>
-  )).toThrowError('ListenActions must be plain object')
 
   expect(renderer.create.bind(renderer,
     <ExtendedComponent1 reduxMountPath="ui component" />
@@ -272,43 +265,6 @@ test('Test listenActions', () => {
 
   class Component extends React.Component {
     componentDidMount() {
-      const { dispatch, reduxActionPrefix } = this.props
-      dispatch({ type: `${reduxActionPrefix}/${UPDATE_TODO}`, text: 'My second todo' })
-    }
-    render() {
-      const { props } = this
-      return (
-        <div>{JSON.stringify(props.reduxState)}</div>
-      )
-    }
-  }
-  Component.propTypes = {
-    reduxState: PropTypes.object.isRequired,
-    dispatch: PropTypes.func.isRequired,
-    reduxActionPrefix: PropTypes.string.isRequired
-  }
-  const ExtendedComponent = compose(
-    createReducer({
-      mountPath: 'ui component',
-      initialState: { text: 'My first todo' },
-      listenActions: { [`ui component/${UPDATE_TODO}`]: (state, action) => ({ text: action.text }) }
-    })
-  )(Component)
-
-  const component = renderer.create(
-    <Provider store={store}>
-      <ExtendedComponent />
-    </Provider>
-  )
-  expect(component.toJSON()).toMatchSnapshot()
-})
-
-test('Test listenActions is function', () => {
-  const store = createStore(() => {}, enhanceStore)
-  const UPDATE_TODO = 'UPDATE_TODO'
-
-  class Component extends React.Component {
-    componentDidMount() {
       const { dispatch, text, reduxActionPrefix } = this.props
       dispatch({ type: `${reduxActionPrefix}/${UPDATE_TODO}`, text })
     }
@@ -329,8 +285,12 @@ test('Test listenActions is function', () => {
     createReducer({
       mountPath: 'ui component',
       initialState: { text: 'My first todo' },
-      listenActions: (props, actionPrefix) =>
-        ({ [`${actionPrefix}/${UPDATE_TODO}`]: (state, action) => ({ text: action.text, num: props.num }) })
+      listenActions: (state, action, props, actionPrefix) => {
+        if (action.type === `${actionPrefix}/${UPDATE_TODO}`) {
+          return { text: action.text, num: props.num }
+        }
+        return state
+      }
     })
   )(Component)
 
@@ -342,7 +302,7 @@ test('Test listenActions is function', () => {
   expect(component.toJSON()).toMatchSnapshot()
 })
 
-test('Test listenActions is function in reusable component', () => {
+test('Test listenActions in reusable component', () => {
   const store = createStore(() => {}, enhanceStore)
   const UPDATE_TODO = 'UPDATE_TODO'
 
@@ -368,8 +328,12 @@ test('Test listenActions is function in reusable component', () => {
     createReducer({
       mountPath: 'main',
       initialState: { text: 'My first todo' },
-      listenActions: (props, actionPrefix) =>
-        ({ [`${actionPrefix}/${UPDATE_TODO}`]: (state, action) => ({ text: action.text, num: props.num }) })
+      listenActions: (state, action, props, actionPrefix) => {
+        if (action.type === `${actionPrefix}/${UPDATE_TODO}`) {
+          return { text: action.text, num: props.num }
+        }
+        return state
+      }
     })
   )(Component)
 

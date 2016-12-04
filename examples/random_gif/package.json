@@ -1,8 +1,8 @@
 {
-  "name": "reused_components",
+  "name": "random-gif",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://mrefrem.github.io/reused-components",
+  "homepage": "https://mrefrem.github.io/random-gif",
   "devDependencies": {
     "cpx": "^1.5.0",
     "enzyme": "^2.6.0",
@@ -12,10 +12,10 @@
     "rimraf": "^2.5.4"
   },
   "dependencies": {
+    "babel-polyfill": "^6.16.0",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
     "react-redux": "^4.4.5",
-    "recompose": "^0.20.2",
     "redbox-react": "^1.3.3",
     "redux": "^3.6.0",
     "redux-fly": "*"
@@ -25,6 +25,6 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "deploy": "npm run build && cpx \"build/**\" gh-pages/reused-components && gh-pages -d gh-pages -r https://github.com/MrEfrem/mrefrem.github.io.git -b master -v reused-components && rimraf gh-pages"
+    "deploy": "npm run build && cpx \"build/**\" gh-pages/random-gif && gh-pages -d gh-pages -r https://github.com/MrEfrem/mrefrem.github.io.git -b master -v random-gif && rimraf gh-pages"
   }
 }

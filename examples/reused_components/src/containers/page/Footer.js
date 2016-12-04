@@ -14,18 +14,28 @@ const Footer = ({ reduxState: { logs } }: { reduxState: { logs: Object[] } }) =>
   </ul>
 )
 
-const saveLog = (description) => (state) => ({ logs: [...state.logs, { description, timestamp: Date.now() }] })
+const saveLog = (description, state) => ({ logs: [...state.logs, { description, timestamp: Date.now() }] })
 export default createReducer({
   mountPath: 'footer',
   initialState: {
     logs: []
   },
-  listenActions: {
-    [leftOpenModal.type]: saveLog('Left frame open modal (public action)'),
-    [leftCloseModal.type]: saveLog('Left frame close modal (public action)'),
-    [leftPrivateCloseModal]: saveLog('Left frame close modal (private action)'),
-    [rightOpenModal.type]: saveLog('Right frame open modal (public action)'),
-    [rightCloseModal.type]: saveLog('Right frame close modal (public action)'),
-    [rightPrivateCloseModal]: saveLog('Right frame close modal (private action)'),
+  listenActions: (state, action) => { // Listen public actions
+    switch (action.type) {
+      case leftOpenModal.type:
+        return saveLog('Left frame open modal (public action)', state)
+      case leftCloseModal.type:
+        return saveLog('Left frame close modal (public action)', state)
+      case leftPrivateCloseModal:
+        return saveLog('Left frame close modal (private action)', state)
+      case rightOpenModal.type:
+        return saveLog('Right frame open modal (public action)', state)
+      case rightCloseModal.type:
+        return saveLog('Right frame close modal (public action)', state)
+      case rightPrivateCloseModal:
+        return saveLog('Right frame close modal (private action)', state)
+      default:
+        return state
+    }
   }
 })(Footer)

@@ -7,24 +7,26 @@ Function creates and registers special reducer in Redux store, and provides simp
   * `[mountPath]`\(*string*): if argument is specified, it defines reducer mounting path. Argument consists from object keys separated by spaces.
   * `initialState`\(*Object*): it defines reducer initial state.
   * `initialState(props): Object`\(*Function*): it receives props and must return object described above.
-  * `[listenActions]`\(*Object*): if argument is specified, it defines listeners to actions.
-    * `key`\(*string*): it defines action type.
-    * `value(state, action): newState`\(*Function*): it defines function which receives into arguments a current state and action object and must be returning new state. New state merge with current state through `Object.assign` and new object always returns.
-  * `[listenActions(props, actionPrefix): Object]`\(*Function*): if argument is specified, it defines function which receives props and actionPrefix and must return object described above.
-  * `connectToStore = true`\(*boolean*): default argument defines connect to current registered reducer by library `react-redux` and state is transferred in `reduxState` prop. If argument specified to `false` then manual connect needed.
+  * `[listenActions(state, action, props, actionPrefix): Object]`\(*Function*): if argument is specified, it defines function - [reducer](http://redux.js.org/docs/basics/Reducers.html)
+    which receives into arguments the previous state, action, props and actionPrefix and returns the next state.
+  * `connectToStore = true`\(*boolean*): default argument defines connect to current registered reducer by library `react-redux` and state is transferred in `reduxState` prop.
+    If argument specified to `false` then manual connect needed.
   * `persist = true`\(*boolean*): default argument defines need to keeps current reducer state in case of component is unmounted. If argument specified to `false` then reducer state to reset.
   * `[actionPrefix]`\(*string*): if argument is specified, it defines prefix for actions dispatched by `reduxSetState` and `reduxResetState` described below.
 
 #### Props
 It must be specified in case reused components creations.
-* `[reduxMountPath]`\(*string*) if prop is specified, it also replaces `mountPath` argument if `mountPath` isn't specified. But if also argument `mountPath` is specified, then they concatenates: `reduxMountPath + mountPath`
+* `[reduxMountPath]`\(*string*) if prop is specified, it also replaces `mountPath` argument if `mountPath` isn't specified. But if also argument `mountPath` is specified,
+  then they concatenates: `reduxMountPath + mountPath`
 * `[reduxPersist]`\(*boolean*) if prop is specified, it behaves just as `persist` argument. The prop replaces an argument.
 * `[reduxActionPrefix]`\(*string*) if prop is specified, it behaves just as `actionPrefix` argument. The prop replaces an argument.
 
 #### Returns
 A React component class that injects into your component an Redux state through prop `reduxState`, injects `reduxSetState`, `reduxResetState` functions for state change:
-* `reduxSetState(actionType, newState)`\(*Function*): it dispatches Redux action with the `action prefix + actionType` type and the `newState` property. `newState` merge with current state through `Object.assign` and new object always returns.
-* `reduxResetState()`\(*Function*): it dispatches Redux action with the `action prefix + reset action type` type and the `newState` property. `newState` replaces current state and new object always returns.
+* `reduxSetState(actionType, newState)`\(*Function*): it dispatches Redux action with the `action prefix + actionType` type and the `newState` property. `newState` merge with current
+  state through `Object.assign` and new object always returns.
+* `reduxResetState()`\(*Function*): it dispatches Redux action with the `action prefix + reset action type` type and the `newState` property. `newState` replaces current state and new
+  object always returns.
 * `reduxPersist`\(*boolean*) it contains calculated `reduxPersist`.
 * `reduxActionPrefix`\(*string*) it contains calculated `reduxActionPrefix`.
 * `dispatch`\(*Function*) it is [dispatch](http://redux.js.org/docs/api/Store.html#dispatch) function of Redux store.

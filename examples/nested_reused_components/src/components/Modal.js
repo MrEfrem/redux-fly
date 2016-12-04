@@ -3,9 +3,6 @@ import React from 'react'
 import { createReducer } from 'redux-fly'
 import Button from './Button'
 
-// Public actions (other components might control)
-export const createActionOpenModal = (actionPrefix: string) => ({ type: `${actionPrefix}/PUBLIC-OPEN-MODAL` })
-
 const style = {
   container: (opened) => ({
     display: opened ? 'block' : 'none',
@@ -43,14 +40,18 @@ const Modal = ({ reduxState: { opened }, children = 'Hi, I is modal', reduxSetSt
   </div>
 )
 
+// Public actions (other components might control)
+export const createActionOpenModal = (actionPrefix: string) => ({ type: `${actionPrefix}/PUBLIC-OPEN-MODAL` })
+
 export default createReducer({
   mountPath: 'main',
   initialState: {
     opened: false
   },
-  listenActions: (props, actionPrefix) => ({ // Listen public actions
-    [createActionOpenModal(actionPrefix).type]: () => ({ // Listen action to open a modal
-      opened: true
-    })
-  })
+  listenActions: (state, action, props, actionPrefix) => { // Listen public actions
+    if (action.type === createActionOpenModal(actionPrefix).type) { // Listen action to open a modal
+      return { opened: true }
+    }
+    return state
+  }
 })(Modal)

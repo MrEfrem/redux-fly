@@ -48,17 +48,11 @@ exports[`test Test is valid to set the mountPath for reused component which cont
 
 exports[`test Test listenActions 1`] = `
 <div>
-  {\"text\":\"My second todo\"}
-</div>
-`;
-
-exports[`test Test listenActions is function 1`] = `
-<div>
   {\"text\":\"My second todo\",\"num\":\"10\"}
 </div>
 `;
 
-exports[`test Test listenActions is function in reusable component 1`] = `
+exports[`test Test listenActions in reusable component 1`] = `
 <div>
   {\"text\":\"My second todo\",\"num\":\"10\"}
 </div>

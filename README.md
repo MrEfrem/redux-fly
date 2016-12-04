@@ -52,6 +52,13 @@ import React from 'react';
 import { createReducer, getState } from 'redux-fly';
 import { MENU_OPEN } from './Menu'; // Action of other component
 
+const Modal = ({ reduxState: { opened }, children, reduxSetState }) => (
+  <div style={{ display: opened ? 'block' : 'none' }}>
+    <a onClick={() => reduxSetState('PRIVATE-CLOSE-MODAL', { opened: false })}>&times;</a>
+    {children}
+  </div>
+);
+
 // Type of window closing action (other components might listen in reducers)
 export const actionPrivateCloseModal = (actionPrefix) => `${actionPrefix}/@PRIVATE-CLOSE-MODAL`;
 
@@ -71,22 +78,23 @@ export const isOpened = (mountPath, allState) => {
   }
 }
 
-const Modal = ({ reduxState: { opened }, children, reduxSetState }) => (
-  <div style={{ display: opened ? 'block' : 'none' }}>
-    <a onClick={() => reduxSetState('PRIVATE-CLOSE-MODAL', { opened: false })}>&times;</a>
-    {children}
-  </div>
-);
-
 export default createReducer({
   initialState: ({
     opened: false
   }),
-  listenActions: (props, actionPrefix) => ({ // Listen public actions
-    [createActionOpenModal(actionPrefix).type]: (state, action) => ({ opened: true }),
-    [createActionCloseModal(actionPrefix).type]: (state, action) => ({ opened: false })
-    [MENU_OPEN]: (state, action) => ({ opened: false }) // Listen action of other component
-  })
+  listenActions: (state, action, props, actionPrefix) => { // Listen public actions
+    switch (action.type) {
+      case createActionOpenModal(actionPrefix).type: // Listen own action
+        return { ...state, opened: true };
+
+      case MENU_OPEN: // Listen action of other component
+      case createActionCloseModal(actionPrefix).type: // Listen own action
+        return { ...state, opened: false };
+
+      default:
+        return state;
+    }
+  }
 })(Modal);
 ```
 
@@ -143,3 +151,5 @@ All examples use [redux-devtools-extension](https://github.com/zalmoxisus/redux-
 * [Universal](examples/universal). Example to use `redux-fly` for creation of component state and showin how to implement the universal rendering.
 * [Reused components](examples/reused_components). Example to use `redux-fly` for creation reused components and showin how to implement the interaction between components.
 * [Nested reused components](examples/nested_reused_components). Example to use `redux-fly` for creation nested reused in reused components.
+* [RandomGif](examples/random_gif). Example is based on the famous RandomGif ([JS](https://github.com/jarvisaoieong/redux-architecture) / [Elm](https://github.com/evancz/elm-architecture-tutorial)
+  example that is often used to showcase Elm architecture.<br/>

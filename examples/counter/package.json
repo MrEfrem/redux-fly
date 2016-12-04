@@ -8,7 +8,7 @@
     "enzyme": "^2.6.0",
     "gh-pages": "^0.12.0",
     "react-addons-test-utils": "^15.3.2",
-    "react-scripts": "0.7.0",
+    "react-scripts": "0.8.1",
     "rimraf": "^2.5.4"
   },
   "dependencies": {
