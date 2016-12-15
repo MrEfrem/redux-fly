@@ -1,6 +1,4 @@
 {
-	// Документацию о формате jsconfig.json см. в статье https://go.microsoft.com/fwlink/?LinkId=759670
-	//
 	"compilerOptions": {
 		"target": "es6"
 	},

@@ -15,7 +15,7 @@ const getTemplate = (markup, preloadedState) =>
       '<div id="root"></div>', [
         `<div id="root">${markup}</div>`,
         `<script>window.__PRELOADED_STATE__=${serialize(preloadedState)};</script>`,
-        `<script src="/public/${config.webpack.fileName}?nocache=${Math.random()}"></script>`
+        `<script src="${config.webpack.publicPath}${config.webpack.fileName}?nocache=${Math.random()}"></script>`
       ].join('')
     )
 
